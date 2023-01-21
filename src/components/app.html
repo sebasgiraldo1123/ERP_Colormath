@@ -12,14 +12,51 @@
     <title>ERP Colormath</title>
 
 </head>
-
 <header>
-    <!-- navbar -->
-    <?!= include('src/components/navbar/navbar')?>
+    <nav class="navbar navbar-expand-sm navbar-dark bg-dark" id="main-navbar">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                Colormath
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
+                aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                <div class="navbar-nav">
+                    <a class="nav-link " href="#" id="nav-sales">Ventas</a>
+                    <a class="nav-link " href="#" id="nav-orders">Pedidos</a>
+                    <a class="nav-link " href="#" id="nav-prices">Precios</a>
+                    <a class="nav-link " href="#" id="nav-bills">Facturas</a>
+                    <a class="nav-link " href="#" id="nav-wood">Madera</a>
+                </div>
+            </div>
+        </div>
+    </nav>
 </header>
 
-
 <body>
+    <!-- Contenido Principal -->
+    <div id="content-sales" style="display: inline;">
+        <?!= include('src/components/sales/index')?>
+    </div>
+
+    <div id="content-orders" style="display: none;">
+        <?!= include('src/components/orders/index')?>
+    </div>
+
+    <div id="content-prices" style="display: none;">
+        <?!= include('src/components/prices/index')?>
+    </div>
+
+    <div id="content-bills" style="display: none;">
+        <?!= include('src/components/bills/index')?>
+    </div>
+
+    <div id="content-wood" style="display: none;">
+        <?!= include('src/components/wood/index')?>
+    </div>
+
     <!-- Bootstrap y JS -->
     <?!= include('src/components/js')?>
 </body>
