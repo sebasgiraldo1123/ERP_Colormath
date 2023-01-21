@@ -2,15 +2,25 @@
 <html lang="es">
 
 <head>
+    <base target="_self">
+
+    <!-- Bootstrap y CSS -->
     <?!= include('src/components/css')?>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1">
+    <title>ERP Colormath</title>
+
 </head>
 
+<header>
+    <!-- navbar -->
+    <?!= include('src/components/navbar/navbar')?>
+</header>
+
+
 <body>
-    <h1>Prueba de Rama</h1>
+    <!-- Bootstrap y JS -->
     <?!= include('src/components/js')?>
 </body>
 
