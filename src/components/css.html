@@ -8,8 +8,32 @@
     body {
         background-color: #e8e8b8;
     }
-    
+
+    .container {
+        max-width: 1000px;
+    }
+
+    /*
+    Todos los inputs type text resiben texto solo en mayúscula
+    */
     input {
         text-transform: uppercase;
     }
+
+    /*
+    Desactiva los botones del input type number
+    */
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    /*
+    Cambia el fondo de los inputs que tienen el atributo read only
+    */
+    input[readonly] {
+    background-color: rgb(111, 183, 201);
+}
+
 </style>

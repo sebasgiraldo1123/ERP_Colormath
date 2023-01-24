@@ -1,9 +1,17 @@
 <!DOCTYPE html>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous">
     </script>
 
+<script src="//cdnjs.cloudflare.com/ajax/libs/numeral.js/2.0.6/numeral.min.js"></script>
+
+
 <script>
+
+    /*
+        Intercambia el contenido del body según lo seleccionado en el navbar
+    */
 
     let contentSales = document.getElementById('content-sales');
     let contentOrders = document.getElementById('content-orders');
@@ -57,4 +65,44 @@
             }
         }
     }
+
+</script>
+
+<!-- 
+    Validaciones y Formateos
+-->
+
+<script>
+
+    /*
+        Formatea los inputs numbers con eparadores de miles
+    */
+    let inputs = document.querySelectorAll('.format-price');
+    for (let input of inputs) {
+        input.addEventListener("input", function () {
+            let number = numeral(input.value);
+            input.value = number.format('0,0');
+        });
+    }
+
+    /*
+        Formatea el campo celular para facilitar su escritura
+    */
+    let phone = document.getElementById('celular_cliente');
+    phone.addEventListener("input", function () {
+        this.value = this.value.replace(/[^\d]/g, "");
+        this.value = this.value.replace(/(\d{3})(\d{3})(\d{4})/, "$1-$2-$3");
+    });
+
+    /*
+        Validación de campo cantidad menor a 0
+    */
+    let count = document.getElementById('cantidad');
+    count.addEventListener("input", function () {
+        if (this.value < 0) {
+            this.value = 0;
+        }
+    });
+
+
 </script>
