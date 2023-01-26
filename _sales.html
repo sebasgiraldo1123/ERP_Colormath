@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+
+<div class="container" style="background-color: aquamarine;">
+    <nav>
+        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+            <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home"
+                type="button" role="tab" aria-controls="nav-home" aria-selected="true">Crear Venta
+            </button>
+            <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile"
+                type="button" role="tab" aria-controls="nav-profile" aria-selected="false">Buscar Venta
+            </button>
+        </div>
+    </nav>
+    <div class="tab-content" id="nav-tabContent">
+        <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+            <!-- 
+                Formulario para la creación de una venta 
+            -->
+            <form class="needs-validation" name="crearVenta" id="crearVenta"
+                style="background-color: rgb(228, 221, 126);" novalidate>
+                <!--
+                    Cliente
+                -->
+                <h3>
+                    Cliente
+                </h3>
+                <!--
+                    Datos del cliente
+                -->
+                <div class="row">
+                    <div class="col-sm-2">
+                        <label for="id_cliente" class="form-label">N°</label>
+                        <input type="text" class="form-control text-center" id="id_cliente" name="id_cliente" readonly>
+                    </div>
+                    <div class="col-sm-7">
+                        <label for="nombre_cliente" class="form-label">Nombre</label>
+                        <input type="text" class="form-control" id="nombre_cliente" name="nombre_cliente" required>
+                        <div class="invalid-feedback">
+                            Ingrese un nombre.
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <label for="celular_cliente" class="form-label">Celular</label>
+                        <input type="tel" pattern=".{10,}" maxlength="10" class="form-control" id="celular_cliente"
+                            name="celular_cliente" required>
+                        <div class="invalid-feedback">
+                            Ingrese un celular correcto
+                        </div>
+                    </div>
+                </div>
+                <!--
+                    Pedidos
+                -->
+                <h3>
+                    Productos
+                </h3>
+
+                <div class="row" id="productos" style="background-color: rgb(160, 247, 125);">
+
+                    <div class="row" id="producto_0" style="background-color: blueviolet;">
+                        <!--
+                            Datos del producto
+                        -->
+                        <div class="row">
+                            <div class="col-sm-2">
+                                <label for="id_producto" class="form-label">N°</label>
+                                <input type="text" class="form-control text-center id-producto" readonly>
+                            </div>
+                            <div class="col-sm-5">
+                                <label class="form-label">Producto</label>
+                                <select class="form-select nombre-producto" onchange="selectChanged(event)" required>
+                                    <option selected disabled value>Seleccione un producto...</option>
+                                </select>
+                                <div class="invalid-feedback">
+                                    Seleccione un producto.
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <label for="cantidad" class="form-label">Cantidad</label>
+                                <input type="number" class="form-control cantidad" onchange="calculateTotal()" required>
+                                <div class="invalid-feedback">
+                                    Ingrese una cantidad.
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <label for="valor_unitario" class="form-label">Valor Unitario</label>
+                                <input type="text" class="form-control format-price valor-unitario"
+                                    onchange="calculateTotal()">
+                            </div>
+                        </div>
+                        <!--
+                            Opciones del producto
+                        -->
+                        <div class="row opciones-productos">
+                        </div>
+                    </div>
+
+                </div>
+                <!--
+                    Agregar otro producto
+                -->
+                <div class="row">
+                    <div class="col-sm-12 d-flex justify-content-center">
+                        <button type="button" onclick="addProduct()" class="btn btn-info">Agregar</button>
+                    </div>
+                </div>
+                <!--
+                    Totales
+                -->
+                <h3>
+                    Totales
+                </h3>
+                <div class="row">
+                    <div class="col-sm">
+                        <label for="valor_total" class="form-label" onchange="formatPrices()">Valor Total</label>
+                        <input type="text" class="form-control format-price" id="valor_total" name="valor_total"
+                            readonly>
+                    </div>
+                    <div class="col-sm">
+                        <label for="abono" class="form-label">Abono</label>
+                        <input type="text" class="form-control format-price" id="abono" name="abono"
+                            onchange="calculateAdvance()" required>
+                        <div class="invalid-feedback">
+                            Ingresa un abono, recuerda que debe ser mínimo la mitad del valor total, sino hay puedes
+                            poner 0.
+                        </div>
+                    </div>
+                    <div class="col-sm">
+                        <label for="valor_restante" class="form-label">Valor Restante</label>
+                        <input type="text" class="form-control format-price" id="valor_restante" name="valor_restante"
+                            readonly>
+                    </div>
+                    <div class="col-sm">
+                        <label for="fecha_entrega" class="form-label">Fecha Entrega</label>
+                        <input type="date" class="form-control" id="fecha_entrega" name="fecha_entrega" required>
+                        <div class="invalid-feedback">
+                            Ingresa una fecha aceptable para la entrega del trabajo.
+                        </div>
+                    </div>
+                </div>
+                <!--
+                    Botones de Acción
+                -->
+                <div class="row">
+                    <div class="col-sm-12 d-flex justify-content-center">
+                        <button type="submit" class="btn btn-success">Registrar</button>
+                    </div>
+                </div>
+            </form>
+
+            <!--
+                Este script se encarga de insertar un nuevo form de producto.
+            -->
+            <script>
+
+                const newProduct =
+                    '<div class="row">' +
+                    '<div class="col-sm-2">' +
+                    '<label for="id_producto" class="form-label">N°</label>' +
+                    '<input type="text" class="form-control text-center id-producto " readonly>' +
+                    '</div>' +
+                    '<div class="col-sm-5">' +
+                    '<label class="form-label">Producto</label>' +
+                    '<select class="form-select nombre-producto" onchange="selectChanged(event)" required>' +
+                    '<option selected disabled value>Seleccione un producto...</option>' +
+                    '</select>' +
+                    '<div class="invalid-feedback">' +
+                    'Seleccione un producto.' +
+                    '</div>' +
+                    '</div>' +
+                    '<div class="col-sm-2">' +
+                    '<label for="cantidad" class="form-label">Cantidad</label>' +
+                    '<input type="number" class="form-control cantidad" onchange="calculateTotal()" required>' +
+                    '<div class="invalid-feedback">' +
+                    'Ingrese una cantidad.' +
+                    '</div>' +
+                    '</div>' +
+                    '<div class="col-sm-3">' +
+                    '<label for="valor_unitario" class="form-label">Valor Unitario</label>' +
+                    '<input type="text" class="form-control format-price valor-unitario" onchange="calculateTotal()">' +
+                    '</div>' +
+                    '</div>' +
+                    '<div class="row opciones-productos">' +
+                    '</div>';
+
+                function addProduct() {
+
+                    productos = document.getElementById('productos');
+
+                    // Se crea el nuevo div con sus parámetros y se agrega el html del nuevo producto
+                    productsIndex += 1;
+
+                    let div_newProduct = document.createElement("div");
+                    div_newProduct.className = "row";
+                    div_newProduct.id = `producto_${productsIndex}`;
+                    div_newProduct.innerHTML = newProduct;
+
+                    // Se agrega al contendor de productos
+                    productos.appendChild(div_newProduct);
+
+                    // Se actualizan los selects nuevos con los productos
+                    updateDataNewSelects();
+
+                    // Se actualizan los querySelectorAll
+                    inputs = document.querySelectorAll('.format-price');
+                    counts = document.querySelectorAll('.cantidad');
+
+                    //console.log(inputs);
+                    //console.log(counts);
+                }
+
+            </script>
+
+            <!--
+                Este script se encarga de generar las opciones de cada producto seleccionado y todos los
+                cambios que desencadena su selección.
+            -->
+            <script>
+
+                const orientacion =
+                    '<div class="col-sm-4">' +
+                    '<label class="form-label">Orientación</label>' +
+                    '<select class="form-select" required>' +
+                    '<option selected disabled value>Seleccionar...</option>' +
+                    '<option value="HORIZONTAL">HORIZONTAL</option>' +
+                    '<option value="VERTICAL">VERTICAL</option>' +
+                    '</select>' +
+                    '<div class="invalid-feedback">' +
+                    'Seleccione una orientación.' +
+                    '</div>' +
+                    '</div>';
+
+                const color =
+                    '<div class="col-sm-4">' +
+                    '<label class="form-label">Color</label>' +
+                    '<select class="form-select" required>' +
+                    '<option selected disabled value>Seleccionar...</option>' +
+                    '<option value="WENGUE">WENGUE</option>' +
+                    '<option value="NATURAL">NATURAL</option>' +
+                    '</select>' +
+                    '<div class="invalid-feedback">' +
+                    'Seleccione un color.' +
+                    '</div>' +
+                    '</div>';
+
+                const tipoDiseño =
+                    '<div class="col-sm-4">' +
+                    '<label class="form-label">Tipo de Diseño</label>' +
+                    '<select class="form-select" required>' +
+                    '<option selected disabled value>Seleccionar...</option>' +
+                    '<option value="COLLAGE">COLLAGE</option>' +
+                    '<option value="RETOQUE">RETOQUE</option>' +
+                    '<option value="MONTAJE">MONTAJE</option>' +
+                    '</select>' +
+                    '<div class="invalid-feedback">' +
+                    'Seleccione el tipo de diseño.' +
+                    '</div>' +
+                    '</div>';
+
+                /*
+                    Capturo el select seleccionado y su opción.
+                    Agrego la opciones correspondientes al tipo de producto
+                */
+
+                function selectChanged(event) {
+
+                    /*
+                        Se busca la data del producto que se seleccionó en el select seleccionado
+                    */
+
+                    // Busco el indice y el valor del select activado
+                    let selectValue = event.target.value;
+                    let index = event.target.parentElement.parentElement.parentElement.id.split('_')[1];
+                    let index_productList = 0;
+
+                    // se busca la data
+                    while (productsList[index_productList][0] !== selectValue) {
+                        index_productList++;
+                    }
+                    let data_selectedProduct = productsList[index_productList];
+
+
+                    /*
+                        Se agregan y modifican los cambios que el select produce
+                    */
+                    // --------------------- Valor Unitario -----------------------
+                    let valoresUnitarios = document.querySelectorAll('.valor-unitario');
+                    valoresUnitarios[index].value = data_selectedProduct[1];
+
+
+                    // ----------- Opciones para el producto seleccio1nado -------------
+                    let opcionesProductos = document.querySelectorAll('.opciones-productos');
+
+                    // Borrar las opciones que existan
+                    opcionesProductos[index].innerHTML = "";
+                    // Orientación 
+                    if (data_selectedProduct[2] === 'TRUE') {
+                        opcionesProductos[index].innerHTML += orientacion;
+                    }
+                    // Color 
+                    if (data_selectedProduct[3] === 'TRUE') {
+                        opcionesProductos[index].innerHTML += color;
+                    }
+                    // Tipo Diseño 
+                    if (data_selectedProduct[4] === 'TRUE') {
+                        opcionesProductos[index].innerHTML += tipoDiseño;
+                    }
+                }
+
+
+
+            </script>
+
+            <!--
+                Este script se ejecuta cada vez que se carga el contenedor de Ventas 
+                Crea los options para los selects disponibles y carga la lista de productos.
+            -->
+            <script>
+
+                // Se ejecuta al cargar el documento y cada que se actualiza
+                window.addEventListener("load", loadProductsList);
+
+                // Variables de inicio.
+                let productsList = null;
+                let productsIndex;
+
+                // Leo y almaceno en una variable la lista de productos desde el SpreadSheet
+                function loadProductsList() {
+
+                    productsIndex = 0;
+                    google.script.run
+                        .withSuccessHandler(products_list => {
+
+                            productsList = products_list;
+
+                            let selects = document.querySelectorAll('.nombre-producto');
+                            for (let select of selects) {
+
+                                products_list.forEach(product => {
+
+                                    let option = document.createElement("option");
+                                    option.value = product[0];
+                                    option.text = product[0];
+                                    select.add(option);
+                                });
+                            }
+                        })
+                        .readProductsList();
+                }
+
+                // Actualiza los options para los selects nuevos
+                function updateDataNewSelects() {
+
+                    let selects = document.querySelectorAll('.nombre-producto');
+                    for (let select of selects) {
+
+                        // Solo se actualizan los selects con sólo el option por defecto.
+                        if (select.options.length === 1) {
+                            productsList.forEach(product => {
+
+                                let option = document.createElement("option");
+                                option.value = product[0];
+                                option.text = product[0];
+                                select.add(option);
+                            });
+                        }
+                    }
+                }
+
+            </script>
+
+            <!--
+                Este script se encarga de calcular los totales cuando hay cambio en:
+                Cantidad
+                Valor Unitario
+                Abono
+            -->
+            <script>
+
+                let total;
+
+                /*
+                    Se llama cuando hay cambios en el input de cantidad o valor unitario
+                */
+                function calculateTotal() {
+
+                    let cantidades = document.querySelectorAll('.cantidad');
+                    let valoresUnitarios = document.querySelectorAll('.valor-unitario');
+
+                    total = 0;
+                    for (let index = 0; index < cantidades.length; index++) {
+                        total += cantidades[index].value.replace(',', '') * valoresUnitarios[index].value.replace(',', '');
+                    }
+
+                    document.getElementById("valor_total").value = total;
+                }
+
+                /*
+                    Se llama cuando se ingresa un abono, calcula el valor restante
+                */
+                function calculateAdvance() {
+                    let advance = document.getElementById("abono").value.replace(',', '');
+
+                    document.getElementById("valor_restante").value = total - advance;
+                }
+
+
+            </script>
+
+
+        </div>
+        <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+
+        </div>
+    </div>
+</div>

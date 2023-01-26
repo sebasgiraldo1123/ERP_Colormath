@@ -4,7 +4,7 @@
  * @returns http principal evaluado.
  */
 function doGet() {
-    const html = HtmlService.createTemplateFromFile('src/components/app');
+    const html = HtmlService.createTemplateFromFile('_app');
 
     const output = html.evaluate()
         .setTitle('ERP Colormath')

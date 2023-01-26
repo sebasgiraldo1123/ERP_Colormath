@@ -6,7 +6,6 @@
 
 <script src="//cdnjs.cloudflare.com/ajax/libs/numeral.js/2.0.6/numeral.min.js"></script>
 
-
 <script>
 
     /*
@@ -75,15 +74,18 @@
 <script>
 
     /*
-        Formatea los inputs numbers con eparadores de miles
+        Formatea los inputs numbers con separadores de miles
     */
-    let inputs = document.querySelectorAll('.format-price');
-    for (let input of inputs) {
-        input.addEventListener("input", function () {
-            let number = numeral(input.value);
-            input.value = number.format('0,0');
-        });
+    function formatPrices() {
+        let inputs = document.querySelectorAll('.format-price');
+        for (let input of inputs) {
+            input.addEventListener("input", function () {
+                let number = numeral(input.value);
+                input.value = number.format('0,0');
+            });
+        }
     }
+
 
     /*
         Formatea el campo celular para facilitar su escritura
@@ -95,14 +97,39 @@
     });
 
     /*
-        Validación de campo cantidad menor a 0
+        Validación los campos cantidad menor a 0
     */
-    let count = document.getElementById('cantidad');
-    count.addEventListener("input", function () {
-        if (this.value < 0) {
-            this.value = 0;
-        }
-    });
 
+    let counts = document.querySelectorAll('.cantidad');
+    for (let count of counts) {
+        count.addEventListener("input", function () {
+            this.value = this.value.replace(/[^1-9]+/g, "");
+        });
+    }
+
+</script>
+
+
+<script>
+
+    (function () {
+        'use strict'
+
+        // Obtener todos los formularios a los que queremos aplicar estilos de validación de Bootstrap personalizados
+        var forms = document.querySelectorAll('.needs-validation')
+
+        // Bucle sobre ellos y evitar el envío
+        Array.prototype.slice.call(forms)
+            .forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+
+                    form.classList.add('was-validated')
+                }, false)
+            })
+    })()
 
 </script>

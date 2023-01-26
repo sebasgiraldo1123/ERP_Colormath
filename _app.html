@@ -1,12 +1,11 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 
 <head>
     <base target="_self">
 
     <!-- Bootstrap y CSS -->
-    <?!= include('src/components/css')?>
-
+    <?!= include('_app_css')?>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1">
     <title>ERP Colormath</title>
@@ -38,27 +37,27 @@
 <body>
     <!-- Contenido Principal -->
     <div id="content-sales" style="display: inline;">
-        <?!= include('src/components/sales/index')?>
+        <?!= include('_sales')?>
     </div>
 
     <div id="content-orders" style="display: none;">
-        <?!= include('src/components/orders/index')?>
+        <?!= include('_orders')?>
     </div>
 
     <div id="content-prices" style="display: none;">
-        <?!= include('src/components/prices/index')?>
+        <?!= include('_prices')?>
     </div>
 
     <div id="content-bills" style="display: none;">
-        <?!= include('src/components/bills/index')?>
+        <?!= include('_bills')?>
     </div>
 
     <div id="content-wood" style="display: none;">
-        <?!= include('src/components/wood/index')?>
+        <?!= include('_wood')?>
     </div>
 
     <!-- Bootstrap y JS -->
-    <?!= include('src/components/js')?>
+    <?!= include('_app_script')?>
 </body>
 
 </html>
