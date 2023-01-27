@@ -77,15 +77,16 @@
                             </div>
                             <div class="col-sm-2">
                                 <label for="cantidad" class="form-label">Cantidad</label>
-                                <input type="number" class="form-control cantidad" onchange="calculateTotal()" required>
+                                <input type="number" class="form-control cantidad"
+                                    onkeyup="calculateTotal(); formatCount(event)" required>
                                 <div class="invalid-feedback">
                                     Ingrese una cantidad.
                                 </div>
                             </div>
                             <div class="col-sm-3">
                                 <label for="valor_unitario" class="form-label">Valor Unitario</label>
-                                <input type="text" class="form-control format-price valor-unitario"
-                                    onchange="calculateTotal()">
+                                <input type="text" class="form-control valor-unitario"
+                                    onkeyup="calculateTotal(); formatPrice(event)">
                             </div>
                         </div>
                         <!--
@@ -112,30 +113,33 @@
                 </h3>
                 <div class="row">
                     <div class="col-sm">
-                        <label for="valor_total" class="form-label" onchange="formatPrices()">Valor Total</label>
-                        <input type="text" class="form-control format-price" id="valor_total" name="valor_total"
-                            readonly>
+                        <label for="valor_total" class="form-label">Valor Total</label>
+                        <input type="text" class="form-control" id="valor_total" name="valor_total" readonly>
                     </div>
                     <div class="col-sm">
                         <label for="abono" class="form-label">Abono</label>
-                        <input type="text" class="form-control format-price" id="abono" name="abono"
-                            onchange="calculateAdvance()" required>
-                        <div class="invalid-feedback">
-                            Ingresa un abono, recuerda que debe ser mínimo la mitad del valor total, sino hay puedes
-                            poner 0.
+                        <input type="text" class="form-control" id="abono" name="abono"
+                            onkeyup="calculateAdvance(); formatPrice(event)" required>
+                        <div class="invalid-feedback" id="invalid-feedback-abono">
+                            Ingresa un abono.<br> Si no hay puedes poner 0.
                         </div>
                     </div>
                     <div class="col-sm">
                         <label for="valor_restante" class="form-label">Valor Restante</label>
-                        <input type="text" class="form-control format-price" id="valor_restante" name="valor_restante"
-                            readonly>
+                        <input type="text" class="form-control" id="valor_restante" name="valor_restante" readonly>
                     </div>
                     <div class="col-sm">
                         <label for="fecha_entrega" class="form-label">Fecha Entrega</label>
-                        <input type="date" class="form-control" id="fecha_entrega" name="fecha_entrega" required>
+                        <input type="date" class="form-control" id="fecha_entrega" name="fecha_entrega"
+                            onchange="timeToDelivery()">
                         <div class="invalid-feedback">
-                            Ingresa una fecha aceptable para la entrega del trabajo.
+                            El plazo de entrega no puede ser negativo.
                         </div>
+                    </div>
+                    <div class="col-sm">
+                        <label for="plazo_entrega" class="form-label">Plazo (dias)</label>
+                        <input type="number" class="form-control" id="plazo_entrega" name="plazo_entrega" readonly>
+
                     </div>
                 </div>
                 <!--
@@ -170,14 +174,14 @@
                     '</div>' +
                     '<div class="col-sm-2">' +
                     '<label for="cantidad" class="form-label">Cantidad</label>' +
-                    '<input type="number" class="form-control cantidad" onchange="calculateTotal()" required>' +
+                    '<input type="number" class="form-control cantidad" onkeyup="calculateTotal(); formatCount(event)" required>' +
                     '<div class="invalid-feedback">' +
                     'Ingrese una cantidad.' +
                     '</div>' +
                     '</div>' +
                     '<div class="col-sm-3">' +
                     '<label for="valor_unitario" class="form-label">Valor Unitario</label>' +
-                    '<input type="text" class="form-control format-price valor-unitario" onchange="calculateTotal()">' +
+                    '<input type="text" class="form-control format-price valor-unitario" onkeyup="calculateTotal(); formatPrice(event)">' +
                     '</div>' +
                     '</div>' +
                     '<div class="row opciones-productos">' +
@@ -200,13 +204,6 @@
 
                     // Se actualizan los selects nuevos con los productos
                     updateDataNewSelects();
-
-                    // Se actualizan los querySelectorAll
-                    inputs = document.querySelectorAll('.format-price');
-                    counts = document.querySelectorAll('.cantidad');
-
-                    //console.log(inputs);
-                    //console.log(counts);
                 }
 
             </script>
@@ -374,6 +371,8 @@
                 Cantidad
                 Valor Unitario
                 Abono
+
+                Tambiém calcula el plazo de entrega.
             -->
             <script>
 
@@ -392,18 +391,56 @@
                         total += cantidades[index].value.replace(',', '') * valoresUnitarios[index].value.replace(',', '');
                     }
 
-                    document.getElementById("valor_total").value = total;
+                    document.getElementById("valor_total").value = numeral(total).format('0,0')
+                    calculateAdvance();
                 }
 
                 /*
                     Se llama cuando se ingresa un abono, calcula el valor restante
                 */
                 function calculateAdvance() {
-                    let advance = document.getElementById("abono").value.replace(',', '');
+                    let inputAbono = document.getElementById("abono");
+                    let advance = inputAbono.value.replace(',', '');
 
-                    document.getElementById("valor_restante").value = total - advance;
+                    if (advance <= total) {
+                        document.getElementById("valor_restante").value = numeral(total - advance).format('0,0');
+                        document.getElementById("invalid-feedback-abono").innerText = "Ingresa un abono.\n Si no hay puedes poner 0."
+                        inputAbono.className = "form-control";
+                    }
+
+                    // El abono es mayor que el total de la venta
+                    else {
+                        inputAbono.className = "form-control is-invalid";
+
+                        document.getElementById("invalid-feedback-abono").innerText = `El abono no puede ser mayor al total.\n Se sugieren mínimo ${numeral(total / 2).format('0,0')} COP \n ;p`
+                    }
                 }
 
+                /*
+                    Se llama cuando la fecha de entrega cambia y calcula el plazo de entrega 
+                    que no debe ser menor a cero es decir el mismo dia.
+                */
+                function timeToDelivery() {
+
+                    let inputFechaEntrega = document.getElementById("fecha_entrega");
+                    let currentDate = new Date();
+                    let inputDate = new Date(inputFechaEntrega.value);
+
+
+                    // El tiempo se dá en milisegundos, se resta y se hace la conversión a dias
+                    let difference = (Math.floor((inputDate - currentDate) / (1000 * 60 * 60 * 24))) + 1;
+                    
+                    // Se muestra por pantalla
+                    document.getElementById("plazo_entrega").value = difference;
+                    
+                    // Avisa si es necesario activando el invalid-feedback
+                    if(difference < 0){
+                        inputFechaEntrega.className = "form-control is-invalid";
+                    }
+                    else{
+                        inputFechaEntrega.className = "form-control";
+                    }
+                }
 
             </script>
 

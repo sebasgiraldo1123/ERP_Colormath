@@ -6,11 +6,11 @@
 
 <script src="//cdnjs.cloudflare.com/ajax/libs/numeral.js/2.0.6/numeral.min.js"></script>
 
-<script>
 
-    /*
-        Intercambia el contenido del body según lo seleccionado en el navbar
-    */
+<!-- 
+    Intercambia el contenido del body según lo seleccionado en el navbar
+-->
+<script>
 
     let contentSales = document.getElementById('content-sales');
     let contentOrders = document.getElementById('content-orders');
@@ -70,22 +70,15 @@
 <!-- 
     Validaciones y Formateos
 -->
-
 <script>
 
     /*
-        Formatea los inputs numbers con separadores de miles
+        Formatea el input con separadores de miles.
     */
-    function formatPrices() {
-        let inputs = document.querySelectorAll('.format-price');
-        for (let input of inputs) {
-            input.addEventListener("input", function () {
-                let number = numeral(input.value);
-                input.value = number.format('0,0');
-            });
-        }
+    function formatPrice(event) {
+        let number = numeral(event.target.value);
+        event.target.value = number.format('0,0');
     }
-
 
     /*
         Formatea el campo celular para facilitar su escritura
@@ -99,19 +92,18 @@
     /*
         Validación los campos cantidad menor a 0
     */
-
-    let counts = document.querySelectorAll('.cantidad');
-    for (let count of counts) {
-        count.addEventListener("input", function () {
-            this.value = this.value.replace(/[^1-9]+/g, "");
-        });
+    function formatCount(event) {
+        if (event.target.value <= 0) {
+            event.target.value = "";
+        }
     }
 
 </script>
 
-
+<!--
+    Función de validación de Bootstrap
+-->
 <script>
-
     (function () {
         'use strict'
 
@@ -131,5 +123,4 @@
                 }, false)
             })
     })()
-
 </script>
