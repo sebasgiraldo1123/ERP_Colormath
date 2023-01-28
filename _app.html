@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <base target="_self">
+
+    <!-- Bootstrap y CSS -->
+    <?!= include('_app_css')?>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1">
+    <title>ERP Colormath</title>
+
+</head>
+<header>
+    <nav class="navbar navbar-expand-sm navbar-dark bg-dark" id="main-navbar">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                Colormath
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
+                aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                <div class="navbar-nav">
+                    <a class="nav-link " href="#" id="nav-sales">Ventas</a>
+                    <a class="nav-link " href="#" id="nav-orders">Pedidos</a>
+                    <a class="nav-link " href="#" id="nav-prices">Precios</a>
+                    <a class="nav-link " href="#" id="nav-bills">Facturas</a>
+                    <a class="nav-link " href="#" id="nav-wood">Madera</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<body>
+    <!-- Contenido Principal -->
+    <div id="content-sales" style="display: inline;">
+        <?!= include('_sales')?>
+    </div>
+
+    <div id="content-orders" style="display: none;">
+        <?!= include('_orders')?>
+    </div>
+
+    <div id="content-prices" style="display: none;">
+        <?!= include('_prices')?>
+    </div>
+
+    <div id="content-bills" style="display: none;">
+        <?!= include('_bills')?>
+    </div>
+
+    <div id="content-wood" style="display: none;">
+        <?!= include('_wood')?>
+    </div>
+
+    <!-- Bootstrap y JS -->
+    <?!= include('_app_script')?>
+</body>
+
+</html>

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous">
+    </script>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/numeral.js/2.0.6/numeral.min.js"></script>
+
+
+<!-- 
+    Intercambia el contenido del body según lo seleccionado en el navbar
+-->
+<script>
+
+    let contentSales = document.getElementById('content-sales');
+    let contentOrders = document.getElementById('content-orders');
+    let contentPrices = document.getElementById('content-prices');
+    let contentBills = document.getElementById('content-bills');
+    let contentWood = document.getElementById('content-wood');
+
+    document.getElementById('main-navbar').addEventListener('click', navbarclicked);
+
+    function navbarclicked(e) {
+        if (e.target.matches('.nav-link')) {
+
+            switch (e.target.id) {
+                case "nav-sales":
+                    contentSales.style.display = "inline";
+                    contentOrders.style.display = "none";
+                    contentPrices.style.display = "none";
+                    contentBills.style.display = "none";
+                    contentWood.style.display = "none";
+                    break;
+                case "nav-orders":
+                    contentSales.style.display = "none";
+                    contentOrders.style.display = "inline";
+                    contentPrices.style.display = "none";
+                    contentBills.style.display = "none";
+                    contentWood.style.display = "none";
+                    break;
+                case "nav-prices":
+                    contentSales.style.display = "none";
+                    contentOrders.style.display = "none";
+                    contentPrices.style.display = "inline";
+                    contentBills.style.display = "none";
+                    contentWood.style.display = "none";
+                    break;
+                case "nav-bills":
+                    contentSales.style.display = "none";
+                    contentOrders.style.display = "none";
+                    contentPrices.style.display = "none";
+                    contentBills.style.display = "inline";
+                    contentWood.style.display = "none";
+                    break;
+                case "nav-wood":
+                    contentSales.style.display = "none";
+                    contentOrders.style.display = "none";
+                    contentPrices.style.display = "none";
+                    contentBills.style.display = "none";
+                    contentWood.style.display = "inline";
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+</script>
+
+<!-- 
+    Validaciones y Formateos
+-->
+<script>
+
+    /*
+        Formatea el input con separadores de miles.
+    */
+    function formatPrice(event) {
+        let number = numeral(event.target.value);
+        event.target.value = number.format('0,0');
+    }
+
+    /*
+        Formatea el campo celular para facilitar su escritura
+    */
+    let phone = document.getElementById('celular_cliente');
+    phone.addEventListener("input", function () {
+        this.value = this.value.replace(/[^\d]/g, "");
+        this.value = this.value.replace(/(\d{3})(\d{3})(\d{4})/, "$1-$2-$3");
+    });
+
+    /*
+        Validación los campos cantidad menor a 0
+    */
+    function formatCount(event) {
+        if (event.target.value <= 0) {
+            event.target.value = "";
+        }
+    }
+
+</script>
+
+<!--
+    Función de validación de Bootstrap
+-->
+<script>
+    (function () {
+        'use strict'
+
+        // Obtener todos los formularios a los que queremos aplicar estilos de validación de Bootstrap personalizados
+        var forms = document.querySelectorAll('.needs-validation')
+
+        // Bucle sobre ellos y evitar el envío
+        Array.prototype.slice.call(forms)
+            .forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+
+                    form.classList.add('was-validated')
+                }, false)
+            })
+    })()
+</script>
