@@ -57,7 +57,7 @@
 
                 <div class="row" id="productos" style="background-color: rgb(160, 247, 125);">
 
-                    <div class="row" id="producto_0" style="background-color: blueviolet;">
+                    <div class="row producto" id="producto_0" style="background-color: blueviolet;">
                         <!--
                             Datos del producto
                         -->
@@ -102,7 +102,7 @@
                 -->
                 <div class="row">
                     <div class="col-sm-12 d-flex justify-content-center">
-                        <button type="button" onclick="addProduct()" class="btn btn-info">Agregar</button>
+                        <button type="button" onclick="addProduct()" class="btn btn-success btn-sm">+</button>
                     </div>
                 </div>
                 <!--
@@ -153,11 +153,16 @@
             </form>
 
             <!--
-                Este script se encarga de insertar un nuevo form de producto.
+                Este script se encarga de insertar o eliminar un form de producto.
             -->
             <script>
 
                 const newProduct =
+                    '<div class="row">' +
+                    '<div class="col-sm-12 d-flex justify-content-end">' +
+                    '<button type="button" onclick="deleteProduct(event)" class="btn btn-danger btn-sm">x</button>' +
+                    '</div>' +
+                    '</div>' +
                     '<div class="row">' +
                     '<div class="col-sm-2">' +
                     '<label for="id_producto" class="form-label">N°</label>' +
@@ -192,10 +197,10 @@
                     productos = document.getElementById('productos');
 
                     // Se crea el nuevo div con sus parámetros y se agrega el html del nuevo producto
-                    productsIndex += 1;
+                    productsIndex = document.querySelectorAll('.producto').length;
 
                     let div_newProduct = document.createElement("div");
-                    div_newProduct.className = "row";
+                    div_newProduct.className = "row producto";
                     div_newProduct.id = `producto_${productsIndex}`;
                     div_newProduct.innerHTML = newProduct;
 
@@ -204,6 +209,39 @@
 
                     // Se actualizan los selects nuevos con los productos
                     updateDataNewSelects();
+
+                    // Se actualizan los ID's de producto
+                    updateProductId();
+                }
+
+                function deleteProduct(event) {
+                    // Obtengo el indice del producto
+                    let index = event.target.parentElement.parentElement.parentElement.id.split('_')[1];
+
+                    // Elimino el contenedor
+                    document.getElementById(`producto_${index}`).remove();
+
+                    // Se actualizan los ID's de producto
+                    updateProductId();
+
+                    // Se actualizan los ID's de los contenedores de producto
+                    updateClassProductsId();
+
+                    // Se actualizan los totales
+                    calculateTotal();
+                    calculateAdvance();
+                }
+
+                // Cuando se elimina un producto, se deben actualizar los ID´s de sus contenedores
+                // para evitar un problema con la referencia.
+                function updateClassProductsId() {
+
+                    let productos = document.querySelectorAll('.producto');
+                    let newId = 0;
+                    productos.forEach(producto => {
+                        producto.id = `producto_${newId}`;
+                        newId++;
+                    });
                 }
 
             </script>
@@ -270,6 +308,8 @@
                     let index = event.target.parentElement.parentElement.parentElement.id.split('_')[1];
                     let index_productList = 0;
 
+                    console.log(index);
+
                     // se busca la data
                     while (productsList[index_productList][0] !== selectValue) {
                         index_productList++;
@@ -319,12 +359,9 @@
 
                 // Variables de inicio.
                 let productsList = null;
-                let productsIndex;
 
                 // Leo y almaceno en una variable la lista de productos desde el SpreadSheet
                 function loadProductsList() {
-
-                    productsIndex = 0;
                     google.script.run
                         .withSuccessHandler(products_list => {
 
@@ -429,21 +466,52 @@
 
                     // El tiempo se dá en milisegundos, se resta y se hace la conversión a dias
                     let difference = (Math.floor((inputDate - currentDate) / (1000 * 60 * 60 * 24))) + 1;
-                    
+
                     // Se muestra por pantalla
                     document.getElementById("plazo_entrega").value = difference;
-                    
+
                     // Avisa si es necesario activando el invalid-feedback
-                    if(difference < 0){
+                    if (difference < 0) {
                         inputFechaEntrega.className = "form-control is-invalid";
                     }
-                    else{
+                    else {
                         inputFechaEntrega.className = "form-control";
                     }
                 }
 
             </script>
 
+            <!--
+                Este escript genera el ID del cliente al iniciar y los de productos conforme se van creando.
+            -->
+            <script>
+
+                /*
+                    Carga el ID del cliente al cargar el documento
+                */
+                window.addEventListener("load", loadClientId());
+
+                function loadClientId() {
+                    google.script.run
+                        .withSuccessHandler(id => {
+                            document.getElementById("id_cliente").value = id;
+                            updateProductId();
+                        })
+                        .getLastClientId();
+                }
+
+                function updateProductId() {
+                    // Se obtiene el id del cliente
+                    let clientId = document.getElementById("id_cliente").value;
+
+                    // Se recorren los productos creados y se les agrega su id personalizado´
+                    let productsIdentifier = document.querySelectorAll('.id-producto');
+
+                    for (let index = 0; index < productsIdentifier.length; index++) {
+                        productsIdentifier[index].value = `${clientId}P${index}`;
+                    }
+                }
+            </script>
 
         </div>
         <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
