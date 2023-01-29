@@ -16,7 +16,7 @@
             <!-- 
                 Formulario para la creación de una venta 
             -->
-            <form class="needs-validation" name="crearVenta" id="crearVenta"
+            <form class="needs-validation" name="crear_venta" id="crear_venta"
                 style="background-color: rgb(228, 221, 126);" novalidate>
                 <!--
                     Cliente
@@ -131,9 +131,9 @@
                     <div class="col-sm">
                         <label for="fecha_entrega" class="form-label">Fecha Entrega</label>
                         <input type="date" class="form-control" id="fecha_entrega" name="fecha_entrega"
-                            onchange="timeToDelivery()">
+                            onchange="timeToDelivery()" required>
                         <div class="invalid-feedback">
-                            El plazo de entrega no puede ser negativo.
+                            El plazo de entrega no puede ser negativo o nulo.
                         </div>
                     </div>
                     <div class="col-sm">
@@ -147,10 +147,30 @@
                 -->
                 <div class="row">
                     <div class="col-sm-12 d-flex justify-content-center">
-                        <button type="submit" class="btn btn-success">Registrar</button>
+                        <button id="register_button" type="button" class="btn btn-success"
+                            onclick="submitFormSale()">Registrar</button>
                     </div>
                 </div>
             </form>
+
+            <!-- Modal -->
+            <div class="modal fade" id="create_sale_modal" data-bs-backdrop="static" data-bs-keyboard="false"
+                tabindex="-1" aria-labelledby="create_sale_modal_Label" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="create_sale_modal_Label">Información de la venta</h5>
+                        </div>
+                        <div class="modal-body" id="modal_body">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary"
+                                onclick="closeCreateSaleModal()">Atrás</button>
+                            <button type="button" class="btn btn-primary" onclick="sendDataFromSale()">Guardar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <!--
                 Este script se encarga de insertar o eliminar un form de producto.
@@ -308,7 +328,6 @@
                     let index = event.target.parentElement.parentElement.parentElement.id.split('_')[1];
                     let index_productList = 0;
 
-                    console.log(index);
 
                     // se busca la data
                     while (productsList[index_productList][0] !== selectValue) {
@@ -343,8 +362,6 @@
                         opcionesProductos[index].innerHTML += tipoDiseño;
                     }
                 }
-
-
 
             </script>
 
@@ -436,18 +453,18 @@
                     Se llama cuando se ingresa un abono, calcula el valor restante
                 */
                 function calculateAdvance() {
-                    let inputAbono = document.getElementById("abono");
-                    let advance = inputAbono.value.replace(',', '');
+                    let isInvalidAbono = document.getElementById("abono");
+                    let advance = isInvalidAbono.value.replace(',', '');
 
                     if (advance <= total) {
                         document.getElementById("valor_restante").value = numeral(total - advance).format('0,0');
                         document.getElementById("invalid-feedback-abono").innerText = "Ingresa un abono.\n Si no hay puedes poner 0."
-                        inputAbono.className = "form-control";
+                        isInvalidAbono.className = "form-control";
                     }
 
                     // El abono es mayor que el total de la venta
                     else {
-                        inputAbono.className = "form-control is-invalid";
+                        isInvalidAbono.className = "form-control is-invalid";
 
                         document.getElementById("invalid-feedback-abono").innerText = `El abono no puede ser mayor al total.\n Se sugieren mínimo ${numeral(total / 2).format('0,0')} COP \n ;p`
                     }
@@ -459,9 +476,9 @@
                 */
                 function timeToDelivery() {
 
-                    let inputFechaEntrega = document.getElementById("fecha_entrega");
+                    let isInvalidFechaEntrega = document.getElementById("fecha_entrega");
                     let currentDate = new Date();
-                    let inputDate = new Date(inputFechaEntrega.value);
+                    let inputDate = new Date(isInvalidFechaEntrega.value);
 
 
                     // El tiempo se dá en milisegundos, se resta y se hace la conversión a dias
@@ -472,10 +489,10 @@
 
                     // Avisa si es necesario activando el invalid-feedback
                     if (difference < 0) {
-                        inputFechaEntrega.className = "form-control is-invalid";
+                        isInvalidFechaEntrega.className = "form-control is-invalid";
                     }
                     else {
-                        inputFechaEntrega.className = "form-control";
+                        isInvalidFechaEntrega.className = "form-control";
                     }
                 }
 
@@ -511,6 +528,74 @@
                         productsIdentifier[index].value = `${clientId}P${index}`;
                     }
                 }
+            </script>
+
+            <!--
+                Este script controla el botón de submit del formulario.
+                Realiza las validaciones.
+                Lanza un modal en el cual el usuario verifica la info suministrada.
+                Si acepta llama a la función que guarda la data.
+            -->
+            <script>
+                function submitFormSale() {
+                    let form = document.getElementById("crear_venta");
+
+                    // Se verifica que la clase de estos inputs que están personallizados no contenga el "is-invalid"
+                    let isInvalidAbono = document.getElementById("abono").className.match("is-invalid");
+                    let isInvalidFechaEntrega = document.getElementById("fecha_entrega").className.match("is-invalid");
+
+                    // Se activa la validación de Bootstrap
+                    form.classList.add('was-validated');
+
+                    // No es válido
+                    if (!form.checkValidity() || isInvalidFechaEntrega != null || isInvalidAbono != null) {
+
+                        event.preventDefault()
+                        event.stopPropagation()
+
+                        console.log("inválido");
+                    }
+                    // Es válido
+                    else {
+                        console.log("válido");
+
+                        let modalBody = document.getElementById("modal_body");
+                        let formData = new FormData(form);
+                        let data = JSON.stringify(formData);
+
+                        modalBody.innerHTML = data;
+
+                        // Muestra el modal
+                        let modal = document.getElementById("create_sale_modal");              
+                        modal.style.display = "block";
+                        modal.classList.add("show");
+                    }
+                }
+
+
+                /*
+                    Se encarga de enviar la información al spreadsheet
+                */
+                function sendDataFromSale() {
+                    let form = document.getElementById("crear_venta");
+
+                    google.script.run
+                        .withSuccessHandler(result => {
+                            //form.reset()
+                            console.log(result);
+                        })
+                        .createSale(form);
+                }
+
+
+                /*
+                    Cierra el create_sale_modal
+                */
+                function closeCreateSaleModal() {
+                    let modal = document.getElementById("create_sale_modal");
+                    modal.style.display = "none";
+                }
+
             </script>
 
         </div>

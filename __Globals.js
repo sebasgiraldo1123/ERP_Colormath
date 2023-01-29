@@ -5,6 +5,8 @@ const DATA_ERP_COLORMATH = SpreadsheetApp.openById(BD_ID);
 
 // Tablas de la BD
 const PEDIDOS_TABLE = DATA_ERP_COLORMATH.getSheetByName('PEDIDOS');
+const PRODUCTOS_TABLE = DATA_ERP_COLORMATH.getSheetByName('PRODUCTOS');
+const ABONOS_TABLE = DATA_ERP_COLORMATH.getSheetByName('ABONOS');
 
 
 //------------- Price Admin ERP Colormath ---------------------
