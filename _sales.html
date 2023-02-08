@@ -158,12 +158,85 @@
             <!-- Modal -->
             <div class="modal fade" id="create_sale_modal" data-bs-backdrop="static" data-bs-keyboard="false"
                 tabindex="-1" aria-labelledby="create_sale_modal_Label" aria-hidden="true">
-                <div class="modal-dialog">
+                <div class="modal-dialog modal-lg">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title" id="create_sale_modal_Label">Información de la venta</h5>
                         </div>
                         <div class="modal-body" id="modal_body">
+                            <!--
+                                Cliente
+                            -->
+                            <h3>
+                                Cliente
+                            </h3>
+                            <!--
+                                Datos del cliente
+                            -->
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">N°</th>
+                                        <th scope="col">Cliente</th>
+                                        <th scope="col">Celular</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td id="id_cliente_modal"></td>
+                                        <td id="nombre_cliente_modal"></td>
+                                        <td id="celular_cliente_modal"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <!--
+                                Pedidos
+                            -->
+                            <h3>
+                                Productos
+                            </h3>
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">N°</th>
+                                        <th scope="col">Producto</th>
+                                        <th scope="col">Cantidad</th>
+                                        <th scope="col">Valor Unitario</th>
+                                        <th scope="col">Orientación</th>
+                                        <th scope="col">Color</th>
+                                        <th scope="col">Tipo Diseño</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tableBody-products-modal">
+                                </tbody>
+                            </table>
+
+                            <!--
+                                Totales
+                            -->
+                            <h3>
+                                Totales
+                            </h3>
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Valor Total</th>
+                                        <th scope="col">Abono</th>
+                                        <th scope="col">Valor Restante</th>
+                                        <th scope="col">Fecha Entrega</th>
+                                        <th scope="col">Plazo (dias)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td id="valor_total_modal" class="table-active"></td>
+                                        <td id="abono_modal"></td>
+                                        <td id="valor_restante_modal"></td>
+                                        <td id="fecha_entrega_modal"></td>
+                                        <td id="plazo_modal"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary"
@@ -578,6 +651,7 @@
                         let product = {};
                         let isProduct = false;
 
+                        // Se recorre el formData y se arma el json
                         for (var [key, value] of formData.entries()) {
                             if (key === "id_producto") {
                                 isProduct = true;
@@ -606,8 +680,35 @@
                         data["products"] = products;
                         console.log(data);
 
-                        let modalBody = document.getElementById("modal_body");
-                        modalBody.innerHTML = formData;
+                        // Se muestra la info por el modal para perdir confirmación al usuario.
+
+                        // Datos del cliente
+                        document.getElementById("id_cliente_modal").innerHTML = data.id_cliente;
+                        document.getElementById("nombre_cliente_modal").innerHTML = data.nombre_cliente;
+                        document.getElementById("celular_cliente_modal").innerHTML = data.celular_cliente;
+
+                        // Datos de productos
+                        let tableBody = document.getElementById("tableBody-products-modal");
+                        tableBody.innerHTML = "";
+                        for (const [key, product] of Object.entries(data.products)) {
+                            let row = `<tr>
+                                        <td>${product.id_producto}</td>
+                                        <td>${product.nombre_producto}</td>
+                                        <td>${product.cantidad}</td>
+                                        <td>${product.valor_unitario}</td>
+                                        </tr>`;
+
+                                        // Faltan las opciones, no funciona solo con el tamaño, puede ser de tamaño 5 y no significa que sea una opcion determinada
+
+                                        tableBody.innerHTML += row; 
+                        }
+
+                        // Datos de los totales
+                        document.getElementById("valor_total_modal").innerHTML = data.valor_total;
+                        document.getElementById("abono_modal").innerHTML = data.abono;
+                        document.getElementById("valor_restante_modal").innerHTML = data.valor_restante;
+                        document.getElementById("fecha_entrega_modal").innerHTML = data.fecha_entrega;
+                        document.getElementById("plazo_modal").innerHTML = data.plazo_entrega;
 
                         // Muestra el modal
                         let modal = document.getElementById("create_sale_modal");
