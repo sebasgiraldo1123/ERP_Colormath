@@ -64,11 +64,13 @@
                         <div class="row">
                             <div class="col-sm-2">
                                 <label for="id_producto" class="form-label">N°</label>
-                                <input type="text" class="form-control text-center id-producto" readonly>
+                                <input type="text" name="id_producto" class="form-control text-center id-producto"
+                                    readonly>
                             </div>
                             <div class="col-sm-5">
                                 <label class="form-label">Producto</label>
-                                <select class="form-select nombre-producto" onchange="selectChanged(event)" required>
+                                <select class="form-select nombre-producto" name="nombre_producto"
+                                    onchange="selectChanged(event)" required>
                                     <option selected disabled value>Seleccione un producto...</option>
                                 </select>
                                 <div class="invalid-feedback">
@@ -77,7 +79,7 @@
                             </div>
                             <div class="col-sm-2">
                                 <label for="cantidad" class="form-label">Cantidad</label>
-                                <input type="number" class="form-control cantidad"
+                                <input type="number" name="cantidad" class="form-control cantidad"
                                     onkeyup="calculateTotal(); formatCount(event)" required>
                                 <div class="invalid-feedback">
                                     Ingrese una cantidad.
@@ -85,7 +87,7 @@
                             </div>
                             <div class="col-sm-3">
                                 <label for="valor_unitario" class="form-label">Valor Unitario</label>
-                                <input type="text" class="form-control valor-unitario"
+                                <input type="text" class="form-control valor-unitario" name="valor_unitario"
                                     onkeyup="calculateTotal(); formatPrice(event)">
                             </div>
                         </div>
@@ -186,11 +188,11 @@
                     '<div class="row">' +
                     '<div class="col-sm-2">' +
                     '<label for="id_producto" class="form-label">N°</label>' +
-                    '<input type="text" class="form-control text-center id-producto " readonly>' +
+                    '<input type="text" name="id_producto" class="form-control text-center id-producto " readonly>' +
                     '</div>' +
                     '<div class="col-sm-5">' +
                     '<label class="form-label">Producto</label>' +
-                    '<select class="form-select nombre-producto" onchange="selectChanged(event)" required>' +
+                    '<select class="form-select nombre-producto" name="nombre_producto" onchange="selectChanged(event)" required>' +
                     '<option selected disabled value>Seleccione un producto...</option>' +
                     '</select>' +
                     '<div class="invalid-feedback">' +
@@ -199,14 +201,14 @@
                     '</div>' +
                     '<div class="col-sm-2">' +
                     '<label for="cantidad" class="form-label">Cantidad</label>' +
-                    '<input type="number" class="form-control cantidad" onkeyup="calculateTotal(); formatCount(event)" required>' +
+                    '<input type="number" name="cantidad" class="form-control cantidad" onkeyup="calculateTotal(); formatCount(event)" required>' +
                     '<div class="invalid-feedback">' +
                     'Ingrese una cantidad.' +
                     '</div>' +
                     '</div>' +
                     '<div class="col-sm-3">' +
                     '<label for="valor_unitario" class="form-label">Valor Unitario</label>' +
-                    '<input type="text" class="form-control format-price valor-unitario" onkeyup="calculateTotal(); formatPrice(event)">' +
+                    '<input type="text" class="form-control format-price valor-unitario" name="valor_unitario" onkeyup="calculateTotal(); formatPrice(event)">' +
                     '</div>' +
                     '</div>' +
                     '<div class="row opciones-productos">' +
@@ -275,7 +277,7 @@
                 const orientacion =
                     '<div class="col-sm-4">' +
                     '<label class="form-label">Orientación</label>' +
-                    '<select class="form-select" required>' +
+                    '<select name="orientacion" class="form-select" required>' +
                     '<option selected disabled value>Seleccionar...</option>' +
                     '<option value="HORIZONTAL">HORIZONTAL</option>' +
                     '<option value="VERTICAL">VERTICAL</option>' +
@@ -288,7 +290,7 @@
                 const color =
                     '<div class="col-sm-4">' +
                     '<label class="form-label">Color</label>' +
-                    '<select class="form-select" required>' +
+                    '<select name="color" class="form-select" required>' +
                     '<option selected disabled value>Seleccionar...</option>' +
                     '<option value="WENGUE">WENGUE</option>' +
                     '<option value="NATURAL">NATURAL</option>' +
@@ -301,7 +303,7 @@
                 const tipoDiseño =
                     '<div class="col-sm-4">' +
                     '<label class="form-label">Tipo de Diseño</label>' +
-                    '<select class="form-select" required>' +
+                    '<select name="tipo_diseño" class="form-select" required>' +
                     '<option selected disabled value>Seleccionar...</option>' +
                     '<option value="COLLAGE">COLLAGE</option>' +
                     '<option value="RETOQUE">RETOQUE</option>' +
@@ -342,6 +344,11 @@
                     // --------------------- Valor Unitario -----------------------
                     let valoresUnitarios = document.querySelectorAll('.valor-unitario');
                     valoresUnitarios[index].value = data_selectedProduct[1];
+
+                    // --------------------- Cantidad -----------------------
+                    // Si se realiza un cambio de producto la cantidad se formatea
+                    let cantidades = document.querySelectorAll('.cantidad');
+                    cantidades[index].value = "";
 
 
                     // ----------- Opciones para el producto seleccio1nado -------------
@@ -550,8 +557,8 @@
                     // No es válido
                     if (!form.checkValidity() || isInvalidFechaEntrega != null || isInvalidAbono != null) {
 
-                        event.preventDefault()
-                        event.stopPropagation()
+                        event.preventDefault();
+                        event.stopPropagation();
 
                         console.log("inválido");
                     }
@@ -559,19 +566,55 @@
                     else {
                         console.log("válido");
 
-                        let modalBody = document.getElementById("modal_body");
-                        let formData = new FormData(form);
-                        let data = JSON.stringify(formData);
+                        // Se genera un objeto json a partir de los datos
 
-                        modalBody.innerHTML = data;
+                        // FormData es un objeto JavaScript que permite crear un conjunto de pares 
+                        // clave/valor para enviar a un servidor a través de una solicitud HTTP
+                        let formData = new FormData(form);
+
+                        let data = {};
+                        let products = {};
+                        let productsIndex = 0;
+                        let product = {};
+                        let isProduct = false;
+
+                        for (var [key, value] of formData.entries()) {
+                            if (key === "id_producto") {
+                                isProduct = true;
+
+                                // Ya tiene la data de un producto
+                                if (Object.keys(product).length !== 0) {
+                                    products[productsIndex] = product;
+                                    productsIndex++;
+                                    product = {};
+                                }
+                            }
+                            // Recupero la info del último producto
+                            if (key === "valor_total") {
+                                isProduct = false;
+
+                                products[productsIndex] = product;
+                            }
+
+                            if (isProduct) {
+                                product[key] = value;
+                            }
+                            else {
+                                data[key] = value
+                            }
+                        }
+                        data["products"] = products;
+                        console.log(data);
+
+                        let modalBody = document.getElementById("modal_body");
+                        modalBody.innerHTML = formData;
 
                         // Muestra el modal
-                        let modal = document.getElementById("create_sale_modal");              
+                        let modal = document.getElementById("create_sale_modal");
                         modal.style.display = "block";
                         modal.classList.add("show");
                     }
                 }
-
 
                 /*
                     Se encarga de enviar la información al spreadsheet
@@ -586,7 +629,6 @@
                         })
                         .createSale(form);
                 }
-
 
                 /*
                     Cierra el create_sale_modal
