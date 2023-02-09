@@ -689,6 +689,10 @@
 
                         // Datos de productos
                         let tableBody = document.getElementById("tableBody-products-modal");
+                        let orientacion_column;
+                        let color_column;
+                        let tipo_diseño_column;
+
                         tableBody.innerHTML = "";
                         for (const [key, product] of Object.entries(data.products)) {
                             let row = `<tr>
@@ -696,11 +700,32 @@
                                         <td>${product.nombre_producto}</td>
                                         <td>${product.cantidad}</td>
                                         <td>${product.valor_unitario}</td>
-                                        </tr>`;
+                                        `;
 
-                                        // Faltan las opciones, no funciona solo con el tamaño, puede ser de tamaño 5 y no significa que sea una opcion determinada
+                            if(product.orientacion !== undefined){
+                                orientacion_column = `<td>${product.orientacion}</td>`;
+                            }
+                            else{
+                                orientacion_column = "<td>-</td>";
+                            }
 
-                                        tableBody.innerHTML += row; 
+                            if(product.color !== undefined){
+                                color_column = `<td>${product.color}</td>`;
+                            }
+                            else{
+                                color_column = "<td>-</td>";
+                            }
+
+                            if(product.tipo_diseño !== undefined){
+                                tipo_diseño_column = `<td>${product.tipo_diseño}</td>`;
+                            }
+                            else{
+                                tipo_diseño_column = "<td>-</td>";
+                            }
+
+                            // Faltan las opciones, no funciona solo con el tamaño, puede ser de tamaño 5 y no significa que sea una opcion determinada
+
+                            tableBody.innerHTML += `${row}${orientacion_column}${color_column}${tipo_diseño_column}</tr>`;
                         }
 
                         // Datos de los totales
