@@ -3,15 +3,16 @@
 <div class="container" style="background-color: aquamarine;">
     <nav>
         <div class="nav nav-tabs" id="nav-tab" role="tablist">
-            <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home"
-                type="button" role="tab" aria-controls="nav-home" aria-selected="true">Crear Venta
+            <button class="nav-link active" id="nav-create-sale-tab" data-bs-toggle="tab"
+                data-bs-target="#nav-create-sale" type="button" role="tab" aria-controls="nav-create-sale"
+                aria-selected="true">Crear Venta
             </button>
-            <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile"
-                type="button" role="tab" aria-controls="nav-profile" aria-selected="false">Buscar Venta
+            <button class="nav-link" id="nav-view-sale-tab" data-bs-toggle="tab" data-bs-target="#nav-view-sale"
+                type="button" role="tab" aria-controls="nav-view-sale" aria-selected="false">Buscar Venta
             </button>
         </div>
     </nav>
-    <div class="tab-content" id="nav-tabContent">
+    <div class="tab-content" id="nav-create-sale">
         <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
             <!-- 
                 Formulario para la creación de una venta 
@@ -617,6 +618,8 @@
                 Si acepta llama a la función que guarda la data.
             -->
             <script>
+                let data = {};
+
                 function submitFormSale() {
                     let form = document.getElementById("crear_venta");
 
@@ -632,20 +635,15 @@
 
                         event.preventDefault();
                         event.stopPropagation();
-
-                        console.log("inválido");
                     }
                     // Es válido
                     else {
-                        console.log("válido");
-
                         // Se genera un objeto json a partir de los datos
 
                         // FormData es un objeto JavaScript que permite crear un conjunto de pares 
                         // clave/valor para enviar a un servidor a través de una solicitud HTTP
                         let formData = new FormData(form);
 
-                        let data = {};
                         let products = {};
                         let productsIndex = 0;
                         let product = {};
@@ -680,11 +678,11 @@
                         data["products"] = products;
                         console.log(data);
 
-                        // Se muestra la info por el modal para perdir confirmación al usuario.
+                        // Se muestra la info por el modal para pedir confirmación al usuario.
 
                         // Datos del cliente
                         document.getElementById("id_cliente_modal").innerHTML = data.id_cliente;
-                        document.getElementById("nombre_cliente_modal").innerHTML = data.nombre_cliente;
+                        document.getElementById("nombre_cliente_modal").innerHTML = data.nombre_cliente.toUpperCase();
                         document.getElementById("celular_cliente_modal").innerHTML = data.celular_cliente;
 
                         // Datos de productos
@@ -702,28 +700,26 @@
                                         <td>${product.valor_unitario}</td>
                                         `;
 
-                            if(product.orientacion !== undefined){
+                            if (product.orientacion !== undefined) {
                                 orientacion_column = `<td>${product.orientacion}</td>`;
                             }
-                            else{
+                            else {
                                 orientacion_column = "<td>-</td>";
                             }
 
-                            if(product.color !== undefined){
+                            if (product.color !== undefined) {
                                 color_column = `<td>${product.color}</td>`;
                             }
-                            else{
+                            else {
                                 color_column = "<td>-</td>";
                             }
 
-                            if(product.tipo_diseño !== undefined){
+                            if (product.tipo_diseño !== undefined) {
                                 tipo_diseño_column = `<td>${product.tipo_diseño}</td>`;
                             }
-                            else{
+                            else {
                                 tipo_diseño_column = "<td>-</td>";
                             }
-
-                            // Faltan las opciones, no funciona solo con el tamaño, puede ser de tamaño 5 y no significa que sea una opcion determinada
 
                             tableBody.innerHTML += `${row}${orientacion_column}${color_column}${tipo_diseño_column}</tr>`;
                         }
@@ -748,12 +744,18 @@
                 function sendDataFromSale() {
                     let form = document.getElementById("crear_venta");
 
+                    setTimeout(function () {
+                        alert("Venta creada, apunta el código en el sobre.");
+                    }, 500);
+
                     google.script.run
                         .withSuccessHandler(result => {
-                            //form.reset()
-                            console.log(result);
+
+                            reloadCreateSaleForm(form);
+                            loadClientId();
+                            closeCreateSaleModal();
                         })
-                        .createSale(form);
+                        .createSale(data);
                 }
 
                 /*
@@ -762,6 +764,27 @@
                 function closeCreateSaleModal() {
                     let modal = document.getElementById("create_sale_modal");
                     modal.style.display = "none";
+                }
+
+                /*
+                    Regresa el form a su estado inicial
+                    Borra los campos de texto
+                    Elimina el was validate de la clase
+                    Quita el contenedor de los productos adicionales
+                */
+                function reloadCreateSaleForm(form) {
+                    // Se borran los inputs
+                    form.reset();
+
+                    // Se desactiva el trigger de la validación de Bootstrap
+                    form.classList.remove('was-validated');
+
+                    // Quita el contenedor de los productos adicionales 
+                    // index 0,1,2....
+                    let containersProducts = document.getElementById('productos').childElementCount;
+                    for (let index = 1; index <= containersProducts - 1; index++) {
+                        document.getElementById(`producto_${index}`).remove();
+                    }
                 }
 
             </script>
