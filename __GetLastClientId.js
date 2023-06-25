@@ -5,7 +5,7 @@
 function getLastClientId() {
     // No existe ningún registro
     if (PEDIDOS_TABLE.getLastRow() === 1) {
-        return ID_Cliente_Inicial;
+        return 1;
     }
     else {
         let id_actual = parseInt(PEDIDOS_TABLE.getRange(PEDIDOS_TABLE.getLastRow(), 1).getValues());

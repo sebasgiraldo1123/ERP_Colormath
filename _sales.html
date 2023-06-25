@@ -3,20 +3,21 @@
 <div class="container" style="background-color: aquamarine;">
     <nav>
         <div class="nav nav-tabs" id="nav-tab" role="tablist">
-            <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home"
-                type="button" role="tab" aria-controls="nav-home" aria-selected="true">Crear Venta
+            <button class="nav-link active" id="nav-create-sale-tab" data-bs-toggle="tab"
+                data-bs-target="#nav-create-sale" type="button" role="tab" aria-controls="nav-create-sale"
+                aria-selected="true">Crear Venta
             </button>
-            <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile"
-                type="button" role="tab" aria-controls="nav-profile" aria-selected="false">Buscar Venta
+            <button class="nav-link" id="nav-view-sale-tab" data-bs-toggle="tab" data-bs-target="#nav-view-sale"
+                type="button" role="tab" aria-controls="nav-view-sale" aria-selected="false">Buscar Venta
             </button>
         </div>
     </nav>
-    <div class="tab-content" id="nav-tabContent">
+    <div class="tab-content" id="nav-create-sale">
         <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
             <!-- 
                 Formulario para la creación de una venta 
             -->
-            <form class="needs-validation" name="crearVenta" id="crearVenta"
+            <form class="needs-validation" name="crear_venta" id="crear_venta"
                 style="background-color: rgb(228, 221, 126);" novalidate>
                 <!--
                     Cliente
@@ -64,11 +65,13 @@
                         <div class="row">
                             <div class="col-sm-2">
                                 <label for="id_producto" class="form-label">N°</label>
-                                <input type="text" class="form-control text-center id-producto" readonly>
+                                <input type="text" name="id_producto" class="form-control text-center id-producto"
+                                    readonly>
                             </div>
                             <div class="col-sm-5">
                                 <label class="form-label">Producto</label>
-                                <select class="form-select nombre-producto" onchange="selectChanged(event)" required>
+                                <select class="form-select nombre-producto" name="nombre_producto"
+                                    onchange="selectChanged(event)" required>
                                     <option selected disabled value>Seleccione un producto...</option>
                                 </select>
                                 <div class="invalid-feedback">
@@ -77,7 +80,7 @@
                             </div>
                             <div class="col-sm-2">
                                 <label for="cantidad" class="form-label">Cantidad</label>
-                                <input type="number" class="form-control cantidad"
+                                <input type="number" name="cantidad" class="form-control cantidad"
                                     onkeyup="calculateTotal(); formatCount(event)" required>
                                 <div class="invalid-feedback">
                                     Ingrese una cantidad.
@@ -85,7 +88,7 @@
                             </div>
                             <div class="col-sm-3">
                                 <label for="valor_unitario" class="form-label">Valor Unitario</label>
-                                <input type="text" class="form-control valor-unitario"
+                                <input type="text" class="form-control valor-unitario" name="valor_unitario"
                                     onkeyup="calculateTotal(); formatPrice(event)">
                             </div>
                         </div>
@@ -131,9 +134,9 @@
                     <div class="col-sm">
                         <label for="fecha_entrega" class="form-label">Fecha Entrega</label>
                         <input type="date" class="form-control" id="fecha_entrega" name="fecha_entrega"
-                            onchange="timeToDelivery()">
+                            onchange="timeToDelivery()" required>
                         <div class="invalid-feedback">
-                            El plazo de entrega no puede ser negativo.
+                            El plazo de entrega no puede ser negativo o nulo.
                         </div>
                     </div>
                     <div class="col-sm">
@@ -147,10 +150,103 @@
                 -->
                 <div class="row">
                     <div class="col-sm-12 d-flex justify-content-center">
-                        <button type="submit" class="btn btn-success">Registrar</button>
+                        <button id="register_button" type="button" class="btn btn-success"
+                            onclick="submitFormSale()">Registrar</button>
                     </div>
                 </div>
             </form>
+
+            <!-- Modal -->
+            <div class="modal fade" id="create_sale_modal" data-bs-backdrop="static" data-bs-keyboard="false"
+                tabindex="-1" aria-labelledby="create_sale_modal_Label" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="create_sale_modal_Label">Información de la venta</h5>
+                        </div>
+                        <div class="modal-body" id="modal_body">
+                            <!--
+                                Cliente
+                            -->
+                            <h3>
+                                Cliente
+                            </h3>
+                            <!--
+                                Datos del cliente
+                            -->
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">N°</th>
+                                        <th scope="col">Cliente</th>
+                                        <th scope="col">Celular</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td id="id_cliente_modal"></td>
+                                        <td id="nombre_cliente_modal"></td>
+                                        <td id="celular_cliente_modal"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <!--
+                                Pedidos
+                            -->
+                            <h3>
+                                Productos
+                            </h3>
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">N°</th>
+                                        <th scope="col">Producto</th>
+                                        <th scope="col">Cantidad</th>
+                                        <th scope="col">Valor Unitario</th>
+                                        <th scope="col">Orientación</th>
+                                        <th scope="col">Color</th>
+                                        <th scope="col">Tipo Diseño</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tableBody-products-modal">
+                                </tbody>
+                            </table>
+
+                            <!--
+                                Totales
+                            -->
+                            <h3>
+                                Totales
+                            </h3>
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Valor Total</th>
+                                        <th scope="col">Abono</th>
+                                        <th scope="col">Valor Restante</th>
+                                        <th scope="col">Fecha Entrega</th>
+                                        <th scope="col">Plazo (dias)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td id="valor_total_modal" class="table-active"></td>
+                                        <td id="abono_modal"></td>
+                                        <td id="valor_restante_modal"></td>
+                                        <td id="fecha_entrega_modal"></td>
+                                        <td id="plazo_modal"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary"
+                                onclick="closeCreateSaleModal()">Atrás</button>
+                            <button type="button" class="btn btn-primary" onclick="sendDataFromSale()">Guardar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <!--
                 Este script se encarga de insertar o eliminar un form de producto.
@@ -166,11 +262,11 @@
                     '<div class="row">' +
                     '<div class="col-sm-2">' +
                     '<label for="id_producto" class="form-label">N°</label>' +
-                    '<input type="text" class="form-control text-center id-producto " readonly>' +
+                    '<input type="text" name="id_producto" class="form-control text-center id-producto " readonly>' +
                     '</div>' +
                     '<div class="col-sm-5">' +
                     '<label class="form-label">Producto</label>' +
-                    '<select class="form-select nombre-producto" onchange="selectChanged(event)" required>' +
+                    '<select class="form-select nombre-producto" name="nombre_producto" onchange="selectChanged(event)" required>' +
                     '<option selected disabled value>Seleccione un producto...</option>' +
                     '</select>' +
                     '<div class="invalid-feedback">' +
@@ -179,14 +275,14 @@
                     '</div>' +
                     '<div class="col-sm-2">' +
                     '<label for="cantidad" class="form-label">Cantidad</label>' +
-                    '<input type="number" class="form-control cantidad" onkeyup="calculateTotal(); formatCount(event)" required>' +
+                    '<input type="number" name="cantidad" class="form-control cantidad" onkeyup="calculateTotal(); formatCount(event)" required>' +
                     '<div class="invalid-feedback">' +
                     'Ingrese una cantidad.' +
                     '</div>' +
                     '</div>' +
                     '<div class="col-sm-3">' +
                     '<label for="valor_unitario" class="form-label">Valor Unitario</label>' +
-                    '<input type="text" class="form-control format-price valor-unitario" onkeyup="calculateTotal(); formatPrice(event)">' +
+                    '<input type="text" class="form-control format-price valor-unitario" name="valor_unitario" onkeyup="calculateTotal(); formatPrice(event)">' +
                     '</div>' +
                     '</div>' +
                     '<div class="row opciones-productos">' +
@@ -255,7 +351,7 @@
                 const orientacion =
                     '<div class="col-sm-4">' +
                     '<label class="form-label">Orientación</label>' +
-                    '<select class="form-select" required>' +
+                    '<select name="orientacion" class="form-select" required>' +
                     '<option selected disabled value>Seleccionar...</option>' +
                     '<option value="HORIZONTAL">HORIZONTAL</option>' +
                     '<option value="VERTICAL">VERTICAL</option>' +
@@ -268,7 +364,7 @@
                 const color =
                     '<div class="col-sm-4">' +
                     '<label class="form-label">Color</label>' +
-                    '<select class="form-select" required>' +
+                    '<select name="color" class="form-select" required>' +
                     '<option selected disabled value>Seleccionar...</option>' +
                     '<option value="WENGUE">WENGUE</option>' +
                     '<option value="NATURAL">NATURAL</option>' +
@@ -281,7 +377,7 @@
                 const tipoDiseño =
                     '<div class="col-sm-4">' +
                     '<label class="form-label">Tipo de Diseño</label>' +
-                    '<select class="form-select" required>' +
+                    '<select name="tipo_diseño" class="form-select" required>' +
                     '<option selected disabled value>Seleccionar...</option>' +
                     '<option value="COLLAGE">COLLAGE</option>' +
                     '<option value="RETOQUE">RETOQUE</option>' +
@@ -308,7 +404,6 @@
                     let index = event.target.parentElement.parentElement.parentElement.id.split('_')[1];
                     let index_productList = 0;
 
-                    console.log(index);
 
                     // se busca la data
                     while (productsList[index_productList][0] !== selectValue) {
@@ -323,6 +418,11 @@
                     // --------------------- Valor Unitario -----------------------
                     let valoresUnitarios = document.querySelectorAll('.valor-unitario');
                     valoresUnitarios[index].value = data_selectedProduct[1];
+
+                    // --------------------- Cantidad -----------------------
+                    // Si se realiza un cambio de producto la cantidad se formatea
+                    let cantidades = document.querySelectorAll('.cantidad');
+                    cantidades[index].value = "";
 
 
                     // ----------- Opciones para el producto seleccio1nado -------------
@@ -343,8 +443,6 @@
                         opcionesProductos[index].innerHTML += tipoDiseño;
                     }
                 }
-
-
 
             </script>
 
@@ -436,18 +534,18 @@
                     Se llama cuando se ingresa un abono, calcula el valor restante
                 */
                 function calculateAdvance() {
-                    let inputAbono = document.getElementById("abono");
-                    let advance = inputAbono.value.replace(',', '');
+                    let isInvalidAbono = document.getElementById("abono");
+                    let advance = isInvalidAbono.value.replace(',', '');
 
                     if (advance <= total) {
                         document.getElementById("valor_restante").value = numeral(total - advance).format('0,0');
                         document.getElementById("invalid-feedback-abono").innerText = "Ingresa un abono.\n Si no hay puedes poner 0."
-                        inputAbono.className = "form-control";
+                        isInvalidAbono.className = "form-control";
                     }
 
                     // El abono es mayor que el total de la venta
                     else {
-                        inputAbono.className = "form-control is-invalid";
+                        isInvalidAbono.className = "form-control is-invalid";
 
                         document.getElementById("invalid-feedback-abono").innerText = `El abono no puede ser mayor al total.\n Se sugieren mínimo ${numeral(total / 2).format('0,0')} COP \n ;p`
                     }
@@ -459,9 +557,9 @@
                 */
                 function timeToDelivery() {
 
-                    let inputFechaEntrega = document.getElementById("fecha_entrega");
+                    let isInvalidFechaEntrega = document.getElementById("fecha_entrega");
                     let currentDate = new Date();
-                    let inputDate = new Date(inputFechaEntrega.value);
+                    let inputDate = new Date(isInvalidFechaEntrega.value);
 
 
                     // El tiempo se dá en milisegundos, se resta y se hace la conversión a dias
@@ -472,10 +570,10 @@
 
                     // Avisa si es necesario activando el invalid-feedback
                     if (difference < 0) {
-                        inputFechaEntrega.className = "form-control is-invalid";
+                        isInvalidFechaEntrega.className = "form-control is-invalid";
                     }
                     else {
-                        inputFechaEntrega.className = "form-control";
+                        isInvalidFechaEntrega.className = "form-control";
                     }
                 }
 
@@ -511,6 +609,184 @@
                         productsIdentifier[index].value = `${clientId}P${index}`;
                     }
                 }
+            </script>
+
+            <!--
+                Este script controla el botón de submit del formulario.
+                Realiza las validaciones.
+                Lanza un modal en el cual el usuario verifica la info suministrada.
+                Si acepta llama a la función que guarda la data.
+            -->
+            <script>
+                let data = {};
+
+                function submitFormSale() {
+                    let form = document.getElementById("crear_venta");
+
+                    // Se verifica que la clase de estos inputs que están personallizados no contenga el "is-invalid"
+                    let isInvalidAbono = document.getElementById("abono").className.match("is-invalid");
+                    let isInvalidFechaEntrega = document.getElementById("fecha_entrega").className.match("is-invalid");
+
+                    // Se activa la validación de Bootstrap
+                    form.classList.add('was-validated');
+
+                    // No es válido
+                    if (!form.checkValidity() || isInvalidFechaEntrega != null || isInvalidAbono != null) {
+
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    // Es válido
+                    else {
+                        // Se genera un objeto json a partir de los datos
+
+                        // FormData es un objeto JavaScript que permite crear un conjunto de pares 
+                        // clave/valor para enviar a un servidor a través de una solicitud HTTP
+                        let formData = new FormData(form);
+
+                        let products = {};
+                        let productsIndex = 0;
+                        let product = {};
+                        let isProduct = false;
+
+                        // Se recorre el formData y se arma el json
+                        for (var [key, value] of formData.entries()) {
+                            if (key === "id_producto") {
+                                isProduct = true;
+
+                                // Ya tiene la data de un producto
+                                if (Object.keys(product).length !== 0) {
+                                    products[productsIndex] = product;
+                                    productsIndex++;
+                                    product = {};
+                                }
+                            }
+                            // Recupero la info del último producto
+                            if (key === "valor_total") {
+                                isProduct = false;
+
+                                products[productsIndex] = product;
+                            }
+
+                            if (isProduct) {
+                                product[key] = value;
+                            }
+                            else {
+                                data[key] = value
+                            }
+                        }
+                        data["products"] = products;
+                        console.log(data);
+
+                        // Se muestra la info por el modal para pedir confirmación al usuario.
+
+                        // Datos del cliente
+                        document.getElementById("id_cliente_modal").innerHTML = data.id_cliente;
+                        document.getElementById("nombre_cliente_modal").innerHTML = data.nombre_cliente.toUpperCase();
+                        document.getElementById("celular_cliente_modal").innerHTML = data.celular_cliente;
+
+                        // Datos de productos
+                        let tableBody = document.getElementById("tableBody-products-modal");
+                        let orientacion_column;
+                        let color_column;
+                        let tipo_diseño_column;
+
+                        tableBody.innerHTML = "";
+                        for (const [key, product] of Object.entries(data.products)) {
+                            let row = `<tr>
+                                        <td>${product.id_producto}</td>
+                                        <td>${product.nombre_producto}</td>
+                                        <td>${product.cantidad}</td>
+                                        <td>${product.valor_unitario}</td>
+                                        `;
+
+                            if (product.orientacion !== undefined) {
+                                orientacion_column = `<td>${product.orientacion}</td>`;
+                            }
+                            else {
+                                orientacion_column = "<td>-</td>";
+                            }
+
+                            if (product.color !== undefined) {
+                                color_column = `<td>${product.color}</td>`;
+                            }
+                            else {
+                                color_column = "<td>-</td>";
+                            }
+
+                            if (product.tipo_diseño !== undefined) {
+                                tipo_diseño_column = `<td>${product.tipo_diseño}</td>`;
+                            }
+                            else {
+                                tipo_diseño_column = "<td>-</td>";
+                            }
+
+                            tableBody.innerHTML += `${row}${orientacion_column}${color_column}${tipo_diseño_column}</tr>`;
+                        }
+
+                        // Datos de los totales
+                        document.getElementById("valor_total_modal").innerHTML = data.valor_total;
+                        document.getElementById("abono_modal").innerHTML = data.abono;
+                        document.getElementById("valor_restante_modal").innerHTML = data.valor_restante;
+                        document.getElementById("fecha_entrega_modal").innerHTML = data.fecha_entrega;
+                        document.getElementById("plazo_modal").innerHTML = data.plazo_entrega;
+
+                        // Muestra el modal
+                        let modal = document.getElementById("create_sale_modal");
+                        modal.style.display = "block";
+                        modal.classList.add("show");
+                    }
+                }
+
+                /*
+                    Se encarga de enviar la información al spreadsheet
+                */
+                function sendDataFromSale() {
+                    let form = document.getElementById("crear_venta");
+
+                    setTimeout(function () {
+                        alert("Venta creada, apunta el código en el sobre.");
+                    }, 500);
+
+                    google.script.run
+                        .withSuccessHandler(result => {
+
+                            reloadCreateSaleForm(form);
+                            loadClientId();
+                            closeCreateSaleModal();
+                        })
+                        .createSale(data);
+                }
+
+                /*
+                    Cierra el create_sale_modal
+                */
+                function closeCreateSaleModal() {
+                    let modal = document.getElementById("create_sale_modal");
+                    modal.style.display = "none";
+                }
+
+                /*
+                    Regresa el form a su estado inicial
+                    Borra los campos de texto
+                    Elimina el was validate de la clase
+                    Quita el contenedor de los productos adicionales
+                */
+                function reloadCreateSaleForm(form) {
+                    // Se borran los inputs
+                    form.reset();
+
+                    // Se desactiva el trigger de la validación de Bootstrap
+                    form.classList.remove('was-validated');
+
+                    // Quita el contenedor de los productos adicionales 
+                    // index 0,1,2....
+                    let containersProducts = document.getElementById('productos').childElementCount;
+                    for (let index = 1; index <= containersProducts - 1; index++) {
+                        document.getElementById(`producto_${index}`).remove();
+                    }
+                }
+
             </script>
 
         </div>
