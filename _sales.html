@@ -12,6 +12,10 @@
             </button>
         </div>
     </nav>
+
+    <!--
+        Crear Venta
+    -->
     <div class="tab-content" id="nav-create-sale">
         <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
             <!-- 
@@ -124,7 +128,7 @@
                         <input type="text" class="form-control" id="abono" name="abono"
                             onkeyup="calculateAdvance(); formatPrice(event)" required>
                         <div class="invalid-feedback" id="invalid-feedback-abono">
-                            Ingresa un abono.<br> Si no hay puedes poner 0.
+                            Ingrese un abono.<br> Si no hay puede poner 0.
                         </div>
                     </div>
                     <div class="col-sm">
@@ -206,6 +210,7 @@
                                         <th scope="col">Orientación</th>
                                         <th scope="col">Color</th>
                                         <th scope="col">Tipo Diseño</th>
+                                        <th scope="col">Ruana</th>
                                     </tr>
                                 </thead>
                                 <tbody id="tableBody-products-modal">
@@ -367,6 +372,8 @@
                     '<select name="color" class="form-select" required>' +
                     '<option selected disabled value>Seleccionar...</option>' +
                     '<option value="WENGUE">WENGUE</option>' +
+                    '<option value="MIEL">MIEL</option>' +
+                    '<option value="CARAMELO">CARAMELO</option>' +
                     '<option value="NATURAL">NATURAL</option>' +
                     '</select>' +
                     '<div class="invalid-feedback">' +
@@ -385,6 +392,19 @@
                     '</select>' +
                     '<div class="invalid-feedback">' +
                     'Seleccione el tipo de diseño.' +
+                    '</div>' +
+                    '</div>';
+
+                const ruana =
+                    '<div class="col-sm-4">' +
+                    '<label class="form-label">Ruana</label>' +
+                    '<select name="ruana" class="form-select" required>' +
+                    '<option selected disabled value>Seleccionar...</option>' +
+                    '<option value="SI">SI</option>' +
+                    '<option value="NO">NO</option>' +
+                    '</select>' +
+                    '<div class="invalid-feedback">' +
+                    'Seleccione un valor.' +
                     '</div>' +
                     '</div>';
 
@@ -441,6 +461,10 @@
                     // Tipo Diseño 
                     if (data_selectedProduct[4] === 'TRUE') {
                         opcionesProductos[index].innerHTML += tipoDiseño;
+                    }
+                    // Ruana 
+                    if (data_selectedProduct[5] === 'TRUE') {
+                        opcionesProductos[index].innerHTML += ruana;
                     }
                 }
 
@@ -690,6 +714,7 @@
                         let orientacion_column;
                         let color_column;
                         let tipo_diseño_column;
+                        let ruana_column;
 
                         tableBody.innerHTML = "";
                         for (const [key, product] of Object.entries(data.products)) {
@@ -721,7 +746,14 @@
                                 tipo_diseño_column = "<td>-</td>";
                             }
 
-                            tableBody.innerHTML += `${row}${orientacion_column}${color_column}${tipo_diseño_column}</tr>`;
+                            if (product.ruana !== undefined) {
+                                ruana_column = `<td>${product.ruana}</td>`;
+                            }
+                            else {
+                                ruana_column = "<td>-</td>";
+                            }
+
+                            tableBody.innerHTML += `${row}${orientacion_column}${color_column}${tipo_diseño_column}${ruana_column}</tr>`;
                         }
 
                         // Datos de los totales
@@ -745,7 +777,7 @@
                     let form = document.getElementById("crear_venta");
 
                     setTimeout(function () {
-                        alert("Venta creada, apunta el código en el sobre.");
+                        alert(`\nVenta Registrada \n\n N° ${form.id_cliente.value} \n\nPor favor apunte el N° en el sobre y la tirilla que debe ser entregada al cliente.`);
                     }, 500);
 
                     google.script.run
@@ -791,7 +823,18 @@
 
         </div>
         <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
-
+        </div>
+    </div>
+    
+    <!--
+        Buscar y editar Ventas
+    -->
+    <div class="tab-content" id="nav-view-sale">
+        <div class="tab-pane fade show active" id="nav-home_2" role="tabpanel" aria-labelledby="nav-home-tab">
+            hola
+        </div>
+        <div class="tab-pane fade" id="nav-profile_2" role="tabpanel" aria-labelledby="nav-profile-tab">
         </div>
     </div>
 </div>
+eje

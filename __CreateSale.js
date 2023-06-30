@@ -44,6 +44,7 @@ function createSale(data) {
     let orientacion;
     let color;
     let tipo_diseño;
+    let ruana;
 
     for (const [key, product] of Object.entries(data.products)) {
 
@@ -73,6 +74,13 @@ function createSale(data) {
             tipo_diseño = "-";
         }
 
+        if(product.ruana !== undefined){
+            ruana = product.ruana;
+        }
+        else{
+            ruana = "-";
+        }
+
         PRODUCTOS_TABLE.appendRow([
             id_producto,
             id,
@@ -81,7 +89,8 @@ function createSale(data) {
             vlr_unitario,
             orientacion,
             color,
-            tipo_diseño
+            tipo_diseño,
+            ruana
           ]);
     }
 
