@@ -3,21 +3,26 @@
 <div class="container" style="background-color: aquamarine;">
     <nav>
         <div class="nav nav-tabs" id="nav-tab" role="tablist">
-            <button class="nav-link active" id="nav-create-sale-tab" data-bs-toggle="tab"
-                data-bs-target="#nav-create-sale" type="button" role="tab" aria-controls="nav-create-sale"
-                aria-selected="true">Crear Venta
-            </button>
+
+            <!--
+            Tab - Crear Venta
+            -->
+            <button class="nav-link active" id="nav-create-sale-tab" data-bs-toggle="tab" data-bs-target="#nav-create-sale"
+                type="button" role="tab" aria-controls="nav-create-sale" aria-selected="true">Crear Venta</button>
+            <!--
+            Tab - Buscar y editar Ventas
+            -->
             <button class="nav-link" id="nav-view-sale-tab" data-bs-toggle="tab" data-bs-target="#nav-view-sale"
-                type="button" role="tab" aria-controls="nav-view-sale" aria-selected="false">Buscar Venta
-            </button>
+                type="button" role="tab" aria-controls="nav-view-sale" aria-selected="false">Buscar Venta</button>
+
         </div>
     </nav>
+    <div class="tab-content" id="nav-tabContent">
 
-    <!--
-        Crear Venta
-    -->
-    <div class="tab-content" id="nav-create-sale">
-        <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+        <!--
+        Content - Crear Venta
+        -->
+        <div class="tab-pane fade show active" id="nav-create-sale" role="tabpanel" aria-labelledby="nav-create-sale-tab">
             <!-- 
                 Formulario para la creación de una venta 
             -->
@@ -822,19 +827,12 @@
             </script>
 
         </div>
-        <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+
+        <!--
+        Content - Buscar y editar Ventas
+        -->
+        <div class="tab-pane fade" id="nav-view-sale" role="tabpanel" aria-labelledby="nav-view-sale-tab">
         </div>
-    </div>
-    
-    <!--
-        Buscar y editar Ventas
-    -->
-    <div class="tab-content" id="nav-view-sale">
-        <div class="tab-pane fade show active" id="nav-home_2" role="tabpanel" aria-labelledby="nav-home-tab">
-            hola
-        </div>
-        <div class="tab-pane fade" id="nav-profile_2" role="tabpanel" aria-labelledby="nav-profile-tab">
-        </div>
+
     </div>
 </div>
-eje
