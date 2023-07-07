@@ -7,8 +7,9 @@
             <!--
             Tab - Crear Venta
             -->
-            <button class="nav-link active" id="nav-create-sale-tab" data-bs-toggle="tab" data-bs-target="#nav-create-sale"
-                type="button" role="tab" aria-controls="nav-create-sale" aria-selected="true">Crear Venta</button>
+            <button class="nav-link active" id="nav-create-sale-tab" data-bs-toggle="tab"
+                data-bs-target="#nav-create-sale" type="button" role="tab" aria-controls="nav-create-sale"
+                aria-selected="true">Crear Venta</button>
             <!--
             Tab - Buscar y editar Ventas
             -->
@@ -22,7 +23,8 @@
         <!--
         Content - Crear Venta
         -->
-        <div class="tab-pane fade show active" id="nav-create-sale" role="tabpanel" aria-labelledby="nav-create-sale-tab">
+        <div class="tab-pane fade show active" id="nav-create-sale" role="tabpanel"
+            aria-labelledby="nav-create-sale-tab">
             <!-- 
                 Formulario para la creación de una venta 
             -->
@@ -631,7 +633,7 @@
                     // Se obtiene el id del cliente
                     let clientId = document.getElementById("id_cliente").value;
 
-                    // Se recorren los productos creados y se les agrega su id personalizado´
+                    // Se recorren los productos creados y se les agrega su id personalizado
                     let productsIdentifier = document.querySelectorAll('.id-producto');
 
                     for (let index = 0; index < productsIdentifier.length; index++) {
@@ -829,9 +831,31 @@
         </div>
 
         <!--
-        Content - Buscar y editar Ventas
+            Content - Buscar y editar Ventas
         -->
         <div class="tab-pane fade" id="nav-view-sale" role="tabpanel" aria-labelledby="nav-view-sale-tab">
+
+            <button type="button" class="btn btn-primary" onclick="viewSales()">Sale</button>
+            <!--
+                
+            -->
+            <script>
+                /*
+                    Busca los pedidos en base a un parámetro específico.
+                */
+                function viewSales() {
+                    google.script.run.withSuccessHandler(showSales).lookForSale();
+                }
+                /*
+                    Muestra por pantalla los resultados de la buésqueda
+                */
+                function showSales(data) {
+                    console.log("puta madre");
+                    console.log(data);
+                }
+
+
+            </script>
         </div>
 
     </div>
