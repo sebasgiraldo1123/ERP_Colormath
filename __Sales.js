@@ -38,7 +38,7 @@ function createSale(data) {
         vlr_total
     ]);
 
-    // Se formatea la fila agregada (última fila) como texto plano
+    // Se formatea la fila agregada (última fila) como texto plano para evitar problemas con las fechas
     PEDIDOS_TABLE.getRange("A" + PEDIDOS_TABLE.getLastRow() + ":Z" + PEDIDOS_TABLE.getLastRow()).setNumberFormat("@");
 
 
@@ -116,6 +116,7 @@ function createSale(data) {
         fecha
     ]);
 
+    // Se formatea la fila agregada (última fila) como texto plano
     ABONOS_TABLE.getRange("A" + ABONOS_TABLE.getLastRow() + ":Z" + ABONOS_TABLE.getLastRow()).setNumberFormat("@");
 
     return data;
@@ -125,7 +126,7 @@ function createSale(data) {
 
 /**
  * Lee la lista de productos
- * @returns 
+ * @returns lista de productos disponibles con sus características
  */
 function readProductsList() {
     const dataProducts = PRODUCTS_LIST_TABLE.getDataRange().getDisplayValues();
@@ -158,7 +159,7 @@ function getLastClientId() {
 
 
 /**
- * -------------------------- BUSCAR Y EDITAR VENTAS FUNCTIONS --------------------------
+ * -------------------------- BUSCAR VENTA FUNCTIONS --------------------------
  */
 
 /**
@@ -169,18 +170,44 @@ function getLastClientId() {
  * -------------------
  * @returns la lista de pedidos encontrados
  */
-function lookForSale() {
+function lookForSale(searchText) {
 
-    const searchText = "TEST";
+    //searchText = "YECENIA";
+
     const range = "A2:H";
     const sales = [];
+    let rowList = [];
+    let maxResults = 10;
 
-    // Se obtiene la lista de indices de filas que cumplen con la descripción
-    const rowList = PEDIDOS_TABLE.getRange(range)
-        .createTextFinder(searchText)
-        .matchEntireCell(false)
-        .findAll()
-        .map((r) => r.getRow());
+    // Se obtiene la lista de indices de filas que cumplen con la descripción hasta un máximo de "maxResults"
+
+    // Se realiza una primera búsqueda comparando el searchText con el dato completo de cada celda
+    const textFinder = PEDIDOS_TABLE.getRange(range)
+        .createTextFinder(searchText).matchEntireCell(true);
+
+    let cell = textFinder.findNext();
+    let count = 0;
+
+    while (cell && count < maxResults) {
+        rowList.push(cell.getRow());
+        cell = textFinder.findNext();
+        count++;
+    }
+
+    // Si no hay coinciencias se realiza una búsqueda sin el matchEntireCell
+    if (rowList.length === 0) {
+        const textFinder = PEDIDOS_TABLE.getRange(range)
+            .createTextFinder(searchText).matchEntireCell(false);
+
+        let cell = textFinder.findNext();
+        let count = 0;
+
+        while (cell && count < maxResults) {
+            rowList.push(cell.getRow());
+            cell = textFinder.findNext();
+            count++;
+        }
+    }
 
     // Se crea un objeto con los datos de las filas proporcionadas
     for (let i = 0; i < rowList.length; i++) {
@@ -190,7 +217,7 @@ function lookForSale() {
     console.log(sales);
 
     if (sales.length === 0) {
-        return 0;
+        return null;
     }
     else {
         return sales;

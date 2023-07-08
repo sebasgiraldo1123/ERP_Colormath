@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<div class="container" style="background-color: aquamarine;">
+<div class="container">
     <nav>
         <div class="nav nav-tabs" id="nav-tab" role="tablist">
 
@@ -28,8 +28,7 @@
             <!-- 
                 Formulario para la creación de una venta 
             -->
-            <form class="needs-validation" name="crear_venta" id="crear_venta"
-                style="background-color: rgb(228, 221, 126);" novalidate>
+            <form class="needs-validation" name="crear_venta" id="crear_venta" novalidate>
                 <!--
                     Cliente
                 -->
@@ -67,9 +66,9 @@
                     Productos
                 </h3>
 
-                <div class="row" id="productos" style="background-color: rgb(160, 247, 125);">
+                <div class="row" id="productos">
 
-                    <div class="row producto" id="producto_0" style="background-color: blueviolet;">
+                    <div class="row producto" id="producto_0">
                         <!--
                             Datos del producto
                         -->
@@ -645,7 +644,7 @@
             <!--
                 Este script controla el botón de submit del formulario.
                 Realiza las validaciones.
-                Lanza un modal en el cual el usuario verifica la info suministrada.
+                Lanza un modal en el cual e= sale verifica la info suministrada.
                 Si acepta llama a la función que guarda la data.
             -->
             <script>
@@ -707,9 +706,8 @@
                             }
                         }
                         data["products"] = products;
-                        console.log(data);
 
-                        // Se muestra la info por el modal para pedir confirmación al usuario.
+                        // Se muestra la info por el modal para pedir confirmación a= sale.
 
                         // Datos del cliente
                         document.getElementById("id_cliente_modal").innerHTML = data.id_cliente;
@@ -834,26 +832,165 @@
             Content - Buscar y editar Ventas
         -->
         <div class="tab-pane fade" id="nav-view-sale" role="tabpanel" aria-labelledby="nav-view-sale-tab">
-
-            <button type="button" class="btn btn-primary" onclick="viewSales()">Sale</button>
             <!--
-                
+                Formulario para buscar las ventas
+            -->
+            <form name="buscar_venta" id="buscar_venta">
+                <!--
+                    Área de búsqueda
+                -->
+                <h3>
+                    Buscar Venta
+                </h3>
+                <!--
+                    Datos de Búsqueda
+                -->
+                <div class="row">
+                    <div class="col-sm-3">
+                        <input type="text" class="form-control text-center" id="texto_busqueda"
+                            onkeydown="disableEnterKey(event)">
+                    </div>
+                    <div class="col-sm-3">
+                        <button id="buscar_venta_button" type="button" class="btn btn-primary"
+                            onclick="viewSales()">Buscar</button>
+                    </div>
+                    <div id="loading" class="spinner-border" role="status" style="display: none;">
+                        <span class="sr-only"></span>
+                    </div>
+                </div>
+            </form>
+
+            <!--
+                Tabla con la info encontrada
+            -->
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>N°</th>
+                        <th>Estado</th>
+                        <th>Fecha</th>
+                        <th>Cliente</th>
+                        <th>Celular</th>
+                        <th>Fecha Entrega</th>
+                        <th>Vlr Abonado</th>
+                        <th>Vlr Total</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody_ventas_encontradas">
+                </tbody>
+            </table>
+
+            <template id="rowTemplate">
+                <tr>
+                    <td class="template-id"></td>
+                    <td class="template-estado"></td>
+                    <td class="template-fecha"></td>
+                    <td class="template-cliente"></td>
+                    <td class="template-celular"></td>
+                    <td class="template-fecha-entrega"></td>
+                    <td class="template-vlr-abonado"></td>
+                    <td class="template-vlr-total"></td>
+                    <td class="template-acciones text-center">
+                        <i class="bi bi-pencil-square button-edit me-3" role="button"><i
+                                class="bi bi-trash button-delete" role="button"></i></i>
+                    </td>
+                </tr>
+            </template>
+
+            <!--
+                Busca y muestra los pedidos
             -->
             <script>
+
+                let searchText = "";
+
                 /*
                     Busca los pedidos en base a un parámetro específico.
                 */
                 function viewSales() {
-                    google.script.run.withSuccessHandler(showSales).lookForSale();
-                }
-                /*
-                    Muestra por pantalla los resultados de la buésqueda
-                */
-                function showSales(data) {
-                    console.log("puta madre");
-                    console.log(data);
+
+                    getTextSearch();
+
+                    if (searchText != "") {
+                        // Muestra animación de carga
+                        document.getElementById("loading").style.display = "block";
+
+                        google.script.run
+                            .withSuccessHandler(showSales => {
+                                // Ocultar animación de carga
+                                document.getElementById("loading").style.display = "none";
+
+                                let tableBody = document.getElementById("tableBody_ventas_encontradas");
+                                tableBody.innerHTML = ""; // Reinicio el contenido
+
+                                let template = document.getElementById("rowTemplate");
+                                let templateContent = template.content;
+
+                                if (showSales != null) {
+
+                                    showSales.forEach(sale => {
+
+                                        const tr = templateContent.cloneNode(true);
+
+                                        const idCol = tr.querySelector(".template-id");
+                                        const estadoCol = tr.querySelector(".template-estado");
+                                        const fechaCol = tr.querySelector(".template-fecha");
+                                        const clienteCol = tr.querySelector(".template-cliente");
+                                        const celularCol = tr.querySelector(".template-celular");
+                                        const fechaEntregaCol = tr.querySelector(".template-fecha-entrega");
+                                        const vlrAbonadoCol = tr.querySelector(".template-vlr-abonado");
+                                        const vlrTotalCol = tr.querySelector(".template-vlr-total");
+
+                                        const accionesCol = tr.querySelector(".template-acciones");
+                                        const editButton = tr.querySelector(".button-edit");
+                                        const deleteButton = tr.querySelector(".button-delete");
+
+                                        idCol.textContent = sale[0];
+                                        estadoCol.textContent = sale[1];
+                                        fechaCol.textContent = sale[2];
+                                        clienteCol.textContent = sale[3];
+                                        celularCol.textContent = sale[4];
+                                        fechaEntregaCol.textContent = sale[5];
+                                        vlrAbonadoCol.textContent = sale[6];
+                                        vlrTotalCol.textContent = sale[7];
+
+                                        tableBody.appendChild(tr);
+                                    })
+                                }
+                                else {
+                                    alert("No hay coinicidencia");
+                                }
+                            })
+                            .lookForSale(searchText);
+                    }
+                    else {
+                        alert("Por favor ingrese un dato para realizar la búsqueda");
+                    }
                 }
 
+                /*
+                    Recupera los datos de búsqueda y los formatea si es necesario
+                */
+                function getTextSearch() {
+                    searchText = document.getElementById("texto_busqueda").value;
+
+                    // Identifica si el string proporcionado es un teléfono, en ese caso procede a formatearlo como tal
+                    if (!isNaN(searchText) && searchText.length === 10) {
+                        searchText = searchText.replace(/^(\d{3})(\d{3})(\d{4})$/, "$1-$2-$3");
+                    }
+                }
+
+                /*
+                    Desactiva la tecla enter para evitar que envíe el form y presiona el botón requerido
+                */
+                function disableEnterKey(event) {
+                    // Verificar si se presionó la tecla "Enter"
+                    if (event.keyCode === 13) {
+                        document.getElementById("buscar_venta_button").click();
+                        event.preventDefault();
+                        return false;
+                    }
+                }
 
             </script>
         </div>
