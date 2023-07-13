@@ -166,7 +166,7 @@
                 </div>
             </form>
 
-            <!-- Modal -->
+            <!-- Create Sale Modal -->
             <div class="modal fade" id="create_sale_modal" data-bs-backdrop="static" data-bs-keyboard="false"
                 tabindex="-1" aria-labelledby="create_sale_modal_Label" aria-hidden="true">
                 <div class="modal-dialog modal-lg">
@@ -190,6 +190,8 @@
                                         <th scope="col">N°</th>
                                         <th scope="col">Cliente</th>
                                         <th scope="col">Celular</th>
+                                        <th scope="col">Estado</th>
+                                        <th scope="col">Fecha Recibido</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -197,6 +199,8 @@
                                         <td id="id_cliente_modal"></td>
                                         <td id="nombre_cliente_modal"></td>
                                         <td id="celular_cliente_modal"></td>
+                                        <td id="estado_cliente_modal"></td>
+                                        <td id="fecha_cliente_modal"></td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -553,7 +557,7 @@
 
                     total = 0;
                     for (let index = 0; index < cantidades.length; index++) {
-                        total += cantidades[index].value.replace(',', '') * valoresUnitarios[index].value.replace(',', '');
+                        total += cantidades[index].value.replace(/,/g, '') * valoresUnitarios[index].value.replace(/,/g, '');
                     }
 
                     document.getElementById("valor_total").value = numeral(total).format('0,0')
@@ -565,7 +569,8 @@
                 */
                 function calculateAdvance() {
                     let isInvalidAbono = document.getElementById("abono");
-                    let advance = isInvalidAbono.value.replace(',', '');
+                    let advance = isInvalidAbono.value.replace(/,/g, '');
+                    console.log(advance);
 
                     if (advance <= total) {
                         document.getElementById("valor_restante").value = numeral(total - advance).format('0,0');
@@ -593,7 +598,7 @@
 
 
                     // El tiempo se dá en milisegundos, se resta y se hace la conversión a dias
-                    let difference = (Math.floor((inputDate - currentDate) / (1000 * 60 * 60 * 24))) + 1;
+                    let difference = subtractDate(inputDate, currentDate);
 
                     // Se muestra por pantalla
                     document.getElementById("plazo_entrega").value = difference;
@@ -644,8 +649,8 @@
             <!--
                 Este script controla el botón de submit del formulario.
                 Realiza las validaciones.
-                Lanza un modal en el cual e= sale verifica la info suministrada.
-                Si acepta llama a la función que guarda la data.
+                Lanza un modal en el cual se verifica la info suministrada.
+                Si acepta, llama a la función que guarda la data.
             -->
             <script>
                 let data = {};
@@ -707,12 +712,14 @@
                         }
                         data["products"] = products;
 
-                        // Se muestra la info por el modal para pedir confirmación a= sale.
+                        // Se muestra la info por el modal para pedir confirmación
 
                         // Datos del cliente
                         document.getElementById("id_cliente_modal").innerHTML = data.id_cliente;
                         document.getElementById("nombre_cliente_modal").innerHTML = data.nombre_cliente.toUpperCase();
                         document.getElementById("celular_cliente_modal").innerHTML = data.celular_cliente;
+                        document.getElementById("estado_cliente_modal").innerHTML = "POR HACER";
+                        document.getElementById("fecha_cliente_modal").innerHTML = getDate();
 
                         // Datos de productos
                         let tableBody = document.getElementById("tableBody-products-modal");
@@ -851,6 +858,15 @@
                             onkeydown="disableEnterKey(event)">
                     </div>
                     <div class="col-sm-3">
+                        <select class="form-select" id="cantidad_resultados" onkeydown="disableEnterKey(event)">
+                            <option value="5">5</option>
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                            <option value="50">50</option>
+                            <option value="Todos">Todos</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-3">
                         <button id="buscar_venta_button" type="button" class="btn btn-primary"
                             onclick="viewSales()">Buscar</button>
                     </div>
@@ -874,6 +890,7 @@
                         <th>Fecha Entrega</th>
                         <th>Vlr Abonado</th>
                         <th>Vlr Total</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody id="tableBody_ventas_encontradas">
@@ -891,18 +908,131 @@
                     <td class="template-vlr-abonado"></td>
                     <td class="template-vlr-total"></td>
                     <td class="template-acciones text-center">
-                        <i class="bi bi-pencil-square button-edit me-3" role="button"><i
-                                class="bi bi-trash button-delete" role="button"></i></i>
+                        <button class="btn btn-success show-button"
+                            onclick="showDetails(this.dataset.saleId)">Ver</button>
                     </td>
                 </tr>
             </template>
+
+
+            <!-- Show Sale Modal -->
+            <div class="modal fade" id="show_sale_modal" data-bs-backdrop="static" data-bs-keyboard="false"
+                tabindex="-1" aria-labelledby="show_sale_modal_Label" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="show_sale_modal_Label">Información de la venta</h5>
+                        </div>
+                        <div class="modal-body" id="modal_body_show_sale">
+                            <!--
+                                Cliente
+                            -->
+                            <h3>
+                                Cliente
+                            </h3>
+                            <!--
+                                Datos del cliente
+                            -->
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">N°</th>
+                                        <th scope="col">Cliente</th>
+                                        <th scope="col">Celular</th>
+                                        <th scope="col">Estado</th>
+                                        <th scope="col">Fecha Entrega</th>
+                                        <th scope="col">Plazo(dias)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td id="id_cliente_modal_show_sale"></td>
+                                        <td id="nombre_cliente_modal_show_sale"></td>
+                                        <td id="celular_cliente_modal_show_sale"></td>
+                                        <td id="estado_cliente_modal_show_sale"></td>
+                                        <td id="fecha_entrega_cliente_modal_show_sale"></td>
+                                        <td id="plazo_modal_show_sale"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <!--
+                                Pedidos
+                            -->
+                            <h3>
+                                Productos
+                            </h3>
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">N°</th>
+                                        <th scope="col">Producto</th>
+                                        <th scope="col">Cantidad</th>
+                                        <th scope="col">Valor Unitario</th>
+                                        <th scope="col">Orientación</th>
+                                        <th scope="col">Color</th>
+                                        <th scope="col">Tipo Diseño</th>
+                                        <th scope="col">Ruana</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tableBody_products_modal_show_sale">
+                                </tbody>
+                            </table>
+                            <!--
+                                Pedidos
+                            -->
+                            <h3>
+                                Abonos
+                            </h3>
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">N°</th>
+                                        <th scope="col">Valor</th>
+                                        <th scope="col">Fecha Recibido</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tableBody_advance_modal_show_sale">
+                                </tbody>
+                            </table>
+                            <!--
+                                Totales
+                            -->
+                            <h3>
+                                Totales
+                            </h3>
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Valor Total</th>
+                                        <th scope="col">Abono Total</th>
+                                        <th scope="col">Valor Restante</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td id="valor_total_modal_show_sale" class="table-active"></td>
+                                        <td id="abono_total_modal_show_sale"></td>
+                                        <td id="valor_restante_modal_show_sale"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary"
+                                onclick="closeShowSaleModal()">Atrás</button>
+                            <button type="button" class="btn btn-primary" onclick="">Guardar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <!--
                 Busca y muestra los pedidos
             -->
             <script>
 
-                let searchText = "";
+                let searchText = ""; // String a buscar
+                let maxResults = ""; // Cantidad máxima de resultados
 
                 /*
                     Busca los pedidos en base a un parámetro específico.
@@ -910,6 +1040,7 @@
                 function viewSales() {
 
                     getTextSearch();
+                    getMaxResults();
 
                     if (searchText != "") {
                         // Muestra animación de carga
@@ -942,8 +1073,7 @@
                                         const vlrTotalCol = tr.querySelector(".template-vlr-total");
 
                                         const accionesCol = tr.querySelector(".template-acciones");
-                                        const editButton = tr.querySelector(".button-edit");
-                                        const deleteButton = tr.querySelector(".button-delete");
+                                        const showButton = tr.querySelector(".show-button");
 
                                         idCol.textContent = sale[0];
                                         estadoCol.textContent = sale[1];
@@ -953,6 +1083,8 @@
                                         fechaEntregaCol.textContent = sale[5];
                                         vlrAbonadoCol.textContent = sale[6];
                                         vlrTotalCol.textContent = sale[7];
+                                        showButton.dataset.saleId = sale[0];
+
 
                                         tableBody.appendChild(tr);
                                     })
@@ -961,7 +1093,7 @@
                                     alert("No hay coinicidencia");
                                 }
                             })
-                            .lookForSale(searchText);
+                            .lookForSale(searchText, maxResults);
                     }
                     else {
                         alert("Por favor ingrese un dato para realizar la búsqueda");
@@ -981,6 +1113,13 @@
                 }
 
                 /*
+                    Obtiene la cantidad de resultados para la búsqueda indicados por el usuario
+                */
+                function getMaxResults() {
+                    maxResults = document.getElementById("cantidad_resultados").value;
+                }
+
+                /*
                     Desactiva la tecla enter para evitar que envíe el form y presiona el botón requerido
                 */
                 function disableEnterKey(event) {
@@ -990,6 +1129,171 @@
                         event.preventDefault();
                         return false;
                     }
+                }
+
+                /*
+                    Abre el modal que muestra toda la información de la venta seleccionada en conjunto con sus acciones determinadas
+                */
+                function showDetails(saleId) {
+
+                    // Muestra animación de carga
+                    document.getElementById("loading").style.display = "block";
+
+                    // Se recupera la info de la venta con la ayuda del saleId
+                    google.script.run
+                        .withSuccessHandler(sale => {
+                            
+                            console.log(sale);
+
+                            // Ocultar animación de carga
+                            document.getElementById("loading").style.display = "none";
+
+                            // Se muestra la info de la venta seleccionada por el modal
+                            // Datos del cliente
+
+                            try {
+                                document.getElementById("id_cliente_modal_show_sale").innerHTML = sale.pedido.id;
+                                document.getElementById("nombre_cliente_modal_show_sale").innerHTML = sale.pedido.cliente;
+                                document.getElementById("celular_cliente_modal_show_sale").innerHTML = sale.pedido.celular;
+                                document.getElementById("estado_cliente_modal_show_sale").innerHTML = sale.pedido.estado;
+                                document.getElementById("fecha_entrega_cliente_modal_show_sale").innerHTML = sale.pedido.fechaEntrega;
+
+                                // Resta las fechas de la venta
+                                let difference = subtractDate(new Date(sale.pedido.fechaEntrega), new Date());
+
+                                if (difference >= 0) {
+                                    document.getElementById("plazo_modal_show_sale").innerHTML = difference;
+                                }
+                                else {
+                                    document.getElementById("plazo_modal_show_sale").innerHTML = "-";
+                                }
+                            }
+                            catch {
+                            }
+
+                            // Datos de productos
+
+                            try {
+                                let tableBody = document.getElementById("tableBody_products_modal_show_sale");
+                                let orientacion_column;
+                                let color_column;
+                                let tipo_diseño_column;
+                                let ruana_column;
+
+                                tableBody.innerHTML = "";
+
+                                for (const [key, product] of Object.entries(sale.productos)) {
+                                    let row = `<tr>
+                                        <td>${product.id}</td>
+                                        <td>${product.nombre}</td>
+                                        <td>${product.cantidad}</td>
+                                        <td>${product.vlrUnitario}</td>
+                                        `;
+
+                                    if (product.orientacion !== undefined) {
+                                        orientacion_column = `<td>${product.orientacion}</td>`;
+                                    }
+                                    else {
+                                        orientacion_column = "<td>-</td>";
+                                    }
+
+                                    if (product.color !== undefined) {
+                                        color_column = `<td>${product.color}</td>`;
+                                    }
+                                    else {
+                                        color_column = "<td>-</td>";
+                                    }
+
+                                    if (product.tipoD !== undefined) {
+                                        tipo_diseño_column = `<td>${product.tipoD}</td>`;
+                                    }
+                                    else {
+                                        tipo_diseño_column = "<td>-</td>";
+                                    }
+
+                                    if (product.ruana !== undefined) {
+                                        ruana_column = `<td>${product.ruana}</td>`;
+                                    }
+                                    else {
+                                        ruana_column = "<td>-</td>";
+                                    }
+
+                                    tableBody.innerHTML += `${row}${orientacion_column}${color_column}${tipo_diseño_column}${ruana_column}</tr>`;
+                                }
+
+                            }
+                            catch {
+                            }
+
+                            // Datos de Abonos
+
+                            try {
+                                let tableBody = document.getElementById("tableBody_advance_modal_show_sale");
+
+                                tableBody.innerHTML = "";
+
+                                for (const [key, advance] of Object.entries(sale.abonos)) {
+                                    let row = `<tr>
+                                        <td>${advance.id}</td>
+                                        <td>${advance.vlr}</td>
+                                        <td>${advance.fecha}</td>
+                                        `;
+
+                                    tableBody.innerHTML += `${row}</tr>`;
+                                }
+
+                            }
+                            catch {
+                            }
+
+                            // Datos de los totales
+
+                            try {
+
+                                document.getElementById("valor_total_modal_show_sale").innerHTML = sale.pedido.vlrTotal;
+                                document.getElementById("abono_total_modal_show_sale").innerHTML = sale.pedido.vlrAbonado;
+
+                                // Resta los totales
+                                let difference = parseInt(sale.pedido.vlrTotal.replace(/,/g, '')) - parseInt(sale.pedido.vlrAbonado.replace(/,/g, ''));
+                                // Se formatea para ser mostrado
+                                document.getElementById("valor_restante_modal_show_sale").innerHTML = numeral(difference).format('0,0');
+                            }
+                            catch {
+
+                            }
+
+                            // Muestra el modal
+                            let modal = document.getElementById("show_sale_modal");
+                            modal.style.display = "block";
+                            modal.classList.add("show");
+
+                        }).showSaleById(saleId);
+                }
+
+                /*
+                    Cierra el show_sale_modal
+                */
+                function closeShowSaleModal() {
+                    let modal = document.getElementById("show_sale_modal");
+                    modal.style.display = "none";
+                }
+
+                /*
+                    Devuelve la fecha del dia formateada
+                */
+                function getDate() {
+                    let date = new Date();
+                    let numberMonth = date.getMonth() + 1;
+                    let month = (numberMonth < 10 ? "0" : "") + numberMonth.toString();
+                    return date.getFullYear() + "-" + (month) + "-" + date.getDate();
+                }
+
+                /*
+                    Resta dos fechas dadas
+                */
+                function subtractDate(minDate, susDate) {
+                    let difference = (Math.floor((minDate - susDate) / (1000 * 60 * 60 * 24))) + 1;
+                    return difference;
                 }
 
             </script>

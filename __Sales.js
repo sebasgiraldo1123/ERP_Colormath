@@ -170,14 +170,16 @@ function getLastClientId() {
  * -------------------
  * @returns la lista de pedidos encontrados
  */
-function lookForSale(searchText) {
-
-    //searchText = "YECENIA";
+function lookForSale(searchText, maxResults) {
 
     const range = "A2:H";
     const sales = [];
     let rowList = [];
-    let maxResults = 10;
+
+    // Se seleccionan todos, dado que el option = todos, debe convertirse en un número, en este la última fila de la tabla
+    if (isNaN(maxResults)) {
+        maxResults = PEDIDOS_TABLE.getLastRow();
+    }
 
     // Se obtiene la lista de indices de filas que cumplen con la descripción hasta un máximo de "maxResults"
 
@@ -214,8 +216,6 @@ function lookForSale(searchText) {
         sales.push(PEDIDOS_TABLE.getRange(rowList[i], 1, 1, PEDIDOS_TABLE.getLastColumn()).getValues()[0]);
     }
 
-    console.log(sales);
-
     if (sales.length === 0) {
         return null;
     }
@@ -223,6 +223,111 @@ function lookForSale(searchText) {
         return sales;
     }
 }
+
+/**
+ * Entrega toda la información disponible de una venta dado un Id
+ */
+function showSaleById(saleId) {
+
+    const sale = {};
+
+    // --------------------------------- PEDIDOS -------------------------------------
+
+    // Busco la fila con el id
+    let rowPedidosTable = getRowById(saleId, PEDIDOS_TABLE);
+
+    // Recupero los datos de la fila y genero un objeto con los datos
+    if (rowPedidosTable.length !== 0) {
+
+        // getRange("A row : lastColumn row")
+        let rowPedido = PEDIDOS_TABLE.getRange(`A${rowPedidosTable[0]}:${String.fromCharCode(PEDIDOS_TABLE.getLastColumn() + 64)}${rowPedidosTable[0]}`).getValues();
+
+        let pedido = {
+            id: rowPedido[0][0],
+            estado: rowPedido[0][1],
+            fecha: rowPedido[0][2],
+            cliente: rowPedido[0][3],
+            celular: rowPedido[0][4],
+            fechaEntrega: rowPedido[0][5],
+            vlrAbonado: rowPedido[0][6],
+            vlrTotal: rowPedido[0][7]
+        }
+
+        sale.pedido = pedido;
+    }
+
+    // --------------------------------- PRODUCTOS -------------------------------------
+
+    // Busco la fila con el id
+    let rowsProductosTable = getRowById(saleId, PRODUCTOS_TABLE);
+
+    if (rowsProductosTable.length !== 0) {
+        let rowsProductos = PRODUCTOS_TABLE.getRange(`A${rowsProductosTable[0]}:${String.fromCharCode(PRODUCTOS_TABLE.getLastColumn() + 64)}${rowsProductosTable[rowsProductosTable.length - 1]}`).getValues();
+
+        let productos = {};
+
+        for (let i = 0; i < rowsProductos.length; i++) {
+            let producto = {
+                id: rowsProductos[i][0],
+                nombre: rowsProductos[i][2],
+                cantidad: rowsProductos[i][3],
+                vlrUnitario: rowsProductos[i][4],
+                orientacion: rowsProductos[i][5],
+                color: rowsProductos[i][6],
+                tipoD: rowsProductos[i][7],
+                ruana: rowsProductos[i][8]
+            }
+            productos[i] = producto;
+        }
+        sale.productos = productos;
+    }
+
+    // ----------------------------------- ABONOS --------------------------------------
+
+    // Busco la fila con el id
+    let rowsAbonosTable = getRowById(saleId, ABONOS_TABLE);
+
+    if (rowsAbonosTable.length !== 0) {
+        let rowsAbonos = ABONOS_TABLE.getRange(`A${rowsAbonosTable[0]}:${String.fromCharCode(ABONOS_TABLE.getLastColumn() + 64)}${rowsAbonosTable[rowsAbonosTable.length - 1]}`).getValues();
+
+        let abonos = {};
+
+        for (let i = 0; i < rowsAbonos.length; i++) {
+            let abono = {
+                id: rowsAbonos[i][0],
+                vlr: rowsAbonos[i][2],
+                fecha: rowsAbonos[i][3]
+            }
+            abonos[i] = abono;
+        }
+        sale.abonos = abonos;
+    }
+
+    return sale;
+}
+
+
+/**
+ * Dada una tabla y un id entrega el número de la fila o el número de las filas que contienen dicho id
+ */
+function getRowById(id, table) {
+
+    let range = `B2:B${table.getLastRow()}`;
+
+    if(table === PEDIDOS_TABLE){
+      range = `A2:A${table.getLastRow()}`;
+    }
+
+    const rowsList = table.getRange(range)
+        .createTextFinder(id)
+        .matchEntireCell(true)
+        .findAll()
+        .map((r) => r.getRow());
+
+    return rowsList;
+}
+
+
 
 
 
