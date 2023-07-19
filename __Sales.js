@@ -38,7 +38,7 @@ function createSale(data) {
         vlr_total
     ]);
 
-    // Se formatea la fila agregada (última fila) como texto plano
+    // Se formatea la fila agregada (última fila) como texto plano para evitar problemas con las fechas
     PEDIDOS_TABLE.getRange("A" + PEDIDOS_TABLE.getLastRow() + ":Z" + PEDIDOS_TABLE.getLastRow()).setNumberFormat("@");
 
 
@@ -116,6 +116,7 @@ function createSale(data) {
         fecha
     ]);
 
+    // Se formatea la fila agregada (última fila) como texto plano
     ABONOS_TABLE.getRange("A" + ABONOS_TABLE.getLastRow() + ":Z" + ABONOS_TABLE.getLastRow()).setNumberFormat("@");
 
     return data;
@@ -125,7 +126,7 @@ function createSale(data) {
 
 /**
  * Lee la lista de productos
- * @returns 
+ * @returns lista de productos disponibles con sus características
  */
 function readProductsList() {
     const dataProducts = PRODUCTS_LIST_TABLE.getDataRange().getDisplayValues();
@@ -158,7 +159,7 @@ function getLastClientId() {
 
 
 /**
- * -------------------------- BUSCAR Y EDITAR VENTAS FUNCTIONS --------------------------
+ * -------------------------- BUSCAR VENTA FUNCTIONS --------------------------
  */
 
 /**
@@ -169,33 +170,192 @@ function getLastClientId() {
  * -------------------
  * @returns la lista de pedidos encontrados
  */
-function lookForSale() {
+function lookForSale(searchText, maxResults) {
 
-    const searchText = "TEST";
     const range = "A2:H";
     const sales = [];
+    let rowList = [];
 
-    // Se obtiene la lista de indices de filas que cumplen con la descripción
-    const rowList = PEDIDOS_TABLE.getRange(range)
-        .createTextFinder(searchText)
-        .matchEntireCell(false)
-        .findAll()
-        .map((r) => r.getRow());
+    // Se seleccionan todos, dado que el option = todos, debe convertirse en un número, en este la última fila de la tabla
+    if (isNaN(maxResults)) {
+        maxResults = PEDIDOS_TABLE.getLastRow();
+    }
+
+    // Se obtiene la lista de indices de filas que cumplen con la descripción hasta un máximo de "maxResults"
+
+    // Se realiza una primera búsqueda comparando el searchText con el dato completo de cada celda
+    const textFinder = PEDIDOS_TABLE.getRange(range)
+        .createTextFinder(searchText).matchEntireCell(true);
+
+    let cell = textFinder.findNext();
+    let count = 0;
+
+    while (cell && count < maxResults) {
+        rowList.push(cell.getRow());
+        cell = textFinder.findNext();
+        count++;
+    }
+
+    // Si no hay coinciencias se realiza una búsqueda sin el matchEntireCell
+    if (rowList.length === 0) {
+        const textFinder = PEDIDOS_TABLE.getRange(range)
+            .createTextFinder(searchText).matchEntireCell(false);
+
+        let cell = textFinder.findNext();
+        let count = 0;
+
+        while (cell && count < maxResults) {
+            rowList.push(cell.getRow());
+            cell = textFinder.findNext();
+            count++;
+        }
+    }
 
     // Se crea un objeto con los datos de las filas proporcionadas
     for (let i = 0; i < rowList.length; i++) {
         sales.push(PEDIDOS_TABLE.getRange(rowList[i], 1, 1, PEDIDOS_TABLE.getLastColumn()).getValues()[0]);
     }
 
-    console.log(sales);
-
     if (sales.length === 0) {
-        return 0;
+        return null;
     }
     else {
         return sales;
     }
 }
+
+/**
+ * Entrega toda la información disponible de una venta dado un Id
+ */
+function showSaleById(saleId) {
+
+    const sale = {};
+
+    // --------------------------------- PEDIDOS -------------------------------------
+
+    // Busco la fila con el id
+    let rowPedidosTable = getRowById(saleId, PEDIDOS_TABLE);
+
+    // Recupero los datos de la fila y genero un objeto con los datos
+    if (rowPedidosTable.length !== 0) {
+
+        // getRange("A row : lastColumn row")
+        let rowPedido = PEDIDOS_TABLE.getRange(`A${rowPedidosTable[0]}:${String.fromCharCode(PEDIDOS_TABLE.getLastColumn() + 64)}${rowPedidosTable[0]}`).getValues();
+
+        let pedido = {
+            id: rowPedido[0][0],
+            estado: rowPedido[0][1],
+            fecha: rowPedido[0][2],
+            cliente: rowPedido[0][3],
+            celular: rowPedido[0][4],
+            fechaEntrega: rowPedido[0][5],
+            vlrAbonado: rowPedido[0][6],
+            vlrTotal: rowPedido[0][7]
+        }
+
+        sale.pedido = pedido;
+    }
+
+    // --------------------------------- PRODUCTOS -------------------------------------
+
+    // Busco la fila con el id
+    let rowsProductosTable = getRowById(saleId, PRODUCTOS_TABLE);
+
+    if (rowsProductosTable.length !== 0) {
+        let rowsProductos = PRODUCTOS_TABLE.getRange(`A${rowsProductosTable[0]}:${String.fromCharCode(PRODUCTOS_TABLE.getLastColumn() + 64)}${rowsProductosTable[rowsProductosTable.length - 1]}`).getValues();
+
+        let productos = {};
+
+        for (let i = 0; i < rowsProductos.length; i++) {
+            let producto = {
+                id: rowsProductos[i][0],
+                nombre: rowsProductos[i][2],
+                cantidad: rowsProductos[i][3],
+                vlrUnitario: rowsProductos[i][4],
+                orientacion: rowsProductos[i][5],
+                color: rowsProductos[i][6],
+                tipoD: rowsProductos[i][7],
+                ruana: rowsProductos[i][8]
+            }
+            productos[i] = producto;
+        }
+        sale.productos = productos;
+    }
+
+    // ----------------------------------- ABONOS --------------------------------------
+
+    // Busco la fila con el id
+    let rowsAbonosTable = getRowById(saleId, ABONOS_TABLE);
+
+    if (rowsAbonosTable.length !== 0) {
+        let rowsAbonos = ABONOS_TABLE.getRange(`A${rowsAbonosTable[0]}:${String.fromCharCode(ABONOS_TABLE.getLastColumn() + 64)}${rowsAbonosTable[rowsAbonosTable.length - 1]}`).getValues();
+
+        let abonos = {};
+
+        for (let i = 0; i < rowsAbonos.length; i++) {
+            let abono = {
+                id: rowsAbonos[i][0],
+                vlr: rowsAbonos[i][2],
+                fecha: rowsAbonos[i][3]
+            }
+            abonos[i] = abono;
+        }
+        sale.abonos = abonos;
+    }
+
+    return sale;
+}
+
+
+/**
+ * Dada una tabla y un id entrega el número de la fila o el número de las filas que contienen dicho id
+ */
+function getRowById(id, table) {
+
+    let range = `B2:B${table.getLastRow()}`;
+
+    if (table === PEDIDOS_TABLE) {
+        range = `A2:A${table.getLastRow()}`;
+    }
+
+    const rowsList = table.getRange(range)
+        .createTextFinder(id)
+        .matchEntireCell(true)
+        .findAll()
+        .map((r) => r.getRow());
+
+    return rowsList;
+}
+
+
+/**
+ * Actualiza los abonos y el estado del pedido que se modificó
+ */
+function updateShowSale(id, newState, newTotalAdvance, newAdvanceId, newAdvance, newAdvanceDate, sendNewAdvance) {
+
+
+    let row = "";
+
+    // Se actualiza tabla PEDIDO
+
+    row = getRowById(id, PEDIDOS_TABLE);
+
+    PEDIDOS_TABLE.getRange(row, 2).setValue(newState); // 2 - ESTADO
+    PEDIDOS_TABLE.getRange(row, 7).setValue(newTotalAdvance); // 7 - VLR_ABONADO
+
+    // Se actualiza tabla ABONOS si existe uno válido
+
+    if (sendNewAdvance) {
+        row = getRowById(id, ABONOS_TABLE);
+        row = row[row.length - 1]
+        let newValues = [newAdvanceId, id, newAdvance, newAdvanceDate];
+
+        ABONOS_TABLE.insertRowAfter(row);
+        ABONOS_TABLE.getRange(`A${row + 1}:D${row + 1}`).setValues([newValues]);
+    }
+}
+
+
 
 
 

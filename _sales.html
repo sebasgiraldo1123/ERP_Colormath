@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<div class="container" style="background-color: aquamarine;">
+<div class="container">
     <nav>
         <div class="nav nav-tabs" id="nav-tab" role="tablist">
 
@@ -28,8 +28,7 @@
             <!-- 
                 Formulario para la creación de una venta 
             -->
-            <form class="needs-validation" name="crear_venta" id="crear_venta"
-                style="background-color: rgb(228, 221, 126);" novalidate>
+            <form class="needs-validation" name="crear_venta" id="crear_venta" novalidate>
                 <!--
                     Cliente
                 -->
@@ -67,9 +66,9 @@
                     Productos
                 </h3>
 
-                <div class="row" id="productos" style="background-color: rgb(160, 247, 125);">
+                <div class="row" id="productos">
 
-                    <div class="row producto" id="producto_0" style="background-color: blueviolet;">
+                    <div class="row producto" id="producto_0">
                         <!--
                             Datos del producto
                         -->
@@ -167,7 +166,7 @@
                 </div>
             </form>
 
-            <!-- Modal -->
+            <!-- Create Sale Modal -->
             <div class="modal fade" id="create_sale_modal" data-bs-backdrop="static" data-bs-keyboard="false"
                 tabindex="-1" aria-labelledby="create_sale_modal_Label" aria-hidden="true">
                 <div class="modal-dialog modal-lg">
@@ -191,6 +190,8 @@
                                         <th scope="col">N°</th>
                                         <th scope="col">Cliente</th>
                                         <th scope="col">Celular</th>
+                                        <th scope="col">Estado</th>
+                                        <th scope="col">Fecha Recibido</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -198,6 +199,8 @@
                                         <td id="id_cliente_modal"></td>
                                         <td id="nombre_cliente_modal"></td>
                                         <td id="celular_cliente_modal"></td>
+                                        <td id="estado_cliente_modal"></td>
+                                        <td id="fecha_cliente_modal"></td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -382,6 +385,8 @@
                     '<option value="MIEL">MIEL</option>' +
                     '<option value="CARAMELO">CARAMELO</option>' +
                     '<option value="NATURAL">NATURAL</option>' +
+                    '<option value="BLANCO">BLANCO</option>' +
+                    '<option value="NEGRO">NEGRO</option>' +
                     '</select>' +
                     '<div class="invalid-feedback">' +
                     'Seleccione un color.' +
@@ -554,7 +559,7 @@
 
                     total = 0;
                     for (let index = 0; index < cantidades.length; index++) {
-                        total += cantidades[index].value.replace(',', '') * valoresUnitarios[index].value.replace(',', '');
+                        total += cantidades[index].value.replace(/,/g, '') * valoresUnitarios[index].value.replace(/,/g, '');
                     }
 
                     document.getElementById("valor_total").value = numeral(total).format('0,0')
@@ -566,7 +571,7 @@
                 */
                 function calculateAdvance() {
                     let isInvalidAbono = document.getElementById("abono");
-                    let advance = isInvalidAbono.value.replace(',', '');
+                    let advance = isInvalidAbono.value.replace(/,/g, '');
 
                     if (advance <= total) {
                         document.getElementById("valor_restante").value = numeral(total - advance).format('0,0');
@@ -594,7 +599,7 @@
 
 
                     // El tiempo se dá en milisegundos, se resta y se hace la conversión a dias
-                    let difference = (Math.floor((inputDate - currentDate) / (1000 * 60 * 60 * 24))) + 1;
+                    let difference = subtractDate(inputDate, currentDate);
 
                     // Se muestra por pantalla
                     document.getElementById("plazo_entrega").value = difference;
@@ -645,8 +650,8 @@
             <!--
                 Este script controla el botón de submit del formulario.
                 Realiza las validaciones.
-                Lanza un modal en el cual el usuario verifica la info suministrada.
-                Si acepta llama a la función que guarda la data.
+                Lanza un modal en el cual se verifica la info suministrada.
+                Si acepta, llama a la función que guarda la data.
             -->
             <script>
                 let data = {};
@@ -707,14 +712,15 @@
                             }
                         }
                         data["products"] = products;
-                        console.log(data);
 
-                        // Se muestra la info por el modal para pedir confirmación al usuario.
+                        // Se muestra la info por el modal para pedir confirmación
 
                         // Datos del cliente
                         document.getElementById("id_cliente_modal").innerHTML = data.id_cliente;
                         document.getElementById("nombre_cliente_modal").innerHTML = data.nombre_cliente.toUpperCase();
                         document.getElementById("celular_cliente_modal").innerHTML = data.celular_cliente;
+                        document.getElementById("estado_cliente_modal").innerHTML = "POR HACER";
+                        document.getElementById("fecha_cliente_modal").innerHTML = getDate();
 
                         // Datos de productos
                         let tableBody = document.getElementById("tableBody-products-modal");
@@ -834,29 +840,662 @@
             Content - Buscar y editar Ventas
         -->
         <div class="tab-pane fade" id="nav-view-sale" role="tabpanel" aria-labelledby="nav-view-sale-tab">
-
-            <button type="button" class="btn btn-primary" onclick="viewSales()">Sale</button>
             <!--
-                
+                Formulario para buscar las ventas
+            -->
+            <form name="buscar_venta" id="buscar_venta">
+                <!--
+                    Área de búsqueda
+                -->
+                <h3>
+                    Buscar Venta
+                </h3>
+                <!--
+                    Datos de Búsqueda
+                -->
+                <div class="row">
+                    <div class="col-sm-3">
+                        <input type="text" class="form-control text-center" id="texto_busqueda"
+                            onkeydown="disableEnterKey(event)">
+                    </div>
+                    <div class="col-sm-3">
+                        <select class="form-select" id="cantidad_resultados" onkeydown="disableEnterKey(event)">
+                            <option value="5">5</option>
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                            <option value="50">50</option>
+                            <option value="Todos">Todos</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-3">
+                        <button id="buscar_venta_button" type="button" class="btn btn-primary"
+                            onclick="viewSales()">Buscar</button>
+                    </div>
+                    <div id="loading" class="spinner-border" role="status" style="display: none;">
+                        <span class="sr-only"></span>
+                    </div>
+                </div>
+            </form>
+
+            <!--
+                Tabla con la info encontrada
+            -->
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>N°</th>
+                        <th>Estado</th>
+                        <th>Fecha</th>
+                        <th>Cliente</th>
+                        <th>Celular</th>
+                        <th>Fecha Entrega</th>
+                        <th>Vlr Abonado</th>
+                        <th>Vlr Total</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody_ventas_encontradas">
+                </tbody>
+            </table>
+
+            <template id="rowTemplate">
+                <tr>
+                    <td class="template-id"></td>
+                    <td class="template-estado"></td>
+                    <td class="template-fecha"></td>
+                    <td class="template-cliente"></td>
+                    <td class="template-celular"></td>
+                    <td class="template-fecha-entrega"></td>
+                    <td class="template-vlr-abonado"></td>
+                    <td class="template-vlr-total"></td>
+                    <td class="template-acciones text-center">
+                        <button class="btn btn-success show-button"
+                            onclick="showDetails(this.dataset.saleId)">Ver</button>
+                    </td>
+                </tr>
+            </template>
+
+
+            <!-- Show Sale Modal -->
+            <div class="modal fade" id="show_sale_modal" data-bs-backdrop="static" data-bs-keyboard="false"
+                tabindex="-1" aria-labelledby="show_sale_modal_Label" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="show_sale_modal_Label">Información de la venta</h5>
+                        </div>
+                        <div class="modal-body" id="modal_body_show_sale">
+                            <!--
+                                Cliente
+                            -->
+                            <h3>
+                                Cliente
+                            </h3>
+                            <!--
+                                Datos del cliente
+                            -->
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">N°</th>
+                                        <th scope="col">Cliente</th>
+                                        <th scope="col">Celular</th>
+                                        <th scope="col">Estado</th>
+                                        <th scope="col">Fecha Entrega</th>
+                                        <th scope="col">Plazo(dias)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td id="id_cliente_modal_show_sale"></td>
+                                        <td id="nombre_cliente_modal_show_sale"></td>
+                                        <td id="celular_cliente_modal_show_sale"></td>
+                                        <td id="estado_cliente_modal_show_sale"></td>
+                                        <td id="fecha_entrega_cliente_modal_show_sale"></td>
+                                        <td id="plazo_modal_show_sale"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <!--
+                                Pedidos
+                            -->
+                            <h3>
+                                Productos
+                            </h3>
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">N°</th>
+                                        <th scope="col">Producto</th>
+                                        <th scope="col">Cantidad</th>
+                                        <th scope="col">Valor Unitario</th>
+                                        <th scope="col">Orientación</th>
+                                        <th scope="col">Color</th>
+                                        <th scope="col">Tipo Diseño</th>
+                                        <th scope="col">Ruana</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tableBody_products_modal_show_sale">
+                                </tbody>
+                            </table>
+                            <!--
+                                Pedidos
+                            -->
+                            <h3>
+                                Abonos
+                            </h3>
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">N°</th>
+                                        <th scope="col">Valor</th>
+                                        <th scope="col">Fecha Recibido</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tableBody_advance_modal_show_sale">
+                                </tbody>
+                            </table>
+                            <!--
+                                Agregar otro abono
+                            -->
+                            <div class="row">
+                                <div class="col-sm-12 d-flex justify-content-center">
+                                    <button type="button" onclick="addAdvance()"
+                                        class="btn btn-success btn-sm">+</button>
+                                </div>
+                            </div>
+                            <!--
+                                Totales
+                            -->
+                            <h3>
+                                Totales
+                            </h3>
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Valor Total</th>
+                                        <th scope="col">Abono Total</th>
+                                        <th scope="col">Valor Restante</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td id="valor_total_modal_show_sale" class="table-active"></td>
+                                        <td id="abono_total_modal_show_sale"></td>
+                                        <td id="valor_restante_modal_show_sale"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary"
+                                onclick="closeShowSaleModal()">Atrás</button>
+                            <button type="button" class="btn btn-primary"
+                                onclick="sendDataFromShowSale()">Guardar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!--
+                Busca y muestra y actualiza los pedidos
             -->
             <script>
+
+                let showSaleData = {}; // Almacena la data de la venta que se desea ver com más detalle
+                let lastAdvanceId = ""; // Almacena el id del último abono disponible en la tabla de abonos
+                let searchText = ""; // String a buscar
+                let maxResults = ""; // Cantidad máxima de resultados
+
+
                 /*
                     Busca los pedidos en base a un parámetro específico.
                 */
                 function viewSales() {
-                    google.script.run.withSuccessHandler(showSales).lookForSale();
-                }
-                /*
-                    Muestra por pantalla los resultados de la buésqueda
-                */
-                function showSales(data) {
-                    console.log("puta madre");
-                    console.log(data);
+
+                    getTextSearch();
+                    getMaxResults();
+
+                    if (searchText != "") {
+                        // Muestra animación de carga
+                        document.getElementById("loading").style.display = "block";
+
+                        google.script.run
+                            .withSuccessHandler(showSales => {
+                                // Ocultar animación de carga
+                                document.getElementById("loading").style.display = "none";
+
+                                let tableBody = document.getElementById("tableBody_ventas_encontradas");
+                                tableBody.innerHTML = ""; // Reinicio el contenido
+
+                                let template = document.getElementById("rowTemplate");
+                                let templateContent = template.content;
+
+                                if (showSales != null) {
+
+                                    showSales.forEach(sale => {
+
+                                        const tr = templateContent.cloneNode(true);
+
+                                        const idCol = tr.querySelector(".template-id");
+                                        const estadoCol = tr.querySelector(".template-estado");
+                                        const fechaCol = tr.querySelector(".template-fecha");
+                                        const clienteCol = tr.querySelector(".template-cliente");
+                                        const celularCol = tr.querySelector(".template-celular");
+                                        const fechaEntregaCol = tr.querySelector(".template-fecha-entrega");
+                                        const vlrAbonadoCol = tr.querySelector(".template-vlr-abonado");
+                                        const vlrTotalCol = tr.querySelector(".template-vlr-total");
+
+                                        const accionesCol = tr.querySelector(".template-acciones");
+                                        const showButton = tr.querySelector(".show-button");
+
+                                        idCol.textContent = sale[0];
+                                        estadoCol.textContent = sale[1];
+                                        fechaCol.textContent = sale[2];
+                                        clienteCol.textContent = sale[3];
+                                        celularCol.textContent = sale[4];
+                                        fechaEntregaCol.textContent = sale[5];
+                                        vlrAbonadoCol.textContent = sale[6];
+                                        vlrTotalCol.textContent = sale[7];
+                                        showButton.dataset.saleId = sale[0];
+
+
+                                        tableBody.appendChild(tr);
+                                    })
+                                }
+                                else {
+                                    alert("No hay coinicidencia");
+                                }
+                            })
+                            .lookForSale(searchText, maxResults);
+                    }
+                    else {
+                        alert("Por favor ingrese un dato para realizar la búsqueda");
+                    }
                 }
 
+                /*
+                    Recupera los datos de búsqueda y los formatea si es necesario
+                */
+                function getTextSearch() {
+                    searchText = document.getElementById("texto_busqueda").value;
+
+                    // Identifica si el string proporcionado es un teléfono, en ese caso procede a formatearlo como tal
+                    if (!isNaN(searchText) && searchText.length === 10) {
+                        searchText = searchText.replace(/^(\d{3})(\d{3})(\d{4})$/, "$1-$2-$3");
+                    }
+                }
+
+                /*
+                    Obtiene la cantidad de resultados para la búsqueda indicados por el usuario
+                */
+                function getMaxResults() {
+                    maxResults = document.getElementById("cantidad_resultados").value;
+                }
+
+                /*
+                    Desactiva la tecla enter para evitar que envíe el form y presiona el botón requerido
+                */
+                function disableEnterKey(event) {
+                    // Verificar si se presionó la tecla "Enter"
+                    if (event.keyCode === 13) {
+                        document.getElementById("buscar_venta_button").click();
+                        event.preventDefault();
+                        return false;
+                    }
+                }
+
+                /*
+                    Abre el modal que muestra toda la información de la venta seleccionada en conjunto con sus acciones determinadas
+                */
+                function showDetails(saleId) {
+
+                    // Muestra animación de carga
+                    document.getElementById("loading").style.display = "block";
+
+                    // Se recupera la info de la venta con la ayuda del saleId
+                    google.script.run
+                        .withSuccessHandler(sale => {
+
+                            showSaleData = sale;
+
+                            // Ocultar animación de carga
+                            document.getElementById("loading").style.display = "none";
+
+                            // Se muestra la info de la venta seleccionada por el modal
+                            // Datos del cliente
+
+                            try {
+                                document.getElementById("id_cliente_modal_show_sale").innerHTML = sale.pedido.id;
+                                document.getElementById("nombre_cliente_modal_show_sale").innerHTML = sale.pedido.cliente;
+                                document.getElementById("celular_cliente_modal_show_sale").innerHTML = sale.pedido.celular;
+                                document.getElementById("fecha_entrega_cliente_modal_show_sale").innerHTML = sale.pedido.fechaEntrega;
+
+
+                                // -------------------------------------------------------------------------------------------------
+
+                                document.getElementById("estado_cliente_modal_show_sale").innerHTML = `
+                                    <div>
+                                        <select class="form-select" id="select_estado_cliente_modal_show_sale">
+                                        </select>
+                                    </div>`;
+                                updateSelectNewState();
+
+                                // Resta las fechas de la venta -------------------------------------------------------------------
+
+                                let difference = subtractDate(new Date(sale.pedido.fechaEntrega), new Date());
+                                if (difference >= 0) {
+                                    document.getElementById("plazo_modal_show_sale").innerHTML = difference;
+                                }
+                                else {
+                                    document.getElementById("plazo_modal_show_sale").innerHTML = "-";
+                                }
+
+                                // -------------------------------------------------------------------------------------------------
+                            }
+                            catch {
+                            }
+
+                            // Datos de productos
+
+                            try {
+                                let tableBody = document.getElementById("tableBody_products_modal_show_sale");
+                                let orientacion_column;
+                                let color_column;
+                                let tipo_diseño_column;
+                                let ruana_column;
+
+                                tableBody.innerHTML = "";
+
+                                for (const [key, product] of Object.entries(sale.productos)) {
+                                    let row = `<tr>
+                                        <td>${product.id}</td>
+                                        <td>${product.nombre}</td>
+                                        <td>${product.cantidad}</td>
+                                        <td>${product.vlrUnitario}</td>
+                                        `;
+
+                                    if (product.orientacion !== undefined) {
+                                        orientacion_column = `<td>${product.orientacion}</td>`;
+                                    }
+                                    else {
+                                        orientacion_column = "<td>-</td>";
+                                    }
+
+                                    if (product.color !== undefined) {
+                                        color_column = `<td>${product.color}</td>`;
+                                    }
+                                    else {
+                                        color_column = "<td>-</td>";
+                                    }
+
+                                    if (product.tipoD !== undefined) {
+                                        tipo_diseño_column = `<td>${product.tipoD}</td>`;
+                                    }
+                                    else {
+                                        tipo_diseño_column = "<td>-</td>";
+                                    }
+
+                                    if (product.ruana !== undefined) {
+                                        ruana_column = `<td>${product.ruana}</td>`;
+                                    }
+                                    else {
+                                        ruana_column = "<td>-</td>";
+                                    }
+
+                                    tableBody.innerHTML += `${row}${orientacion_column}${color_column}${tipo_diseño_column}${ruana_column}</tr>`;
+                                }
+
+                            }
+                            catch {
+                            }
+
+                            // Datos de Abonos
+
+                            try {
+                                let tableBody = document.getElementById("tableBody_advance_modal_show_sale");
+
+                                tableBody.innerHTML = "";
+
+                                for (const [key, advance] of Object.entries(sale.abonos)) {
+                                    let row = `<tr>
+                                        <td>${advance.id}</td>
+                                        <td>${advance.vlr}</td>
+                                        <td>${advance.fecha}</td>
+                                        `;
+
+                                    tableBody.innerHTML += `${row}</tr>`;
+
+                                    // Al final del for se queda con el último id disponible
+                                    lastAdvanceId = advance.id;
+                                }
+
+                            }
+                            catch {
+                            }
+
+                            // Datos de los totales
+
+                            try {
+                                document.getElementById("valor_total_modal_show_sale").innerHTML = sale.pedido.vlrTotal;
+                                document.getElementById("abono_total_modal_show_sale").innerHTML = sale.pedido.vlrAbonado;
+
+                                // Resta los totales y actualiza el valor restante
+                                remainingValue();
+                            }
+                            catch {
+
+                            }
+
+                            // Muestra el modal
+                            let modal = document.getElementById("show_sale_modal");
+                            modal.style.display = "block";
+                            modal.classList.add("show");
+
+                        }).showSaleById(saleId);
+                }
+
+                /*
+                    Crea una fila nueva en la tabla de abonos con un input llamado newAdvance que permite agregar un nuevo abono
+                */
+                function addAdvance() {
+
+                    // Si no existe la fila con el input para agregar un abono nuevo se genera
+                    if (document.getElementById("newAdvance") === null) {
+                        let tableBody = document.getElementById("tableBody_advance_modal_show_sale");
+
+                        let row = `<tr>
+                        <td>${getAdvanceId()}</td>
+                        <td>
+                            <div class="needs-validation">
+                                <input type="text" class="form-control" id="newAdvance" onkeyup="calculateNewAdvance(); formatPrice(event)">
+                                <div class="invalid-feedback" id="invalid-feedback-newAdvance">
+                                    Ingrese un abono.
+                            </div>
+                        </td>
+                        <td>${getDate()}</td>
+                        `;
+                        tableBody.innerHTML += `${row}</tr>`;
+                    }
+                }
+
+                /*
+                    Cierra el show_sale_modal
+                */
+                function closeShowSaleModal() {
+                    let modal = document.getElementById("show_sale_modal");
+                    modal.style.display = "none";
+                }
+
+                /*
+                    Devuelve la fecha del dia formateada
+                */
+                function getDate() {
+                    let date = new Date();
+                    let numberMonth = date.getMonth() + 1;
+                    let month = (numberMonth < 10 ? "0" : "") + numberMonth.toString();
+                    return date.getFullYear() + "-" + (month) + "-" + date.getDate();
+                }
+
+                /*
+                    Resta dos fechas dadas
+                */
+                function subtractDate(minDate, susDate) {
+                    let difference = (Math.floor((minDate - susDate) / (1000 * 60 * 60 * 24))) + 1;
+                    return difference;
+                }
+
+                /*
+                    Encuentra el siguiente identificador de abono disponible
+                */
+                function getAdvanceId() {
+                    let arrayAdvanceId = lastAdvanceId.split("A");  //"1A22" --> "1","22" 
+                    let nextId = parseInt(arrayAdvanceId[1]) + 1;
+                    return arrayAdvanceId[0] + "A" + nextId;
+                }
+
+                /*
+                    Generea las opciones restantes para el select del estado cliente modal show
+                */
+                function updateSelectNewState() {
+                    let select = document.getElementById("select_estado_cliente_modal_show_sale");
+                    let options = [];
+
+                    switch (showSaleData.pedido.estado) {
+                        case "POR HACER":
+                            options = ["POR HACER", "LISTO", "ENTREGADO", "CANCELADO"];
+                            break;
+                        case "ENTREGADO":
+                            options = ["ENTREGADO", "CANCELADO", "LISTO", "POR HACER",];
+                            break;
+                        case "CANCELADO":
+                            options = ["CANCELADO", "POR HACER", "LISTO", "ENTREGADO"];
+                            break;
+                        case "LISTO":
+                            options = ["LISTO", "ENTREGADO", "CANCELADO", "POR HACER"];
+                            break;
+                        default:
+                            break;
+                    }
+
+                    for (var i = 0; i < options.length; i++) {
+                        let option = document.createElement("option");
+                        option.value = options[i];
+                        option.text = options[i];
+                        select.add(option);
+                    }
+                }
+
+                /*
+                    Recalcula los totales cada vez que cambia el input newAdvance
+                    Verifica que la suma de abonos no sea mayor que el total de la venta
+                */
+                function calculateNewAdvance() {
+                    let inputNewAdvance = document.getElementById("newAdvance");
+                    let inputFeedback = document.getElementById("invalid-feedback-newAdvance");
+
+                    let totalAdvance = parseInt(showSaleData.pedido.vlrAbonado.replace(/,/g, ''));
+                    let restValue = parseInt(showSaleData.pedido.vlrTotal.replace(/,/g, '')) - totalAdvance;
+
+                    let newAdvance = parseInt(inputNewAdvance.value.replace(/,/g, ''));
+
+                    if (newAdvance > restValue) {
+                        inputNewAdvance.className = "form-control is-invalid";
+                        inputFeedback.innerText = `El abono no puede ser mayor al valor restante de ${numeral(restValue).format('0,0')} COP`;
+                    }
+                    else {
+                        inputNewAdvance.className = "form-control";
+                        inputFeedback.innerText = "Ingresa un abono";
+
+                        if (newAdvance > 0) {
+                            document.getElementById("abono_total_modal_show_sale").innerHTML = numeral(totalAdvance + newAdvance).format('0,0');
+                        }
+                        else {
+                            document.getElementById("abono_total_modal_show_sale").innerHTML = numeral(totalAdvance).format('0,0');
+                        }
+
+                    }
+
+                    remainingValue()
+                }
+
+                /*
+                    Actualiza el valor restante úbicado en el modal show sale
+                */
+                function remainingValue() {
+
+                    // Resta los totales
+                    let difference = parseInt(document.getElementById("valor_total_modal_show_sale").innerText.replace(/,/g, ''))
+                        - parseInt(document.getElementById("abono_total_modal_show_sale").innerText.replace(/,/g, ''));
+                    // Se formatea para ser mostrado
+                    document.getElementById("valor_restante_modal_show_sale").innerHTML = numeral(difference).format('0,0');
+                }
+
+
+                /*
+                    Actualiza los abonos y el estado del pedido
+                */
+                function sendDataFromShowSale() {
+
+                    let inputNewAdvance = document.getElementById("newAdvance");
+                    let selectNewState = document.getElementById("select_estado_cliente_modal_show_sale");
+                    let sendNewAdvance = false;
+                    let sendNewState = false;
+
+                    // Hay un abono válido
+                    if (inputNewAdvance !== null) {
+                        if (parseInt(inputNewAdvance.value.replace(/,/g, '')) > 0 && inputNewAdvance.className == "form-control") {
+                            sendNewAdvance = true;
+                        }
+                    }
+
+                    // Hay un cambio de estado válido
+                    if (selectNewState.value !== showSaleData.pedido.estado) {
+                        sendNewState = true;
+                    }
+
+                    console.log(sendNewAdvance, sendNewState);
+
+                    // Hay un cambio válido en los abonos o en los estados
+                    if (sendNewAdvance || sendNewState) {
+
+                        let id = showSaleData.pedido.id;
+                        let newState = selectNewState.value;
+                        let newTotalAdvance = document.getElementById("abono_total_modal_show_sale").innerText;
+                        let newAdvanceId = "";
+                        let newAdvanceDate = "";
+                        let newAdvance = "";
+
+                        if (sendNewAdvance) {
+                            newAdvanceId = getAdvanceId();
+                            newAdvanceDate = getDate();
+                            newAdvance = inputNewAdvance.value;
+                        }
+
+                        setTimeout(function () {
+                            alert(`\nCambio Registrado \n\n N° ${id} \n Abono : ${newAdvance} COP \n Estado : ${newState}
+                                    `);
+                        }, 500);
+
+                        google.script.run.withSuccessHandler(updateShowSale => {
+                            viewSales();
+                            closeShowSaleModal();
+                        }).updateShowSale(id, newState, newTotalAdvance, newAdvanceId, newAdvance, newAdvanceDate, sendNewAdvance);
+                    }
+                    else {
+                        if (inputNewAdvance === null) {
+                            closeShowSaleModal();
+
+                        }
+                        else {
+                            if (inputNewAdvance.className == "form-control") {
+                                closeShowSaleModal();
+                            }
+                        }
+                    }
+                }
 
             </script>
         </div>
-
     </div>
 </div>
