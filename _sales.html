@@ -385,6 +385,8 @@
                     '<option value="MIEL">MIEL</option>' +
                     '<option value="CARAMELO">CARAMELO</option>' +
                     '<option value="NATURAL">NATURAL</option>' +
+                    '<option value="BLANCO">BLANCO</option>' +
+                    '<option value="NEGRO">NEGRO</option>' +
                     '</select>' +
                     '<div class="invalid-feedback">' +
                     'Seleccione un color.' +
@@ -570,7 +572,6 @@
                 function calculateAdvance() {
                     let isInvalidAbono = document.getElementById("abono");
                     let advance = isInvalidAbono.value.replace(/,/g, '');
-                    console.log(advance);
 
                     if (advance <= total) {
                         document.getElementById("valor_restante").value = numeral(total - advance).format('0,0');
@@ -995,6 +996,15 @@
                                 </tbody>
                             </table>
                             <!--
+                                Agregar otro abono
+                            -->
+                            <div class="row">
+                                <div class="col-sm-12 d-flex justify-content-center">
+                                    <button type="button" onclick="addAdvance()"
+                                        class="btn btn-success btn-sm">+</button>
+                                </div>
+                            </div>
+                            <!--
                                 Totales
                             -->
                             <h3>
@@ -1020,19 +1030,23 @@
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary"
                                 onclick="closeShowSaleModal()">Atrás</button>
-                            <button type="button" class="btn btn-primary" onclick="">Guardar</button>
+                            <button type="button" class="btn btn-primary"
+                                onclick="sendDataFromShowSale()">Guardar</button>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!--
-                Busca y muestra los pedidos
+                Busca y muestra y actualiza los pedidos
             -->
             <script>
 
+                let showSaleData = {}; // Almacena la data de la venta que se desea ver com más detalle
+                let lastAdvanceId = ""; // Almacena el id del último abono disponible en la tabla de abonos
                 let searchText = ""; // String a buscar
                 let maxResults = ""; // Cantidad máxima de resultados
+
 
                 /*
                     Busca los pedidos en base a un parámetro específico.
@@ -1142,8 +1156,8 @@
                     // Se recupera la info de la venta con la ayuda del saleId
                     google.script.run
                         .withSuccessHandler(sale => {
-                            
-                            console.log(sale);
+
+                            showSaleData = sale;
 
                             // Ocultar animación de carga
                             document.getElementById("loading").style.display = "none";
@@ -1155,18 +1169,29 @@
                                 document.getElementById("id_cliente_modal_show_sale").innerHTML = sale.pedido.id;
                                 document.getElementById("nombre_cliente_modal_show_sale").innerHTML = sale.pedido.cliente;
                                 document.getElementById("celular_cliente_modal_show_sale").innerHTML = sale.pedido.celular;
-                                document.getElementById("estado_cliente_modal_show_sale").innerHTML = sale.pedido.estado;
                                 document.getElementById("fecha_entrega_cliente_modal_show_sale").innerHTML = sale.pedido.fechaEntrega;
 
-                                // Resta las fechas de la venta
-                                let difference = subtractDate(new Date(sale.pedido.fechaEntrega), new Date());
 
+                                // -------------------------------------------------------------------------------------------------
+
+                                document.getElementById("estado_cliente_modal_show_sale").innerHTML = `
+                                    <div>
+                                        <select class="form-select" id="select_estado_cliente_modal_show_sale">
+                                        </select>
+                                    </div>`;
+                                updateSelectNewState();
+
+                                // Resta las fechas de la venta -------------------------------------------------------------------
+
+                                let difference = subtractDate(new Date(sale.pedido.fechaEntrega), new Date());
                                 if (difference >= 0) {
                                     document.getElementById("plazo_modal_show_sale").innerHTML = difference;
                                 }
                                 else {
                                     document.getElementById("plazo_modal_show_sale").innerHTML = "-";
                                 }
+
+                                // -------------------------------------------------------------------------------------------------
                             }
                             catch {
                             }
@@ -1240,6 +1265,9 @@
                                         `;
 
                                     tableBody.innerHTML += `${row}</tr>`;
+
+                                    // Al final del for se queda con el último id disponible
+                                    lastAdvanceId = advance.id;
                                 }
 
                             }
@@ -1249,14 +1277,11 @@
                             // Datos de los totales
 
                             try {
-
                                 document.getElementById("valor_total_modal_show_sale").innerHTML = sale.pedido.vlrTotal;
                                 document.getElementById("abono_total_modal_show_sale").innerHTML = sale.pedido.vlrAbonado;
 
-                                // Resta los totales
-                                let difference = parseInt(sale.pedido.vlrTotal.replace(/,/g, '')) - parseInt(sale.pedido.vlrAbonado.replace(/,/g, ''));
-                                // Se formatea para ser mostrado
-                                document.getElementById("valor_restante_modal_show_sale").innerHTML = numeral(difference).format('0,0');
+                                // Resta los totales y actualiza el valor restante
+                                remainingValue();
                             }
                             catch {
 
@@ -1268,6 +1293,30 @@
                             modal.classList.add("show");
 
                         }).showSaleById(saleId);
+                }
+
+                /*
+                    Crea una fila nueva en la tabla de abonos con un input llamado newAdvance que permite agregar un nuevo abono
+                */
+                function addAdvance() {
+
+                    // Si no existe la fila con el input para agregar un abono nuevo se genera
+                    if (document.getElementById("newAdvance") === null) {
+                        let tableBody = document.getElementById("tableBody_advance_modal_show_sale");
+
+                        let row = `<tr>
+                        <td>${getAdvanceId()}</td>
+                        <td>
+                            <div class="needs-validation">
+                                <input type="text" class="form-control" id="newAdvance" onkeyup="calculateNewAdvance(); formatPrice(event)">
+                                <div class="invalid-feedback" id="invalid-feedback-newAdvance">
+                                    Ingrese un abono.
+                            </div>
+                        </td>
+                        <td>${getDate()}</td>
+                        `;
+                        tableBody.innerHTML += `${row}</tr>`;
+                    }
                 }
 
                 /*
@@ -1296,8 +1345,157 @@
                     return difference;
                 }
 
+                /*
+                    Encuentra el siguiente identificador de abono disponible
+                */
+                function getAdvanceId() {
+                    let arrayAdvanceId = lastAdvanceId.split("A");  //"1A22" --> "1","22" 
+                    let nextId = parseInt(arrayAdvanceId[1]) + 1;
+                    return arrayAdvanceId[0] + "A" + nextId;
+                }
+
+                /*
+                    Generea las opciones restantes para el select del estado cliente modal show
+                */
+                function updateSelectNewState() {
+                    let select = document.getElementById("select_estado_cliente_modal_show_sale");
+                    let options = [];
+
+                    switch (showSaleData.pedido.estado) {
+                        case "POR HACER":
+                            options = ["POR HACER", "LISTO", "ENTREGADO", "CANCELADO"];
+                            break;
+                        case "ENTREGADO":
+                            options = ["ENTREGADO", "CANCELADO", "LISTO", "POR HACER",];
+                            break;
+                        case "CANCELADO":
+                            options = ["CANCELADO", "POR HACER", "LISTO", "ENTREGADO"];
+                            break;
+                        case "LISTO":
+                            options = ["LISTO", "ENTREGADO", "CANCELADO", "POR HACER"];
+                            break;
+                        default:
+                            break;
+                    }
+
+                    for (var i = 0; i < options.length; i++) {
+                        let option = document.createElement("option");
+                        option.value = options[i];
+                        option.text = options[i];
+                        select.add(option);
+                    }
+                }
+
+                /*
+                    Recalcula los totales cada vez que cambia el input newAdvance
+                    Verifica que la suma de abonos no sea mayor que el total de la venta
+                */
+                function calculateNewAdvance() {
+                    let inputNewAdvance = document.getElementById("newAdvance");
+                    let inputFeedback = document.getElementById("invalid-feedback-newAdvance");
+
+                    let totalAdvance = parseInt(showSaleData.pedido.vlrAbonado.replace(/,/g, ''));
+                    let restValue = parseInt(showSaleData.pedido.vlrTotal.replace(/,/g, '')) - totalAdvance;
+
+                    let newAdvance = parseInt(inputNewAdvance.value.replace(/,/g, ''));
+
+                    if (newAdvance > restValue) {
+                        inputNewAdvance.className = "form-control is-invalid";
+                        inputFeedback.innerText = `El abono no puede ser mayor al valor restante de ${numeral(restValue).format('0,0')} COP`;
+                    }
+                    else {
+                        inputNewAdvance.className = "form-control";
+                        inputFeedback.innerText = "Ingresa un abono";
+
+                        if (newAdvance > 0) {
+                            document.getElementById("abono_total_modal_show_sale").innerHTML = numeral(totalAdvance + newAdvance).format('0,0');
+                        }
+                        else {
+                            document.getElementById("abono_total_modal_show_sale").innerHTML = numeral(totalAdvance).format('0,0');
+                        }
+
+                    }
+
+                    remainingValue()
+                }
+
+                /*
+                    Actualiza el valor restante úbicado en el modal show sale
+                */
+                function remainingValue() {
+
+                    // Resta los totales
+                    let difference = parseInt(document.getElementById("valor_total_modal_show_sale").innerText.replace(/,/g, ''))
+                        - parseInt(document.getElementById("abono_total_modal_show_sale").innerText.replace(/,/g, ''));
+                    // Se formatea para ser mostrado
+                    document.getElementById("valor_restante_modal_show_sale").innerHTML = numeral(difference).format('0,0');
+                }
+
+
+                /*
+                    Actualiza los abonos y el estado del pedido
+                */
+                function sendDataFromShowSale() {
+
+                    let inputNewAdvance = document.getElementById("newAdvance");
+                    let selectNewState = document.getElementById("select_estado_cliente_modal_show_sale");
+                    let sendNewAdvance = false;
+                    let sendNewState = false;
+
+                    // Hay un abono válido
+                    if (inputNewAdvance !== null) {
+                        if (parseInt(inputNewAdvance.value.replace(/,/g, '')) > 0 && inputNewAdvance.className == "form-control") {
+                            sendNewAdvance = true;
+                        }
+                    }
+
+                    // Hay un cambio de estado válido
+                    if (selectNewState.value !== showSaleData.pedido.estado) {
+                        sendNewState = true;
+                    }
+
+                    console.log(sendNewAdvance, sendNewState);
+
+                    // Hay un cambio válido en los abonos o en los estados
+                    if (sendNewAdvance || sendNewState) {
+
+                        let id = showSaleData.pedido.id;
+                        let newState = selectNewState.value;
+                        let newTotalAdvance = document.getElementById("abono_total_modal_show_sale").innerText;
+                        let newAdvanceId = "";
+                        let newAdvanceDate = "";
+                        let newAdvance = "";
+
+                        if (sendNewAdvance) {
+                            newAdvanceId = getAdvanceId();
+                            newAdvanceDate = getDate();
+                            newAdvance = inputNewAdvance.value;
+                        }
+
+                        setTimeout(function () {
+                            alert(`\nCambio Registrado \n\n N° ${id} \n Abono : ${newAdvance} COP \n Estado : ${newState}
+                                    `);
+                        }, 500);
+
+                        google.script.run.withSuccessHandler(updateShowSale => {
+                            viewSales();
+                            closeShowSaleModal();
+                        }).updateShowSale(id, newState, newTotalAdvance, newAdvanceId, newAdvance, newAdvanceDate, sendNewAdvance);
+                    }
+                    else {
+                        if (inputNewAdvance === null) {
+                            closeShowSaleModal();
+
+                        }
+                        else {
+                            if (inputNewAdvance.className == "form-control") {
+                                closeShowSaleModal();
+                            }
+                        }
+                    }
+                }
+
             </script>
         </div>
-
     </div>
 </div>

@@ -314,8 +314,8 @@ function getRowById(id, table) {
 
     let range = `B2:B${table.getLastRow()}`;
 
-    if(table === PEDIDOS_TABLE){
-      range = `A2:A${table.getLastRow()}`;
+    if (table === PEDIDOS_TABLE) {
+        range = `A2:A${table.getLastRow()}`;
     }
 
     const rowsList = table.getRange(range)
@@ -325,6 +325,34 @@ function getRowById(id, table) {
         .map((r) => r.getRow());
 
     return rowsList;
+}
+
+
+/**
+ * Actualiza los abonos y el estado del pedido que se modificó
+ */
+function updateShowSale(id, newState, newTotalAdvance, newAdvanceId, newAdvance, newAdvanceDate, sendNewAdvance) {
+
+
+    let row = "";
+
+    // Se actualiza tabla PEDIDO
+
+    row = getRowById(id, PEDIDOS_TABLE);
+
+    PEDIDOS_TABLE.getRange(row, 2).setValue(newState); // 2 - ESTADO
+    PEDIDOS_TABLE.getRange(row, 7).setValue(newTotalAdvance); // 7 - VLR_ABONADO
+
+    // Se actualiza tabla ABONOS si existe uno válido
+
+    if (sendNewAdvance) {
+        row = getRowById(id, ABONOS_TABLE);
+        row = row[row.length - 1]
+        let newValues = [newAdvanceId, id, newAdvance, newAdvanceDate];
+
+        ABONOS_TABLE.insertRowAfter(row);
+        ABONOS_TABLE.getRange(`A${row + 1}:D${row + 1}`).setValues([newValues]);
+    }
 }
 
 
