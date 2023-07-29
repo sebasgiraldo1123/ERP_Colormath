@@ -1,50 +1,218 @@
 <!DOCTYPE html>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+  integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
 
+
+
 <style>
-    body {
-        background-color: #eeeeee;
-    }
+  /*              _app.html               */
 
-    .container {
-        max-width: 1000px;
-    }
+  header {
+    position: fixed;
+    /* Fijar la posición del encabezado */
+    width: 100%;
+    /* Ancho del encabezado, igual al ancho de la página */
+  }
 
-    /*
-    Todos los inputs type text resiben texto solo en mayúscula
-    */
-    input {
-        text-transform: uppercase;
-    }
+  #header-divider {
+    margin-top: -18px;
+  }
 
-    /*
+  #nav-sales:hover {
+    color: #c53bb0;
+    /* Cambiar el color del enlace en hover */
+  }
+
+  #nav-orders:hover {
+    color: #d63c68;
+    /* Cambiar el color del enlace en hover */
+  }
+
+  #nav-prices:hover {
+    color: #e5893b;
+    /* Cambiar el color del enlace en hover */
+  }
+
+  #nav-bills:hover {
+    color: #efd434;
+    /* Cambiar el color del enlace en hover */
+  }
+
+  #nav-wood:hover {
+    color: #bcc71d;
+    /* Cambiar el color del enlace en hover */
+  }
+
+  .navbar-toggler-icon {
+    background-image: url('http://drive.google.com/uc?export=view&id=1_QHT-TcU2ChQt40IgzrG4C549J_F-p0i');
+  }
+
+  body {
+    background-color: #31353a;
+    color: white;
+  }
+
+  /*              _sales.html              */
+
+  #nav-tab {
+    height: 60px;
+  }
+
+  .nav {
+    --bs-nav-link-hover-color: #c53bb0;
+  }
+
+  .nav-tabs {
+    border-bottom: none;
+    --bs-nav-tabs-border-width: none;
+    --bs-nav-tabs-border-radius: none;
+    --bs-nav-tabs-link-active-bg: none;
+  }
+
+  .nav-tabs .nav-link.active {
+    color: white;
+  }
+
+  .nav-tabs .nav-link {
+    padding-left: 16px;
+    padding-right: 3px;
+  }
+
+  .nav-link {
+    color: gray;
+  }
+
+  h4 {
+    margin: 10px 0px 0px 0px;
+    text-align: center;
+    font-size: 22px;
+  }
+
+  .opciones-productos {
+    padding: 5px 0px 0px 0px;
+  }
+
+  .producto {
+    padding: 0px 0px 22px 0px;
+  }
+
+  .invalid-feedback {
+    color: #d94141;
+  }
+
+  #loading {
+    margin-left: 23px;
+  }
+
+  /*              Modal               */
+
+  .modal {
+    background-color: rgba(255, 255, 255, 0.3);
+  }
+
+  .modal-content {
+    background-color: #30343A;
+  }
+
+  /*              General               */
+
+  * {
+    font-size: 14px;
+    /* Tamaño de fuente general */
+  }
+
+  div {
+    text-align: center;
+    padding: 0;
+    margin: 0;
+  }
+
+  /* Encabezado de las tablas */
+  tr {
+    height: 50px;
+    vertical-align: middle;
+  }
+
+  th {
+    font-weight: normal;
+  }
+
+  .row {
+    align-content: center;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .container {
+    max-width: 1000px;
+    padding-top: 82px;
+    /* Ajustar el espacio para que el contenido no se oculte debajo del encabezado */
+  }
+
+  .divider-1 {
+    color: #47267A;
+    margin: 10px 0px 10px 0px;
+    border: 4px solid;
+    opacity: 1;
+  }
+
+  .divider-2 {
+    color: #a944a2;
+    margin: 10px 0px 10px 0px;
+    border: 3px solid;
+    opacity: 1;
+  }
+
+  .divider-3 {
+    color: #a944a2;
+    margin: 10px 0px 10px 0px;
+    border: 3px solid;
+    opacity: 1;
+  }
+
+  /*
+    Todos los inputs type text reciben texto solo en mayúscula
+  */
+  input {
+    text-transform: uppercase;
+    border: none;
+    text-align: center;
+  }
+
+  /*
     Desactiva los botones del input type number
-    */
-    input[type=number]::-webkit-inner-spin-button,
-    input[type=number]::-webkit-outer-spin-button {
-        -webkit-appearance: none;
-        margin: 0;
-    }
+  */
+  input[type=number]::-webkit-inner-spin-button,
+  input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
 
-    /*
+  /*
     Cambia el fondo de los inputs que tienen el atributo read only
-    */
-    input[readonly] {
-        background-color: rgb(111, 183, 201);
-    }
+  */
+  input[readonly] {
+    background-color: gray;
+    border: 0px;
+    color: white;
+  }
 
-    /*
+  input:focus {
+    border-color: yellow;
+    /* Cambiar el color del borde cuando el input está seleccionado */
+  }
+
+  /*
     Modifica el ancho de un modal
-    */
-    .modal-lg {
-        max-width: 1000px;
-    }
+  */
+  .modal-lg {
+    max-width: 1000px;
+  }
 
-    .modal-backdrop {
-        background-color: lightgray;
-    }
-
+  .modal-backdrop {
+    background-color: lightgray;
+  }
 </style>

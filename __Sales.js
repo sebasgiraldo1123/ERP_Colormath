@@ -14,11 +14,7 @@ function createSale(data) {
     const estado = "POR HACER";
 
     // La fecha del pedido se toma del servidor
-    // Formateo el mes para que tenga la forma "01" si es menor que 10
-    let date = new Date();
-    let numberMonth = date.getMonth() + 1;
-    let month = (numberMonth < 10 ? "0" : "") + numberMonth.toString();
-    const fecha = date.getFullYear() + "-" + (month) + "-" + date.getDate();
+    const fecha = formatDate(new Date());
 
     const cliente = data.nombre_cliente.toUpperCase();
     const celular = data.celular_cliente;
