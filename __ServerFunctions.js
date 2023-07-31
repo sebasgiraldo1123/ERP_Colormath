@@ -33,18 +33,20 @@ function include(fileName) {
 
 function loadAllData() {
 
-  //deleteDataTable(PEDIDOS_TABLE);
-  //deleteDataTable(PRODUCTOS_TABLE);
-  //deleteDataTable(ABONOS_TABLE);
+  deleteDataTable(PEDIDOS_TABLE);
+  deleteDataTable(PRODUCTOS_TABLE);
+  deleteDataTable(ABONOS_TABLE);
 
-  //0-1131
+  //última fila - 3
 
   //loadData(0, 200);
   //loadData(200, 400);
   //loadData(400, 600);
   //loadData(600, 800);
   //loadData(800, 1000);
-  //loadData(1000, 1131);
+  loadData(900, 1184);
+
+  //  ........ No olvides convertir todo a texto plano
 
 }
 
