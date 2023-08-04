@@ -1,2 +1,524 @@
 <!DOCTYPE html>
-<h1>Pedidos</h1>
+<div class="container">
+
+    <!-- Formulario para buscar los pedidos -->
+
+    <form name="ordenar_pedidos" id="ordenar_pedidos">
+
+        <!-- Área de búsqueda -->
+        <!-- Datos de Búsqueda -->
+
+        <div class="row">
+            <div class="col-sm-3">
+                <select class="form-select mt-3 mb-3" id="texto_busqueda_ordenar_pedidos"
+                    onkeydown="disableEnterKeyOrders(event)">
+                    <option value="SEBAS">*</option>
+                    <option value="POR HACER">POR HACER</option>
+                    <option value="ENTREGADO">ENTREGADO</option>
+                    <option value="CANCELADO">CANCELADO</option>
+                    <option value="LISTO">LISTO</option>
+                    <option value="DISEÑADO">DISEÑADO</option>
+                    <option value="IMPRESO">IMPRESO</option>
+                </select>
+            </div>
+            <div class="col-sm-1">
+                <button id="ordenar_pedidos_button" type="button" class="btn btn-primary"
+                    onclick="viewOrders()">Buscar</button>
+            </div>
+        </div>
+        <div id="ordenar_pedidos_loading" class="spinner-grow text-primary mt-2" role="status" style="display: none;">
+            <span class="sr-only"></span>
+        </div>
+    </form>
+    <br>
+
+    <!-- Tabla con la info encontrada -->
+
+    <div class="table-responsive-md mb-4">
+        <table id="orders_table" class="table table-striped table-hover table-dark">
+            <thead class="table-dark">
+                <tr>
+                    <th>N°</th>
+                    <th>Estado</th>
+                    <th>Cliente</th>
+                    <th>Celular</th>
+                    <th>Plazo<br>(Dias)</th>
+                    <th>Valor<br>Abonado</th>
+                    <th>Valor<br>Total</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="tableBody_ordenar_pedidos">
+            </tbody>
+        </table>
+    </div>
+
+    <template id="rowTemplate_ordenar_pedidos">
+        <tr>
+            <td class="template-id_ordenar_pedidos"></td>
+            <td class="template-estado_ordenar_pedidos"></td>
+            <td class="template-cliente_ordenar_pedidos"></td>
+            <td class="template-celular_ordenar_pedidos"></td>
+            <td class="template-plazo_ordenar_pedidos"></td>
+            <td class="template-vlr-abonado_ordenar_pedidos"></td>
+            <td class="template-vlr-total_ordenar_pedidos"></td>
+            <td class="template-acciones_ordenar_pedidos text-center">
+                <button class="btn btn-success show-button_ordenar_pedidos btn-sm"
+                    onclick="showDetailsOrders(this.dataset.orderId)">+</button>
+            </td>
+        </tr>
+    </template>
+
+    <!-- Show Order Modal -->
+
+    <div class="modal fade" id="show_orders_modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="show_orders_model_label" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+
+                <div class="modal-body" id="modal_body_show_orders">
+
+                    <!-- Cliente -->
+
+                    <h4>
+                        Información de Pedido
+                    </h4>
+                    <hr class="divider-2">
+
+                    <!-- Datos del cliente -->
+
+                    <div class="table-responsive-lg">
+                        <table class="table table-striped table-hover table-dark">
+                            <thead>
+                                <tr>
+                                    <th scope="col">N°</th>
+                                    <th scope="col">Cliente</th>
+                                    <th scope="col">Celular</th>
+                                    <th scope="col">Estado</th>
+                                    <th scope="col">Fecha<br>Recibido</th>
+                                    <th scope="col">Fecha<br>Entrega</th>
+                                    <th scope="col">Plazo<br>(dias)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td id="id_cliente_modal_show_order"></td>
+                                    <td id="nombre_cliente_modal_show_order"></td>
+                                    <td id="celular_cliente_modal_show_order"></td>
+                                    <td id="estado_cliente_modal_show_order"></td>
+                                    <td id="fecha_recibido_cliente_modal_show_order"></td>
+                                    <td id="fecha_entrega_cliente_modal_show_order"></td>
+                                    <td id="plazo_modal_show_order"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pedidos -->
+
+                    <hr class="divider-2">
+                    <div class="table-responsive-lg">
+                        <table class="table table-striped table-hover table-dark">
+                            <thead>
+                                <tr>
+                                    <th scope="col">N°</th>
+                                    <th scope="col">Producto</th>
+                                    <th scope="col">Cantidad</th>
+                                    <th scope="col">Valor<br>Unitario</th>
+                                    <th scope="col">Orientación</th>
+                                    <th scope="col">Color</th>
+                                    <th scope="col">Tipo<br>Diseño</th>
+                                    <th scope="col">Ruana</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableBody_products_modal_show_order">
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Totales -->
+
+                    <hr class="divider-2">
+                    <div class="table-responsive-lg">
+                        <table class="table table-striped table-hover table-dark">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Valor<br>Total</th>
+                                    <th scope="col">Abono<br>Total</th>
+                                    <th scope="col">Valor<br>Restante</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td id="valor_total_modal_show_order" class="table-active"></td>
+                                    <td id="abono_total_modal_show_order"></td>
+                                    <td id="valor_restante_modal_show_order"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Botones de acción -->
+
+                    <div class="row justify-content-end m-3">
+                        <div class="col-lg-1 mt-2">
+                            <button type="button" class="btn btn-secondary"
+                                onclick="closeShowOrdersModal()">Atrás</button>
+                        </div>
+                        <div class="col-lg-1 mt-2">
+                            <button type="button" class="btn btn-primary"
+                                onclick="sendDataFromShowOrders()">Guardar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let searchParameter = ""; // Parámetro a buscar
+        let showOrderData = {}; // Almacena la data de la venta que se desea ver com más detalle
+
+        /*
+          Busca los pedidos en base a un parámetro específico.
+        */
+        function viewOrders() {
+
+            searchParameter = document.getElementById("texto_busqueda_ordenar_pedidos").value;
+
+            if (searchParameter != "") {
+                // Muestra animación de carga
+                document.getElementById("ordenar_pedidos_loading").style.display = "inline-block";
+
+                google.script.run
+                    .withSuccessHandler(showOrders => {
+                        // Ocultar animación de carga
+                        document.getElementById("ordenar_pedidos_loading").style.display = "none";
+
+                        let tableBody = document.getElementById("tableBody_ordenar_pedidos");
+                        tableBody.innerHTML = ""; // Reinicio el contenido
+
+                        let template = document.getElementById("rowTemplate_ordenar_pedidos");
+                        let templateContent = template.content;
+
+                        if (showOrders != null) {
+
+                            showOrders.forEach(order => {
+
+                                const tr = templateContent.cloneNode(true);
+
+                                const idCol_ordenar_pedidos = tr.querySelector(".template-id_ordenar_pedidos");
+                                const estadoCol_ordenar_pedidos = tr.querySelector(".template-estado_ordenar_pedidos");
+                                const clienteCol_ordenar_pedidos = tr.querySelector(".template-cliente_ordenar_pedidos");
+                                const celularCol_ordenar_pedidos = tr.querySelector(".template-celular_ordenar_pedidos");
+                                const plazoCol_ordenar_pedidos = tr.querySelector(".template-plazo_ordenar_pedidos");
+                                const vlrAbonadoCol_ordenar_pedidos = tr.querySelector(".template-vlr-abonado_ordenar_pedidos");
+                                const vlrTotalCol_ordenar_pedidos = tr.querySelector(".template-vlr-total_ordenar_pedidos");
+
+                                const accionesCol_ordenar_pedidos = tr.querySelector(".template-acciones_ordenar_pedidos");
+                                const showButton_ordenar_pedidos = tr.querySelector(".show-button_ordenar_pedidos");
+
+                                idCol_ordenar_pedidos.textContent = order[0];
+                                estadoCol_ordenar_pedidos.textContent = order[1];
+                                clienteCol_ordenar_pedidos.textContent = order[3];
+                                celularCol_ordenar_pedidos.textContent = order[4];
+                                plazoCol_ordenar_pedidos.textContent = substractDate(new Date(order[5]), new Date());
+                                vlrAbonadoCol_ordenar_pedidos.textContent = order[6];
+                                vlrTotalCol_ordenar_pedidos.textContent = order[7];
+                                showButton_ordenar_pedidos.dataset.orderId = order[0];
+
+                                // Resalta los estados
+                                highlightState(estadoCol_ordenar_pedidos);
+
+
+                                tableBody.appendChild(tr);
+                            })
+
+                            // Ordena la tabla según los dias que faltan para entregar
+                            sortOrdersTable();
+
+                        }
+                        else {
+                            alert("No se encontraron resultados");
+                        }
+                    })
+                    .filterOrders(searchParameter);
+            }
+            else {
+                alert("Por favor ingrese un dato para realizar la búsqueda");
+            }
+        }
+
+
+        /*
+            Abre el modal que muestra toda la información de los pedidos seleccionada en conjunto con sus acciones determinadas
+        */
+        function showDetailsOrders(orderId) {
+
+            // Muestra animación de carga
+            document.getElementById("ordenar_pedidos_loading").style.display = "inline-block";
+
+            // Se recupera la info de la venta con la ayuda del orderId
+            google.script.run
+                .withSuccessHandler(order => {
+
+                    showOrderData = order;
+
+                    // Ocultar animación de carga
+                    document.getElementById("ordenar_pedidos_loading").style.display = "none";
+
+                    // Se muestra la info de la venta seleccionada por el modal
+                    // Datos del cliente
+
+                    try {
+                        document.getElementById("id_cliente_modal_show_order").innerHTML = order.pedido.id;
+                        document.getElementById("nombre_cliente_modal_show_order").innerHTML = order.pedido.cliente;
+                        document.getElementById("celular_cliente_modal_show_order").innerHTML = order.pedido.celular;
+                        document.getElementById("fecha_recibido_cliente_modal_show_order").innerHTML = order.pedido.fecha;
+                        document.getElementById("fecha_entrega_cliente_modal_show_order").innerHTML = order.pedido.fechaEntrega;
+
+
+                        // -------------------------------------------------------------------------------------------------
+
+                        document.getElementById("estado_cliente_modal_show_order").innerHTML = `
+                          <div>
+                              <select class="form-select" id="select_estado_cliente_modal_show_order">
+                              </select>
+                          </div>`;
+                        updateSelectNewStateOrders();
+
+                        // Resta las fechas de la venta -------------------------------------------------------------------
+
+                        let difference = substractDate(new Date(order.pedido.fechaEntrega), new Date());
+
+                        if (difference < 0 && (order.pedido.estado === "ENTREGADO" || order.pedido.estado === "CANCELADO")) {
+                            document.getElementById("plazo_modal_show_order").innerHTML = "-";
+                        }
+                        else {
+                            document.getElementById("plazo_modal_show_order").innerHTML = difference;
+                        }
+
+                        // -------------------------------------------------------------------------------------------------
+                    }
+                    catch {
+                    }
+
+                    // Datos de productos
+
+                    try {
+                        let tableBody = document.getElementById("tableBody_products_modal_show_order");
+                        let orientacion_column;
+                        let color_column;
+                        let tipo_diseño_column;
+                        let ruana_column;
+
+                        tableBody.innerHTML = "";
+
+                        for (const [key, product] of Object.entries(order.productos)) {
+                            let row = `<tr>
+                              <td>${product.id}</td>
+                              <td>${product.nombre}</td>
+                              <td>${product.cantidad}</td>
+                              <td>${product.vlrUnitario}</td>
+                              `;
+
+                            if (product.orientacion !== undefined) {
+                                orientacion_column = `<td>${product.orientacion}</td>`;
+                            }
+                            else {
+                                orientacion_column = "<td>-</td>";
+                            }
+
+                            if (product.color !== undefined) {
+                                color_column = `<td>${product.color}</td>`;
+                            }
+                            else {
+                                color_column = "<td>-</td>";
+                            }
+
+                            if (product.tipoD !== undefined) {
+                                tipo_diseño_column = `<td>${product.tipoD}</td>`;
+                            }
+                            else {
+                                tipo_diseño_column = "<td>-</td>";
+                            }
+
+                            if (product.ruana !== undefined) {
+                                ruana_column = `<td>${product.ruana}</td>`;
+                            }
+                            else {
+                                ruana_column = "<td>-</td>";
+                            }
+
+                            tableBody.innerHTML += `${row}${orientacion_column}${color_column}${tipo_diseño_column}${ruana_column}</tr>`;
+                        }
+
+                    }
+                    catch {
+                    }
+
+
+                    // Datos de los totales
+
+                    try {
+                        document.getElementById("valor_total_modal_show_order").innerHTML = order.pedido.vlrTotal;
+                        document.getElementById("abono_total_modal_show_order").innerHTML = order.pedido.vlrAbonado;
+
+                        document.getElementById("valor_restante_modal_show_order")
+                            .innerHTML = numeral(parseInt(order.pedido.vlrTotal.replace(/,/g, '')) - parseInt(order.pedido.vlrAbonado.replace(/,/g, '')))
+                                .format('0,0');
+
+                    }
+                    catch {
+
+                    }
+
+                    // Resalta los datos importantes
+                    document.getElementById("valor_total_modal_show_order").style.color = "yellowgreen";
+                    document.getElementById("abono_total_modal_show_order").style.color = "yellowgreen";
+                    document.getElementById("valor_restante_modal_show_order").style.color = "yellowgreen";
+                    document.getElementById("plazo_modal_show_order").style.color = "yellowgreen";
+
+                    // Muestra el modal
+                    let modal = document.getElementById("show_orders_modal");
+                    modal.style.display = "block";
+                    modal.classList.add("show");
+
+
+                }).showSaleById(orderId);
+        }
+
+
+        /*
+          Desactiva la tecla enter para evitar que envíe el form y presiona el botón requerido
+        */
+        function disableEnterKeyOrders(event) {
+            // Verificar si se presionó la tecla "Enter"
+            if (event.keyCode === 13) {
+                document.getElementById("ordenar_pedidos_button").click();
+                event.preventDefault();
+                return false;
+            }
+        }
+
+
+        /*
+            Cierra el show_orders_modal
+        */
+        function closeShowOrdersModal() {
+            let modal = document.getElementById("show_orders_modal");
+            modal.style.display = "none";
+        }
+
+
+        /*
+            Actualiza el estado del pedido
+        */
+        function sendDataFromShowOrders() {
+
+            let selectNewState = document.getElementById("select_estado_cliente_modal_show_order");
+            let sendNewState = false;
+
+            // Hay un cambio de estado válido
+            if (selectNewState.value !== showOrderData.pedido.estado) {
+                sendNewState = true;
+            }
+
+            // Hay un cambio válido en los estados
+            if (sendNewState) {
+
+                let id = showOrderData.pedido.id;
+                let newState = selectNewState.value;
+                let totalAdvance = showOrderData.pedido.vlrAbonado;
+
+                setTimeout(function () {
+                    alert(`\nCambio Registrado\n\nN°\n-> ${id}\nNuevo Estado\n -> ${newState}`);
+                }, 500);
+
+                google.script.run.withSuccessHandler(updateShowSale => {
+                    viewOrders();
+                    closeShowOrdersModal();
+                }).updateShowSale(id, newState, totalAdvance, "", "", "", false);
+            }
+            else {
+                closeShowOrdersModal();
+            }
+        }
+
+
+        /*
+            Generea las opciones restantes para el select del estado cliente modal show
+        */
+        function updateSelectNewStateOrders() {
+            let select = document.getElementById("select_estado_cliente_modal_show_order");
+            let options = [];
+
+            switch (showOrderData.pedido.estado) {
+                case "POR HACER":
+                    options = ["POR HACER", "DISEÑADO", "IMPRESO", "LISTO", "ENTREGADO", "CANCELADO"];
+                    break;
+                case "ENTREGADO":
+                    options = ["ENTREGADO", "CANCELADO", "POR HACER", "DISEÑADO", "IMPRESO", "LISTO"];
+                    break;
+                case "CANCELADO":
+                    options = ["CANCELADO", "POR HACER", "DISEÑADO", "IMPRESO", "LISTO", "ENTREGADO"];
+                    break;
+                case "LISTO":
+                    options = ["LISTO", "ENTREGADO", "CANCELADO", "POR HACER", "DISEÑADO", "IMPRESO"];
+                    break;
+                case "DISEÑADO":
+                    options = ["DISEÑADO", "IMPRESO", "LISTO", "ENTREGADO", "CANCELADO", "POR HACER"];
+                    break;
+                case "IMPRESO":
+                    options = ["IMPRESO", "LISTO", "ENTREGADO", "CANCELADO", "POR HACER", "DISEÑADO"];
+                    break;
+                default:
+                    break;
+            }
+
+            for (var i = 0; i < options.length; i++) {
+                let option = document.createElement("option");
+                option.value = options[i];
+                option.text = options[i];
+                select.add(option);
+            }
+        }
+
+
+        /*
+            Se usa la libreria dataTable para organizar la tabla según un parámetro específico
+        */
+        function sortOrdersTable2() {
+
+            let table = $('#orders_table').DataTable();
+
+            if (!$.fn.DataTable.isDataTable(table)) {
+
+                table = $('#orders_table').DataTable({
+
+                    "paging": false,
+                    "info": false,
+                    "searching": false,
+                    "lengthChange": false,
+                    "orderClasses": false,
+                });
+            }
+
+            table.clear(); // Limpiar las filas existentes
+            table.order([4, 'asc']).draw(); // Ordenar y dibujar la tabla
+        }
+
+        function sortOrdersTable() {
+            $('#orders_table').DataTable({
+                
+                "paging": false,
+                "info": false,
+                "searching": false,
+                "lengthChange": false,
+                "orderClasses": false,
+                "order": [[4, "asc"]] // Columna 2 (índice 2) es la columna "Edad"
+            });
+        }
+
+    </script>
+</div>

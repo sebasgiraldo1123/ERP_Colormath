@@ -172,30 +172,36 @@ function lookForSale(searchText, maxResults) {
     const sales = [];
     let rowList = [];
 
-    // Se seleccionan todos, dado que el option = todos, debe convertirse en un número, en este la última fila de la tabla
+    // Busca todas las coincidencias
+
     if (isNaN(maxResults)) {
-        maxResults = PEDIDOS_TABLE.getLastRow();
-    }
 
-    // Se obtiene la lista de indices de filas que cumplen con la descripción hasta un máximo de "maxResults"
-
-    // Se realiza una primera búsqueda comparando el searchText con el dato completo de cada celda
-    const textFinder = PEDIDOS_TABLE.getRange(range)
-        .createTextFinder(searchText).matchEntireCell(true);
-
-    let cell = textFinder.findNext();
-    let count = 0;
-
-    while (cell && count < maxResults) {
-        rowList.push(cell.getRow());
-        cell = textFinder.findNext();
-        count++;
-    }
-
-    // Si no hay coinciencias se realiza una búsqueda sin el matchEntireCell
-    if (rowList.length === 0) {
+        // Se realiza una primera búsqueda comparando el searchText con el dato completo de cada celda
         const textFinder = PEDIDOS_TABLE.getRange(range)
-            .createTextFinder(searchText).matchEntireCell(false);
+            .createTextFinder(searchText).matchEntireCell(true);
+
+        rowList = textFinder.findAll();
+
+        // Si no hay coinciencias se realiza una búsqueda sin el matchEntireCell
+        if (rowList.length === 0) {
+            const textFinder = PEDIDOS_TABLE.getRange(range)
+                .createTextFinder(searchText).matchEntireCell(false);
+
+            rowList = textFinder.findAll();
+        }
+
+        // Se crea un objeto con los datos de las filas proporcionadas
+        for (let i = 0; i < rowList.length; i++) {
+            sales.push(PEDIDOS_TABLE.getRange(rowList[i].getRow(), 1, 1, PEDIDOS_TABLE.getLastColumn()).getValues()[0]);
+        }
+    }
+
+    // Coinicidencias limitadas
+
+    else {
+        // Se realiza una primera búsqueda comparando el searchText con el dato completo de cada celda
+        const textFinder = PEDIDOS_TABLE.getRange(range)
+            .createTextFinder(searchText).matchEntireCell(true);
 
         let cell = textFinder.findNext();
         let count = 0;
@@ -205,11 +211,26 @@ function lookForSale(searchText, maxResults) {
             cell = textFinder.findNext();
             count++;
         }
-    }
 
-    // Se crea un objeto con los datos de las filas proporcionadas
-    for (let i = 0; i < rowList.length; i++) {
-        sales.push(PEDIDOS_TABLE.getRange(rowList[i], 1, 1, PEDIDOS_TABLE.getLastColumn()).getValues()[0]);
+        // Si no hay coinciencias se realiza una búsqueda sin el matchEntireCell
+        if (rowList.length === 0) {
+            const textFinder = PEDIDOS_TABLE.getRange(range)
+                .createTextFinder(searchText).matchEntireCell(false);
+
+            let cell = textFinder.findNext();
+            let count = 0;
+
+            while (cell && count < maxResults) {
+                rowList.push(cell.getRow());
+                cell = textFinder.findNext();
+                count++;
+            }
+        }
+
+        // Se crea un objeto con los datos de las filas proporcionadas
+        for (let i = 0; i < rowList.length; i++) {
+            sales.push(PEDIDOS_TABLE.getRange(rowList[i], 1, 1, PEDIDOS_TABLE.getLastColumn()).getValues()[0]);
+        }
     }
 
     if (sales.length === 0) {
@@ -219,6 +240,7 @@ function lookForSale(searchText, maxResults) {
         return sales;
     }
 }
+
 
 /**
  * Entrega toda la información disponible de una venta dado un Id

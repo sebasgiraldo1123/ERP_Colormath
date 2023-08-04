@@ -599,7 +599,7 @@
 
 
           // El tiempo se dá en milisegundos, se resta y se hace la conversión a dias
-          let difference = subtractDate(inputDate, currentDate);
+          let difference = substractDate(inputDate, currentDate);
 
           // Se muestra por pantalla
           document.getElementById("plazo_entrega").value = difference;
@@ -870,22 +870,22 @@
           </div>
         </div>
         <div id="loading" class="spinner-grow text-primary mt-2" role="status" style="display: none;">
-            <span class="sr-only"></span>
+          <span class="sr-only"></span>
         </div>
       </form>
       <br>
 
       <!-- Tabla con la info encontrada -->
 
-      <div class="table-responsive-md">
+      <div class="table-responsive-md mb-4">
         <table class="table table-striped table-hover table-dark">
           <thead class="table-dark">
             <tr>
               <th>N°</th>
               <th>Estado</th>
-              <th>Fecha</th>
               <th>Cliente</th>
               <th>Celular</th>
+              <th>Fecha<br>Recibido</th>
               <th>Fecha<br>Entrega</th>
               <th>Valor<br>Abonado</th>
               <th>Valor<br>Total</th>
@@ -901,9 +901,9 @@
         <tr>
           <td class="template-id"></td>
           <td class="template-estado"></td>
-          <td class="template-fecha"></td>
           <td class="template-cliente"></td>
           <td class="template-celular"></td>
+          <td class="template-fecha"></td>
           <td class="template-fecha-entrega"></td>
           <td class="template-vlr-abonado"></td>
           <td class="template-vlr-total"></td>
@@ -939,6 +939,7 @@
                       <th scope="col">Cliente</th>
                       <th scope="col">Celular</th>
                       <th scope="col">Estado</th>
+                      <th scope="col">Fecha<br>Recibido</th>
                       <th scope="col">Fecha<br>Entrega</th>
                       <th scope="col">Plazo<br>(dias)</th>
                     </tr>
@@ -949,6 +950,7 @@
                       <td id="nombre_cliente_modal_show_sale"></td>
                       <td id="celular_cliente_modal_show_sale"></td>
                       <td id="estado_cliente_modal_show_sale"></td>
+                      <td id="fecha_recibido_cliente_modal_show_sale"></td>
                       <td id="fecha_entrega_cliente_modal_show_sale"></td>
                       <td id="plazo_modal_show_sale"></td>
                     </tr>
@@ -1038,286 +1040,288 @@
             </div>
           </div>
         </div>
+      </div>
 
-        <!-- Busca y muestra y actualiza los pedidos -->
+      <!-- Busca y muestra y actualiza los pedidos -->
 
-        <script>
-          let showSaleData = {}; // Almacena la data de la venta que se desea ver com más detalle
-          let lastAdvanceId = ""; // Almacena el id del último abono disponible en la tabla de abonos
-          let searchText = ""; // String a buscar
-          let maxResults = ""; // Cantidad máxima de resultados
-
-
-          /*
-              Busca los pedidos en base a un parámetro específico.
-          */
-          function viewSales() {
-
-            getTextSearch();
-            getMaxResults();
-
-            if (searchText != "") {
-              // Muestra animación de carga
-              document.getElementById("loading").style.display = "inline-block";
-
-              google.script.run
-                .withSuccessHandler(showSales => {
-                  // Ocultar animación de carga
-                  document.getElementById("loading").style.display = "none";
-
-                  let tableBody = document.getElementById("tableBody_ventas_encontradas");
-                  tableBody.innerHTML = ""; // Reinicio el contenido
-
-                  let template = document.getElementById("rowTemplate");
-                  let templateContent = template.content;
-
-                  if (showSales != null) {
-
-                    showSales = showSales.reverse(); // Muestra los más recientes primero
-
-                    showSales.forEach(sale => {
-
-                      const tr = templateContent.cloneNode(true);
-
-                      const idCol = tr.querySelector(".template-id");
-                      const estadoCol = tr.querySelector(".template-estado");
-                      const fechaCol = tr.querySelector(".template-fecha");
-                      const clienteCol = tr.querySelector(".template-cliente");
-                      const celularCol = tr.querySelector(".template-celular");
-                      const fechaEntregaCol = tr.querySelector(".template-fecha-entrega");
-                      const vlrAbonadoCol = tr.querySelector(".template-vlr-abonado");
-                      const vlrTotalCol = tr.querySelector(".template-vlr-total");
-
-                      const accionesCol = tr.querySelector(".template-acciones");
-                      const showButton = tr.querySelector(".show-button");
-
-                      idCol.textContent = sale[0];
-                      estadoCol.textContent = sale[1];
-                      fechaCol.textContent = sale[2];
-                      clienteCol.textContent = sale[3];
-                      celularCol.textContent = sale[4];
-                      fechaEntregaCol.textContent = sale[5];
-                      vlrAbonadoCol.textContent = sale[6];
-                      vlrTotalCol.textContent = sale[7];
-                      showButton.dataset.saleId = sale[0];
-
-                      // Resalta los estados
-                      highlightState(estadoCol);
+      <script>
+        let showSaleData = {}; // Almacena la data de la venta que se desea ver com más detalle
+        let lastAdvanceId = ""; // Almacena el id del último abono disponible en la tabla de abonos
+        let searchText = ""; // String a buscar
+        let maxResults = ""; // Cantidad máxima de resultados
 
 
-                      tableBody.appendChild(tr);
-                    })
-                  }
-                  else {
-                    alert("No se encontraron resultados");
-                  }
-                })
-                .lookForSale(searchText, maxResults);
-            }
-            else {
-              alert("Por favor ingrese un dato para realizar la búsqueda");
-            }
-          }
+        /*
+            Busca los pedidos en base a un parámetro específico.
+        */
+        function viewSales() {
 
-          /*
-              Recupera los datos de búsqueda y los formatea si es necesario
-          */
-          function getTextSearch() {
-            searchText = document.getElementById("texto_busqueda").value;
+          getTextSearch();
+          getMaxResults();
 
-            // Identifica si el string proporcionado es un teléfono, en ese caso procede a formatearlo como tal
-            if (!isNaN(searchText) && searchText.length === 10) {
-              searchText = searchText.replace(/^(\d{3})(\d{3})(\d{4})$/, "$1-$2-$3");
-            }
-          }
-
-          /*
-              Obtiene la cantidad de resultados para la búsqueda indicados por el usuario
-          */
-          function getMaxResults() {
-            maxResults = document.getElementById("cantidad_resultados").value;
-          }
-
-          /*
-              Desactiva la tecla enter para evitar que envíe el form y presiona el botón requerido
-          */
-          function disableEnterKey(event) {
-            // Verificar si se presionó la tecla "Enter"
-            if (event.keyCode === 13) {
-              document.getElementById("buscar_venta_button").click();
-              event.preventDefault();
-              return false;
-            }
-          }
-
-          /*
-              Abre el modal que muestra toda la información de la venta seleccionada en conjunto con sus acciones determinadas
-          */
-          function showDetails(saleId) {
-
+          if (searchText != "") {
             // Muestra animación de carga
             document.getElementById("loading").style.display = "inline-block";
 
-            // Se recupera la info de la venta con la ayuda del saleId
             google.script.run
-              .withSuccessHandler(sale => {
-
-                showSaleData = sale;
-
+              .withSuccessHandler(showSales => {
                 // Ocultar animación de carga
                 document.getElementById("loading").style.display = "none";
 
-                // Se muestra la info de la venta seleccionada por el modal
-                // Datos del cliente
+                let tableBody = document.getElementById("tableBody_ventas_encontradas");
+                tableBody.innerHTML = ""; // Reinicio el contenido
 
-                try {
-                  document.getElementById("id_cliente_modal_show_sale").innerHTML = sale.pedido.id;
-                  document.getElementById("nombre_cliente_modal_show_sale").innerHTML = sale.pedido.cliente;
-                  document.getElementById("celular_cliente_modal_show_sale").innerHTML = sale.pedido.celular;
-                  document.getElementById("fecha_entrega_cliente_modal_show_sale").innerHTML = sale.pedido.fechaEntrega;
+                let template = document.getElementById("rowTemplate");
+                let templateContent = template.content;
+
+                if (showSales != null) {
+
+                  showSales = showSales.reverse(); // Muestra los más recientes primero
+
+                  showSales.forEach(sale => {
+
+                    const tr = templateContent.cloneNode(true);
+
+                    const idCol = tr.querySelector(".template-id");
+                    const estadoCol = tr.querySelector(".template-estado");
+                    const fechaCol = tr.querySelector(".template-fecha");
+                    const clienteCol = tr.querySelector(".template-cliente");
+                    const celularCol = tr.querySelector(".template-celular");
+                    const fechaEntregaCol = tr.querySelector(".template-fecha-entrega");
+                    const vlrAbonadoCol = tr.querySelector(".template-vlr-abonado");
+                    const vlrTotalCol = tr.querySelector(".template-vlr-total");
+
+                    const accionesCol = tr.querySelector(".template-acciones");
+                    const showButton = tr.querySelector(".show-button");
+
+                    idCol.textContent = sale[0];
+                    estadoCol.textContent = sale[1];
+                    fechaCol.textContent = sale[2];
+                    clienteCol.textContent = sale[3];
+                    celularCol.textContent = sale[4];
+                    fechaEntregaCol.textContent = sale[5];
+                    vlrAbonadoCol.textContent = sale[6];
+                    vlrTotalCol.textContent = sale[7];
+                    showButton.dataset.saleId = sale[0];
+
+                    // Resalta los estados
+                    highlightState(estadoCol);
 
 
-                  // -------------------------------------------------------------------------------------------------
+                    tableBody.appendChild(tr);
+                  })
+                }
+                else {
+                  alert("No se encontraron resultados");
+                }
+              })
+              .lookForSale(searchText, maxResults);
+          }
+          else {
+            alert("Por favor ingrese un dato para realizar la búsqueda");
+          }
+        }
 
-                  document.getElementById("estado_cliente_modal_show_sale").innerHTML = `
+        /*
+            Recupera los datos de búsqueda y los formatea si es necesario
+        */
+        function getTextSearch() {
+          searchText = document.getElementById("texto_busqueda").value;
+
+          // Identifica si el string proporcionado es un teléfono, en ese caso procede a formatearlo como tal
+          if (!isNaN(searchText) && searchText.length === 10) {
+            searchText = searchText.replace(/^(\d{3})(\d{3})(\d{4})$/, "$1-$2-$3");
+          }
+        }
+
+        /*
+            Obtiene la cantidad de resultados para la búsqueda indicados por el usuario
+        */
+        function getMaxResults() {
+          maxResults = document.getElementById("cantidad_resultados").value;
+        }
+
+        /*
+            Desactiva la tecla enter para evitar que envíe el form y presiona el botón requerido
+        */
+        function disableEnterKey(event) {
+          // Verificar si se presionó la tecla "Enter"
+          if (event.keyCode === 13) {
+            document.getElementById("buscar_venta_button").click();
+            event.preventDefault();
+            return false;
+          }
+        }
+
+        /*
+            Abre el modal que muestra toda la información de la venta seleccionada en conjunto con sus acciones determinadas
+        */
+        function showDetails(saleId) {
+
+          // Muestra animación de carga
+          document.getElementById("loading").style.display = "inline-block";
+
+          // Se recupera la info de la venta con la ayuda del saleId
+          google.script.run
+            .withSuccessHandler(sale => {
+
+              showSaleData = sale;
+
+              // Ocultar animación de carga
+              document.getElementById("loading").style.display = "none";
+
+              // Se muestra la info de la venta seleccionada por el modal
+              // Datos del cliente
+
+              try {
+                document.getElementById("id_cliente_modal_show_sale").innerHTML = sale.pedido.id;
+                document.getElementById("nombre_cliente_modal_show_sale").innerHTML = sale.pedido.cliente;
+                document.getElementById("celular_cliente_modal_show_sale").innerHTML = sale.pedido.celular;
+                document.getElementById("fecha_recibido_cliente_modal_show_sale").innerHTML = sale.pedido.fecha;
+                document.getElementById("fecha_entrega_cliente_modal_show_sale").innerHTML = sale.pedido.fechaEntrega;
+
+
+                // -------------------------------------------------------------------------------------------------
+
+                document.getElementById("estado_cliente_modal_show_sale").innerHTML = `
                                     <div>
                                         <select class="form-select" id="select_estado_cliente_modal_show_sale">
                                         </select>
                                     </div>`;
-                  updateSelectNewState();
+                updateSelectNewState();
 
-                  // Resta las fechas de la venta -------------------------------------------------------------------
+                // Resta las fechas de la venta -------------------------------------------------------------------
 
-                  let difference = subtractDate(new Date(sale.pedido.fechaEntrega), new Date());
+                let difference = substractDate(new Date(sale.pedido.fechaEntrega), new Date());
 
-                  if (difference < 0 && (sale.pedido.estado === "ENTREGADO" || sale.pedido.estado === "CANCELADO")) {
-                    document.getElementById("plazo_modal_show_sale").innerHTML = "-";
-                  }
-                  else {
-                    document.getElementById("plazo_modal_show_sale").innerHTML = difference;
-                  }
-
-                  // -------------------------------------------------------------------------------------------------
+                if (difference < 0 && (sale.pedido.estado === "ENTREGADO" || sale.pedido.estado === "CANCELADO")) {
+                  document.getElementById("plazo_modal_show_sale").innerHTML = "-";
                 }
-                catch {
+                else {
+                  document.getElementById("plazo_modal_show_sale").innerHTML = difference;
                 }
 
-                // Datos de productos
+                // -------------------------------------------------------------------------------------------------
+              }
+              catch {
+              }
 
-                try {
-                  let tableBody = document.getElementById("tableBody_products_modal_show_sale");
-                  let orientacion_column;
-                  let color_column;
-                  let tipo_diseño_column;
-                  let ruana_column;
+              // Datos de productos
 
-                  tableBody.innerHTML = "";
+              try {
+                let tableBody = document.getElementById("tableBody_products_modal_show_sale");
+                let orientacion_column;
+                let color_column;
+                let tipo_diseño_column;
+                let ruana_column;
 
-                  for (const [key, product] of Object.entries(sale.productos)) {
-                    let row = `<tr>
+                tableBody.innerHTML = "";
+
+                for (const [key, product] of Object.entries(sale.productos)) {
+                  let row = `<tr>
                                         <td>${product.id}</td>
                                         <td>${product.nombre}</td>
                                         <td>${product.cantidad}</td>
                                         <td>${product.vlrUnitario}</td>
                                         `;
 
-                    if (product.orientacion !== undefined) {
-                      orientacion_column = `<td>${product.orientacion}</td>`;
-                    }
-                    else {
-                      orientacion_column = "<td>-</td>";
-                    }
-
-                    if (product.color !== undefined) {
-                      color_column = `<td>${product.color}</td>`;
-                    }
-                    else {
-                      color_column = "<td>-</td>";
-                    }
-
-                    if (product.tipoD !== undefined) {
-                      tipo_diseño_column = `<td>${product.tipoD}</td>`;
-                    }
-                    else {
-                      tipo_diseño_column = "<td>-</td>";
-                    }
-
-                    if (product.ruana !== undefined) {
-                      ruana_column = `<td>${product.ruana}</td>`;
-                    }
-                    else {
-                      ruana_column = "<td>-</td>";
-                    }
-
-                    tableBody.innerHTML += `${row}${orientacion_column}${color_column}${tipo_diseño_column}${ruana_column}</tr>`;
+                  if (product.orientacion !== undefined) {
+                    orientacion_column = `<td>${product.orientacion}</td>`;
+                  }
+                  else {
+                    orientacion_column = "<td>-</td>";
                   }
 
+                  if (product.color !== undefined) {
+                    color_column = `<td>${product.color}</td>`;
+                  }
+                  else {
+                    color_column = "<td>-</td>";
+                  }
+
+                  if (product.tipoD !== undefined) {
+                    tipo_diseño_column = `<td>${product.tipoD}</td>`;
+                  }
+                  else {
+                    tipo_diseño_column = "<td>-</td>";
+                  }
+
+                  if (product.ruana !== undefined) {
+                    ruana_column = `<td>${product.ruana}</td>`;
+                  }
+                  else {
+                    ruana_column = "<td>-</td>";
+                  }
+
+                  tableBody.innerHTML += `${row}${orientacion_column}${color_column}${tipo_diseño_column}${ruana_column}</tr>`;
                 }
-                catch {
-                }
 
-                // Datos de Abonos
+              }
+              catch {
+              }
 
-                try {
-                  let tableBody = document.getElementById("tableBody_advance_modal_show_sale");
+              // Datos de Abonos
 
-                  tableBody.innerHTML = "";
+              try {
+                let tableBody = document.getElementById("tableBody_advance_modal_show_sale");
 
-                  for (const [key, advance] of Object.entries(sale.abonos)) {
-                    let row = `<tr>
+                tableBody.innerHTML = "";
+
+                for (const [key, advance] of Object.entries(sale.abonos)) {
+                  let row = `<tr>
                                         <td>${advance.id}</td>
                                         <td>${advance.vlr}</td>
                                         <td>${advance.fecha}</td>
                                         `;
 
-                    tableBody.innerHTML += `${row}</tr>`;
+                  tableBody.innerHTML += `${row}</tr>`;
 
-                    // Al final del for se queda con el último id disponible
-                    lastAdvanceId = advance.id;
-                  }
-
-                }
-                catch {
+                  // Al final del for se queda con el último id disponible
+                  lastAdvanceId = advance.id;
                 }
 
-                // Datos de los totales
+              }
+              catch {
+              }
 
-                try {
-                  document.getElementById("valor_total_modal_show_sale").innerHTML = sale.pedido.vlrTotal;
-                  document.getElementById("abono_total_modal_show_sale").innerHTML = sale.pedido.vlrAbonado;
+              // Datos de los totales
 
-                  // Resta los totales y actualiza el valor restante
-                  remainingValue();
-                }
-                catch {
+              try {
+                document.getElementById("valor_total_modal_show_sale").innerHTML = sale.pedido.vlrTotal;
+                document.getElementById("abono_total_modal_show_sale").innerHTML = sale.pedido.vlrAbonado;
 
-                }
+                // Resta los totales y actualiza el valor restante
+                remainingValue();
+              }
+              catch {
 
-                // Resalta los datos importantes
-                document.getElementById("valor_total_modal_show_sale").style.color = "yellowgreen";
-                document.getElementById("abono_total_modal_show_sale").style.color = "yellowgreen";
-                document.getElementById("valor_restante_modal_show_sale").style.color = "yellowgreen";
-                document.getElementById("plazo_modal_show_sale").style.color = "yellowgreen";
+              }
 
-                // Muestra el modal
-                let modal = document.getElementById("show_sale_modal");
-                modal.style.display = "block";
-                modal.classList.add("show");
+              // Resalta los datos importantes
+              document.getElementById("valor_total_modal_show_sale").style.color = "yellowgreen";
+              document.getElementById("abono_total_modal_show_sale").style.color = "yellowgreen";
+              document.getElementById("valor_restante_modal_show_sale").style.color = "yellowgreen";
+              document.getElementById("plazo_modal_show_sale").style.color = "yellowgreen";
+
+              // Muestra el modal
+              let modal = document.getElementById("show_sale_modal");
+              modal.style.display = "block";
+              modal.classList.add("show");
 
 
-              }).showSaleById(saleId);
-          }
+            }).showSaleById(saleId);
+        }
 
-          /*
-              Crea una fila nueva en la tabla de abonos con un input llamado newAdvance que permite agregar un nuevo abono
-          */
-          function addAdvance() {
+        /*
+            Crea una fila nueva en la tabla de abonos con un input llamado newAdvance que permite agregar un nuevo abono
+        */
+        function addAdvance() {
 
-            // Si no existe la fila con el input para agregar un abono nuevo se genera
-            if (document.getElementById("newAdvance") === null) {
-              let tableBody = document.getElementById("tableBody_advance_modal_show_sale");
+          // Si no existe la fila con el input para agregar un abono nuevo se genera
+          if (document.getElementById("newAdvance") === null) {
+            let tableBody = document.getElementById("tableBody_advance_modal_show_sale");
 
-              let row = `<tr>
+            let row = `<tr>
                         <td>${getAdvanceId()}</td>
                         <td class="justify-content-center col-sm-3">
                             <div class="needs-validation">
@@ -1328,221 +1332,221 @@
                         </td>
                         <td>${getDate()}</td>
                         `;
-              tableBody.innerHTML += `${row}</tr>`;
-            }
+            tableBody.innerHTML += `${row}</tr>`;
+          }
+        }
+
+        /*
+            Cierra el show_sale_modal
+        */
+        function closeShowSaleModal() {
+          let modal = document.getElementById("show_sale_modal");
+          modal.style.display = "none";
+        }
+
+        /*
+            Devuelve la fecha del dia formateada
+        */
+        function getDate() {
+          let date = new Date();
+          let numberMonth = date.getMonth() + 1;
+          let month = (numberMonth < 10 ? "0" : "") + numberMonth.toString();
+          return date.getFullYear() + "-" + (month) + "-" + date.getDate();
+        }
+
+        /*
+            Resta dos fechas dadas
+        */
+        function substractDate(minDate, susDate) {
+          let difference = (Math.floor((minDate - susDate) / (1000 * 60 * 60 * 24))) + 1;
+          return difference;
+        }
+
+        /*
+            Encuentra el siguiente identificador de abono disponible
+        */
+        function getAdvanceId() {
+          let arrayAdvanceId = lastAdvanceId.split("A");  //"1A22" --> "1","22" 
+          let nextId = parseInt(arrayAdvanceId[1]) + 1;
+          return arrayAdvanceId[0] + "A" + nextId;
+        }
+
+        /*
+            Generea las opciones restantes para el select del estado cliente modal show
+        */
+        function updateSelectNewState() {
+          let select = document.getElementById("select_estado_cliente_modal_show_sale");
+          let options = [];
+
+          switch (showSaleData.pedido.estado) {
+            case "POR HACER":
+              options = ["POR HACER", "LISTO", "ENTREGADO", "CANCELADO"];
+              break;
+            case "ENTREGADO":
+              options = ["ENTREGADO", "CANCELADO", "LISTO", "POR HACER",];
+              break;
+            case "CANCELADO":
+              options = ["CANCELADO", "POR HACER", "LISTO", "ENTREGADO"];
+              break;
+            case "LISTO":
+              options = ["LISTO", "ENTREGADO", "CANCELADO", "POR HACER"];
+              break;
+            default:
+              break;
           }
 
-          /*
-              Cierra el show_sale_modal
-          */
-          function closeShowSaleModal() {
-            let modal = document.getElementById("show_sale_modal");
-            modal.style.display = "none";
+          for (var i = 0; i < options.length; i++) {
+            let option = document.createElement("option");
+            option.value = options[i];
+            option.text = options[i];
+            select.add(option);
           }
+        }
 
-          /*
-              Devuelve la fecha del dia formateada
-          */
-          function getDate() {
-            let date = new Date();
-            let numberMonth = date.getMonth() + 1;
-            let month = (numberMonth < 10 ? "0" : "") + numberMonth.toString();
-            return date.getFullYear() + "-" + (month) + "-" + date.getDate();
+        /*
+            Recalcula los totales cada vez que cambia el input newAdvance
+            Verifica que la suma de abonos no sea mayor que el total de la venta
+        */
+        function calculateNewAdvance() {
+          let inputNewAdvance = document.getElementById("newAdvance");
+          let inputFeedback = document.getElementById("invalid-feedback-newAdvance");
+
+          let totalAdvance = parseInt(showSaleData.pedido.vlrAbonado.replace(/,/g, ''));
+          let restValue = parseInt(showSaleData.pedido.vlrTotal.replace(/,/g, '')) - totalAdvance;
+
+          let newAdvance = parseInt(inputNewAdvance.value.replace(/,/g, ''));
+
+          if (newAdvance > restValue) {
+            inputNewAdvance.className = "form-control is-invalid";
+            inputFeedback.innerText = `El abono no puede ser mayor al valor restante de ${numeral(restValue).format('0,0')} COP`;
           }
+          else {
+            inputNewAdvance.className = "form-control";
+            inputFeedback.innerText = "Ingresa un abono";
 
-          /*
-              Resta dos fechas dadas
-          */
-          function subtractDate(minDate, susDate) {
-            let difference = (Math.floor((minDate - susDate) / (1000 * 60 * 60 * 24))) + 1;
-            return difference;
-          }
-
-          /*
-              Encuentra el siguiente identificador de abono disponible
-          */
-          function getAdvanceId() {
-            let arrayAdvanceId = lastAdvanceId.split("A");  //"1A22" --> "1","22" 
-            let nextId = parseInt(arrayAdvanceId[1]) + 1;
-            return arrayAdvanceId[0] + "A" + nextId;
-          }
-
-          /*
-              Generea las opciones restantes para el select del estado cliente modal show
-          */
-          function updateSelectNewState() {
-            let select = document.getElementById("select_estado_cliente_modal_show_sale");
-            let options = [];
-
-            switch (showSaleData.pedido.estado) {
-              case "POR HACER":
-                options = ["POR HACER", "LISTO", "ENTREGADO", "CANCELADO"];
-                break;
-              case "ENTREGADO":
-                options = ["ENTREGADO", "CANCELADO", "LISTO", "POR HACER",];
-                break;
-              case "CANCELADO":
-                options = ["CANCELADO", "POR HACER", "LISTO", "ENTREGADO"];
-                break;
-              case "LISTO":
-                options = ["LISTO", "ENTREGADO", "CANCELADO", "POR HACER"];
-                break;
-              default:
-                break;
-            }
-
-            for (var i = 0; i < options.length; i++) {
-              let option = document.createElement("option");
-              option.value = options[i];
-              option.text = options[i];
-              select.add(option);
-            }
-          }
-
-          /*
-              Recalcula los totales cada vez que cambia el input newAdvance
-              Verifica que la suma de abonos no sea mayor que el total de la venta
-          */
-          function calculateNewAdvance() {
-            let inputNewAdvance = document.getElementById("newAdvance");
-            let inputFeedback = document.getElementById("invalid-feedback-newAdvance");
-
-            let totalAdvance = parseInt(showSaleData.pedido.vlrAbonado.replace(/,/g, ''));
-            let restValue = parseInt(showSaleData.pedido.vlrTotal.replace(/,/g, '')) - totalAdvance;
-
-            let newAdvance = parseInt(inputNewAdvance.value.replace(/,/g, ''));
-
-            if (newAdvance > restValue) {
-              inputNewAdvance.className = "form-control is-invalid";
-              inputFeedback.innerText = `El abono no puede ser mayor al valor restante de ${numeral(restValue).format('0,0')} COP`;
-            }
-            else {
-              inputNewAdvance.className = "form-control";
-              inputFeedback.innerText = "Ingresa un abono";
-
-              if (newAdvance > 0) {
-                document.getElementById("abono_total_modal_show_sale").innerHTML = numeral(totalAdvance + newAdvance).format('0,0');
-              }
-              else {
-                document.getElementById("abono_total_modal_show_sale").innerHTML = numeral(totalAdvance).format('0,0');
-              }
-
-            }
-
-            remainingValue()
-          }
-
-          /*
-              Actualiza el valor restante úbicado en el modal show sale
-          */
-          function remainingValue() {
-
-            // Resta los totales
-            let difference = parseInt(document.getElementById("valor_total_modal_show_sale").innerText.replace(/,/g, ''))
-              - parseInt(document.getElementById("abono_total_modal_show_sale").innerText.replace(/,/g, ''));
-            // Se formatea para ser mostrado
-            document.getElementById("valor_restante_modal_show_sale").innerHTML = numeral(difference).format('0,0');
-          }
-
-
-          /*
-              Actualiza los abonos y el estado del pedido
-          */
-          function sendDataFromShowSale() {
-
-            let inputNewAdvance = document.getElementById("newAdvance");
-            let selectNewState = document.getElementById("select_estado_cliente_modal_show_sale");
-            let sendNewAdvance = false;
-            let sendNewState = false;
-
-            // Hay un abono válido
-            if (inputNewAdvance !== null) {
-              if (parseInt(inputNewAdvance.value.replace(/,/g, '')) > 0 && inputNewAdvance.className == "form-control") {
-                sendNewAdvance = true;
-              }
-            }
-
-            // Hay un cambio de estado válido
-            if (selectNewState.value !== showSaleData.pedido.estado) {
-              sendNewState = true;
-            }
-
-            // Hay un cambio válido en los abonos o en los estados
-            if (sendNewAdvance || sendNewState) {
-
-              let id = showSaleData.pedido.id;
-              let newState = selectNewState.value;
-              let newTotalAdvance = document.getElementById("abono_total_modal_show_sale").innerText;
-              let newAdvanceId = "";
-              let newAdvanceDate = "";
-              let newAdvance = "";
-
-              if (sendNewAdvance) {
-                newAdvanceId = getAdvanceId();
-                newAdvanceDate = getDate();
-                newAdvance = inputNewAdvance.value;
-              }
-
-              setTimeout(function () {
-                if(newAdvance === ""){
-                  alert(`\nCambio Registrado\n\nN°\n-> ${id}\nNuevo Abono\n -> ${"0"}\nNuevo Estado\n -> ${newState}`);
-                }
-                else{
-                  alert(`\nCambio Registrado\n\nN°\n-> ${id}\nNuevo Abono\n-> ${newAdvance}\nNuevo Estado\n-> ${newState}`);
-                }
-              }, 500);
-
-              google.script.run.withSuccessHandler(updateShowSale => {
-                viewSales();
-                closeShowSaleModal();
-              }).updateShowSale(id, newState, newTotalAdvance, newAdvanceId, newAdvance, newAdvanceDate, sendNewAdvance);
+            if (newAdvance > 0) {
+              document.getElementById("abono_total_modal_show_sale").innerHTML = numeral(totalAdvance + newAdvance).format('0,0');
             }
             else {
-              if (inputNewAdvance === null) {
-                closeShowSaleModal();
+              document.getElementById("abono_total_modal_show_sale").innerHTML = numeral(totalAdvance).format('0,0');
+            }
 
+          }
+
+          remainingValue()
+        }
+
+        /*
+            Actualiza el valor restante úbicado en el modal show sale
+        */
+        function remainingValue() {
+
+          // Resta los totales
+          let difference = parseInt(document.getElementById("valor_total_modal_show_sale").innerText.replace(/,/g, ''))
+            - parseInt(document.getElementById("abono_total_modal_show_sale").innerText.replace(/,/g, ''));
+          // Se formatea para ser mostrado
+          document.getElementById("valor_restante_modal_show_sale").innerHTML = numeral(difference).format('0,0');
+        }
+
+
+        /*
+            Actualiza los abonos y el estado del pedido
+        */
+        function sendDataFromShowSale() {
+
+          let inputNewAdvance = document.getElementById("newAdvance");
+          let selectNewState = document.getElementById("select_estado_cliente_modal_show_sale");
+          let sendNewAdvance = false;
+          let sendNewState = false;
+
+          // Hay un abono válido
+          if (inputNewAdvance !== null) {
+            if (parseInt(inputNewAdvance.value.replace(/,/g, '')) > 0 && inputNewAdvance.className == "form-control") {
+              sendNewAdvance = true;
+            }
+          }
+
+          // Hay un cambio de estado válido
+          if (selectNewState.value !== showSaleData.pedido.estado) {
+            sendNewState = true;
+          }
+
+          // Hay un cambio válido en los abonos o en los estados
+          if (sendNewAdvance || sendNewState) {
+
+            let id = showSaleData.pedido.id;
+            let newState = selectNewState.value;
+            let newTotalAdvance = document.getElementById("abono_total_modal_show_sale").innerText;
+            let newAdvanceId = "";
+            let newAdvanceDate = "";
+            let newAdvance = "";
+
+            if (sendNewAdvance) {
+              newAdvanceId = getAdvanceId();
+              newAdvanceDate = getDate();
+              newAdvance = inputNewAdvance.value;
+            }
+
+            setTimeout(function () {
+              if (newAdvance === "") {
+                alert(`\nCambio Registrado\n\nN°\n-> ${id}\nNuevo Abono\n -> ${"0"}\nNuevo Estado\n -> ${newState}`);
               }
               else {
-                if (inputNewAdvance.className == "form-control") {
-                  closeShowSaleModal();
-                }
+                alert(`\nCambio Registrado\n\nN°\n-> ${id}\nNuevo Abono\n-> ${newAdvance}\nNuevo Estado\n-> ${newState}`);
+              }
+            }, 500);
+
+            google.script.run.withSuccessHandler(updateShowSale => {
+              viewSales();
+              closeShowSaleModal();
+            }).updateShowSale(id, newState, newTotalAdvance, newAdvanceId, newAdvance, newAdvanceDate, sendNewAdvance);
+          }
+          else {
+            if (inputNewAdvance === null) {
+              closeShowSaleModal();
+
+            }
+            else {
+              if (inputNewAdvance.className == "form-control") {
+                closeShowSaleModal();
               }
             }
           }
+        }
 
 
-          /*
-            Cambia el color de un estado según sea necesario.
-          */
-          function highlightState(element) {
-            switch (element.innerText) {
+        /*
+          Cambia el color de un estado según sea necesario.
+        */
+        function highlightState(element) {
+          switch (element.innerText) {
 
-              case "POR HACER":
-                element.style.color = "#c53bb0";
-                break;
-              case "CANCELADO":
-                element.style.color = "#c1c1c1";
-                break;
-              case "ENTREGADO":
-                element.style.color = "yellowgreen";
-                break;
-              case "DISEÑADO":
-                element.style.color = "#d63c68";
-                break;
-              case "IMPRESO":
-                element.style.color = "cyan";
-                break;
-              case "LISTO":
-                element.style.color = "yellow";
-                break;
-              default:
-                element.style.color = "white";
-                break;
-            }
+            case "POR HACER":
+              element.style.color = "#c53bb0";
+              break;
+            case "CANCELADO":
+              element.style.color = "#c1c1c1";
+              break;
+            case "ENTREGADO":
+              element.style.color = "yellowgreen";
+              break;
+            case "DISEÑADO":
+              element.style.color = "#d63c68";
+              break;
+            case "IMPRESO":
+              element.style.color = "cyan";
+              break;
+            case "LISTO":
+              element.style.color = "yellow";
+              break;
+            default:
+              element.style.color = "white";
+              break;
           }
+        }
 
-        </script>
-      </div>
+      </script>
+
     </div>
   </div>
 </div>
