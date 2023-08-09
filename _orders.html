@@ -35,7 +35,7 @@
     <!-- Tabla con la info encontrada -->
 
     <div class="table-responsive-md mb-4">
-        <table id="orders_table" class="table table-striped table-hover table-dark">
+        <table class="table table-striped table-hover table-dark">
             <thead class="table-dark">
                 <tr>
                     <th>N°</th>
@@ -177,7 +177,7 @@
 
     <script>
         let searchParameter = ""; // Parámetro a buscar
-        let showOrderData = {}; // Almacena la data de la venta que se desea ver com más detalle
+        let showOrderData = {}; // Almacena la data de la venta que se desea ver con más detalle
 
         /*
           Busca los pedidos en base a un parámetro específico.
@@ -222,7 +222,7 @@
                                 estadoCol_ordenar_pedidos.textContent = order[1];
                                 clienteCol_ordenar_pedidos.textContent = order[3];
                                 celularCol_ordenar_pedidos.textContent = order[4];
-                                plazoCol_ordenar_pedidos.textContent = substractDate(new Date(order[5]), new Date());
+                                plazoCol_ordenar_pedidos.textContent = order[8];
                                 vlrAbonadoCol_ordenar_pedidos.textContent = order[6];
                                 vlrTotalCol_ordenar_pedidos.textContent = order[7];
                                 showButton_ordenar_pedidos.dataset.orderId = order[0];
@@ -230,12 +230,12 @@
                                 // Resalta los estados
                                 highlightState(estadoCol_ordenar_pedidos);
 
+                                // Resalta los plazos
+                                highlightPlazo(plazoCol_ordenar_pedidos);
+
 
                                 tableBody.appendChild(tr);
                             })
-
-                            // Ordena la tabla según los dias que faltan para entregar
-                            sortOrdersTable();
 
                         }
                         else {
@@ -291,7 +291,7 @@
 
                         let difference = substractDate(new Date(order.pedido.fechaEntrega), new Date());
 
-                        if (difference < 0 && (order.pedido.estado === "ENTREGADO" || order.pedido.estado === "CANCELADO")) {
+                        if (order.pedido.estado === "ENTREGADO" || order.pedido.estado === "CANCELADO") {
                             document.getElementById("plazo_modal_show_order").innerHTML = "-";
                         }
                         else {
@@ -484,41 +484,12 @@
             }
         }
 
-
         /*
-            Se usa la libreria dataTable para organizar la tabla según un parámetro específico
+            Se cargan las ordenes por defecto al reiniciar la página
         */
-        function sortOrdersTable2() {
-
-            let table = $('#orders_table').DataTable();
-
-            if (!$.fn.DataTable.isDataTable(table)) {
-
-                table = $('#orders_table').DataTable({
-
-                    "paging": false,
-                    "info": false,
-                    "searching": false,
-                    "lengthChange": false,
-                    "orderClasses": false,
-                });
-            }
-
-            table.clear(); // Limpiar las filas existentes
-            table.order([4, 'asc']).draw(); // Ordenar y dibujar la tabla
-        }
-
-        function sortOrdersTable() {
-            $('#orders_table').DataTable({
-                
-                "paging": false,
-                "info": false,
-                "searching": false,
-                "lengthChange": false,
-                "orderClasses": false,
-                "order": [[4, "asc"]] // Columna 2 (índice 2) es la columna "Edad"
-            });
-        }
+        window.addEventListener('load', function () {
+            viewOrders();
+        });
 
     </script>
 </div>

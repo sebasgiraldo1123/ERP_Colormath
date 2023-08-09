@@ -1194,7 +1194,7 @@
 
                 let difference = substractDate(new Date(sale.pedido.fechaEntrega), new Date());
 
-                if (difference < 0 && (sale.pedido.estado === "ENTREGADO" || sale.pedido.estado === "CANCELADO")) {
+                if (sale.pedido.estado === "ENTREGADO" || sale.pedido.estado === "CANCELADO") {
                   document.getElementById("plazo_modal_show_sale").innerHTML = "-";
                 }
                 else {
@@ -1542,6 +1542,24 @@
             default:
               element.style.color = "white";
               break;
+          }
+        }
+
+        /*
+          Cambia el color de un estado según sea necesario.
+        */
+        function highlightPlazo(element) {
+
+          let plazo = parseInt(element.innerText);
+
+          if (plazo > 3) {
+            element.style.color = "yellowgreen";
+          }
+          else if (plazo <= 0) {
+            element.style.color = "#d63c68";
+          }
+          else {
+            element.style.color = "yellow";
           }
         }
 
