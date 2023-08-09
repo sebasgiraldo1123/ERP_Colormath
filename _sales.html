@@ -146,6 +146,8 @@
             <label for="fecha_entrega" class="form-label">Fecha Entrega</label>
             <input type="date" class="form-control" id="fecha_entrega" name="fecha_entrega" onchange="timeToDelivery()"
               required>
+            <div id="orders_count" class="valid-feedback">
+            </div>
             <div class="invalid-feedback">
               El plazo de entrega no puede ser negativo o nulo.
             </div>
@@ -609,7 +611,12 @@
             isInvalidFechaEntrega.className = "form-control is-invalid";
           }
           else {
-            isInvalidFechaEntrega.className = "form-control";
+            isInvalidFechaEntrega.className = "form-control is-valid";
+            document.getElementById("orders_count").innerHTML = "Existen ... trabajo(s) por hacer para esta fecha";
+
+            google.script.run.withSuccessHandler(ordersCount => {
+              document.getElementById("orders_count").innerHTML = `Existen ${ordersCount} trabajo(s) por hacer para esta fecha`;
+            }).getOrdersByDate(isInvalidFechaEntrega.value);
           }
         }
 
