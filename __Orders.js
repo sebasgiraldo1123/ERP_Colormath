@@ -13,26 +13,26 @@ function filterOrders(parameter) {
 
   switch (parameter) {
     case "POR HACER":
-      orders = searchOrdersByParameter("POR HACER");
+      orders = searchOrdersByState("POR HACER");
       break;
     case "ENTREGADO":
-      orders = searchOrdersByParameter("ENTREGADO");
+      orders = searchOrdersByState("ENTREGADO");
       break;
     case "CANCELADO":
-      orders = searchOrdersByParameter("CANCELADO");
+      orders = searchOrdersByState("CANCELADO");
       break;
     case "LISTO":
-      orders = searchOrdersByParameter("LISTO");
+      orders = searchOrdersByState("LISTO");
       break;
     case "DISEÑADO":
-      orders = searchOrdersByParameter("DISEÑADO");
+      orders = searchOrdersByState("DISEÑADO");
       break;
     case "IMPRESO":
-      orders = searchOrdersByParameter("IMPRESO");
+      orders = searchOrdersByState("IMPRESO");
       break;
     default:
-      orders = searchOrdersByParameter("LISTO");
-      orders = orders.concat(searchOrdersByParameter("POR HACER"));
+      orders = searchOrdersByState("LISTO");
+      orders = orders.concat(searchOrdersByState("POR HACER"));
       break;
   }
 
@@ -49,13 +49,14 @@ function filterOrders(parameter) {
   }
 }
 
+
 /**
- * Encuentra todas las ordenes de un estado en específico y las agrega al vector sale
+ * Encuentra todas las ordenes de un estado en específico
  */
-function searchOrdersByParameter(searchText) {
+function searchOrdersByState(searchText) {
 
   let orders = [];
-  const range = "A2:H";
+  const range = "B2:B";
   let rowList = [];
 
   const textFinder = PEDIDOS_TABLE.getRange(range)
