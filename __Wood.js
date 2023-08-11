@@ -3,10 +3,7 @@
  * 
  */
 
-function filterWoodOrders(maxWoodResults) {
-  // Time
-  var startTime = new Date();
-
+function filterWoodOrders() {
   let orders = null;
   let woodOrders = [];
 
@@ -25,50 +22,67 @@ function filterWoodOrders(maxWoodResults) {
     orders.sort((a, b) => a[a.length - 1] - b[b.length - 1]);
   }
 
-  //console.log(orders);
-
   // Deja en el vector únicamente las ordenes que tienen trabajo en madera
+  let products = PRODUCTOS_TABLE.getDataRange().getValues();
+
   for (let i = 0; i < orders.length; i++) {
 
     // Agrega al vector final las ordenes que tienen madera
-    if (searchWoodOrdersById(orders[i][0])) {
+    if (searchWoodOrdersById(orders[i][0], products)) {
       woodOrders.push(orders[i]);
     }
-
-    /*
-    if (woodOrders.length >= maxWoodResults) {
-      break;
-    }
-    */
   }
 
-  // Time
-  var endTime = new Date();
-  console.log("time : ", endTime - startTime);
-
-  //console.log(woodOrders);
   return woodOrders;
 }
 
 /**
  * Encuentra si una orden requiere un trabajo en madera, si es así responde true, de lo contrario false
  */
-function searchWoodOrdersById(id) {
+function searchWoodOrdersById(id, products) {
 
-  let rows = getRowById(id, PRODUCTOS_TABLE);
-  const range = `C${rows[0]}:C${rows[rows.length - 1]}`;
-  let products = PRODUCTOS_TABLE.getRange(range).getValues();
-
+  let filtered = products.filter(sublist => sublist[1] === id);
   let searchWords = ["RETABLO", "GIRATORIO", "CUADRO", "TABLA", "OTROS"];
-
-  // Esto permite ver si la búsqueda es acertada
-  //console.log(products);
-
-  // Expresión regular cortesía de GePeTo
-  //const searchRegex = new RegExp("\\b(" + searchWords.join("|") + ")\\b", 'i');
   const searchRegex = new RegExp(`\\b(?:${searchWords.join("|")})\\b`, 'i');
 
-  return products.some(product => searchRegex.test(product[0]));
+  return filtered.some(product => {
+    let productName = product[2];
+    return searchRegex.test(productName);
+  });
+}
+
+
+function functionSpeedTest() {
+  // Time
+  var startTime = new Date();
+
+  /*
+    let data = PEDIDOS_TABLE.getDataRange();
+    const filtradas = data.getValues().filter(product => product.includes('ENTREGADO'));
+    console.log(filtradas);
+  */
+
+  /*
+  let data = PRODUCTOS_TABLE.getDataRange().getValues();
+  let filtered = data.filter(sublist => sublist[1] === "6716");
+
+  let searchWords = ["RETABLO", "GIRATORIO", "CUADRO", "TABLA", "OTROS"];
+  const searchRegex = new RegExp(`\\b(?:${searchWords.join("|")})\\b`, 'i');
+
+  filtered.forEach(product => {
+    let productName = product[2];
+
+    if (searchRegex.test(productName)) {
+      console.log(`Palabras encontradas en la product ${product[0]}: ${productName}`);
+    } else {
+      console.log(`No se encontraron palabras en la product ${product[0]}`);
+    }
+  })
+  */
+
+  // Time
+  var endTime = new Date();
+  console.log("time : ", endTime - startTime);
 }
 
 
