@@ -1,2 +1,72 @@
 <!DOCTYPE html>
-<h1>Lista de precios</h1>
+<div class="container">
+
+    <br>
+
+    <!-- Tabla con la info encontrada -->
+
+    <div class="table-responsive-md mb-4">
+        <table class="table table-striped table-hover table-dark">
+            <thead class="table-dark">
+                <tr style="color: #EED435;" >
+                    <th class="col-md-6">Nombre<br>Producto</th>
+                    <th class="col-md-6">Valor<br>Unitario</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody_precios">
+            </tbody>
+        </table>
+    </div>
+
+    <template id="rowTemplate_precios">
+        <tr>
+            <td class="template-nombre_precios"></td>
+            <td class="template-vlr_precios"></td>
+        </tr>
+    </template>
+
+    <script>
+
+        /*
+          Busca los precios
+        */
+        function viewPrices() {
+
+            google.script.run
+                .withSuccessHandler(showPrices => {
+
+                    let tableBody = document.getElementById("tableBody_precios");
+                    tableBody.innerHTML = ""; // Reinicio el contenido
+
+                    let template = document.getElementById("rowTemplate_precios");
+                    let templateContent = template.content;
+
+                    if (showPrices != null) {
+
+                        showPrices.forEach(price => {
+
+                            const tr = templateContent.cloneNode(true);
+
+                            const nombre_precios = tr.querySelector(".template-nombre_precios");
+                            const vlr_precios = tr.querySelector(".template-vlr_precios");
+
+                            nombre_precios.textContent = price[0];
+                            vlr_precios.textContent = price[1];
+
+                            tableBody.appendChild(tr);
+                        })
+
+                    }
+                    else {
+                        alert("No se encontraron resultados");
+                    }
+                })
+                .readProductsList();
+        }
+
+        window.addEventListener('load', function () {
+            viewPrices();
+        });
+
+    </script>
+</div>

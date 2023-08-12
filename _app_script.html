@@ -16,7 +16,7 @@
     let contentSales = document.getElementById('content-sales');
     let contentOrders = document.getElementById('content-orders');
     let contentPrices = document.getElementById('content-prices');
-    let contentBills = document.getElementById('content-bills');
+    //let contentBills = document.getElementById('content-bills');
     let contentWood = document.getElementById('content-wood');
 
     document.getElementById('main-navbar').addEventListener('click', navbarclicked);
@@ -29,26 +29,28 @@
                     contentSales.style.display = "inline";
                     contentOrders.style.display = "none";
                     contentPrices.style.display = "none";
-                    contentBills.style.display = "none";
+                    //contentBills.style.display = "none";
                     contentWood.style.display = "none";
                     break;
+
                 case "nav-orders":
                     contentSales.style.display = "none";
                     contentOrders.style.display = "inline";
                     contentPrices.style.display = "none";
-                    contentBills.style.display = "none";
+                    //contentBills.style.display = "none";
                     contentWood.style.display = "none";
-
                     viewOrders();
-
                     break;
+
                 case "nav-prices":
                     contentSales.style.display = "none";
                     contentOrders.style.display = "none";
                     contentPrices.style.display = "inline";
-                    contentBills.style.display = "none";
+                    //contentBills.style.display = "none";
                     contentWood.style.display = "none";
                     break;
+
+                    /*
                 case "nav-bills":
                     contentSales.style.display = "none";
                     contentOrders.style.display = "none";
@@ -56,16 +58,17 @@
                     contentBills.style.display = "inline";
                     contentWood.style.display = "none";
                     break;
+                    */
+
                 case "nav-wood":
                     contentSales.style.display = "none";
                     contentOrders.style.display = "none";
                     contentPrices.style.display = "none";
-                    contentBills.style.display = "none";
+                    //contentBills.style.display = "none";
                     contentWood.style.display = "inline";
-
                     viewWood();
-
                     break;
+                    
                 default:
                     break;
             }
