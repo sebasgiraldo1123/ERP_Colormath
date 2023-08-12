@@ -1,1312 +1,1336 @@
 <!DOCTYPE html>
 
 <div class="container">
-    <nav>
-        <div class="nav nav-tabs" id="nav-tab" role="tablist">
 
-            <!--
-            Tab - Crear Venta
-            -->
-            <button class="nav-link active" id="nav-create-sale-tab" data-bs-toggle="tab"
-                data-bs-target="#nav-create-sale" type="button" role="tab" aria-controls="nav-create-sale"
-                aria-selected="true">Crear Venta</button>
-            <!--
-            Tab - Buscar y editar Ventas
-            -->
-            <button class="nav-link" id="nav-view-sale-tab" data-bs-toggle="tab" data-bs-target="#nav-view-sale"
-                type="button" role="tab" aria-controls="nav-view-sale" aria-selected="false">Buscar Venta</button>
+  <nav class="navbar-dark bg-dark">
+    <div class="nav nav-tabs" id="nav-tab" role="tablist">
 
+      <!-- Tab - Crear Venta -->
+
+      <button class="nav-link active" id="nav-create-sale-tab" data-bs-toggle="tab" data-bs-target="#nav-create-sale"
+        type="button" role="tab" aria controls="nav-create-sale" aria-selected="true">Crear Venta</button>
+
+      <!-- Tab - Buscar y editar Ventas -->
+
+      <button class="nav-link" id="nav-view-sale-tab" data-bs-toggle="tab" data-bs-target="#nav-view-sale" type="button"
+        role="tab" aria-controls="nav-view-sale" aria-selected="false">Buscar Venta</button>
+    </div>
+  </nav>
+
+  <div class="tab-content" id="nav-tabContent">
+
+    <!-- Content - Crear Venta -->
+
+    <div class="tab-pane fade show active" id="nav-create-sale" role="tabpanel" aria-labelledby="nav-create-sale-tab">
+
+      <!-- Formulario para la creación de una venta -->
+
+      <form class="needs-validation" name="crear_venta" id="crear_venta" novalidate>
+
+        <!-- Cliente -->
+
+        <br>
+        <h4>
+          Cliente
+        </h4>
+        <hr class="divider-1">
+
+        <!-- Datos del cliente -->
+
+        <div class="row">
+          <div class="col-sm-2">
+            <label for="id_cliente" class="form-label">N°</label>
+            <input type="text" class="form-control text-center" id="id_cliente" name="id_cliente" readonly>
+          </div>
+          <div class="col-sm-7">
+            <label for="nombre_cliente" class="form-label">Nombre</label>
+            <input type="text" class="form-control" id="nombre_cliente" name="nombre_cliente" required>
+            <div class="invalid-feedback">
+              Ingrese un nombre.
+            </div>
+          </div>
+          <div class="col-sm-3">
+            <label for="celular_cliente" class="form-label">Celular</label>
+            <input type="tel" pattern=".{10,}" maxlength="10" class="form-control" id="celular_cliente"
+              name="celular_cliente" required>
+            <div class="invalid-feedback">
+              Ingrese un celular correcto
+            </div>
+          </div>
         </div>
-    </nav>
-    <div class="tab-content" id="nav-tabContent">
 
-        <!--
-        Content - Crear Venta
-        -->
-        <div class="tab-pane fade show active" id="nav-create-sale" role="tabpanel"
-            aria-labelledby="nav-create-sale-tab">
-            <!-- 
-                Formulario para la creación de una venta 
-            -->
-            <form class="needs-validation" name="crear_venta" id="crear_venta" novalidate>
-                <!--
-                    Cliente
-                -->
-                <h3>
-                    Cliente
-                </h3>
-                <!--
-                    Datos del cliente
-                -->
-                <div class="row">
-                    <div class="col-sm-2">
-                        <label for="id_cliente" class="form-label">N°</label>
-                        <input type="text" class="form-control text-center" id="id_cliente" name="id_cliente" readonly>
-                    </div>
-                    <div class="col-sm-7">
-                        <label for="nombre_cliente" class="form-label">Nombre</label>
-                        <input type="text" class="form-control" id="nombre_cliente" name="nombre_cliente" required>
-                        <div class="invalid-feedback">
-                            Ingrese un nombre.
-                        </div>
-                    </div>
-                    <div class="col-sm-3">
-                        <label for="celular_cliente" class="form-label">Celular</label>
-                        <input type="tel" pattern=".{10,}" maxlength="10" class="form-control" id="celular_cliente"
-                            name="celular_cliente" required>
-                        <div class="invalid-feedback">
-                            Ingrese un celular correcto
-                        </div>
-                    </div>
+        <!-- Pedidos -->
+
+        <br>
+        <h4>
+          Productos
+        </h4>
+        <hr class="divider-1">
+
+        <div class="row" id="productos">
+          <div class="row producto" id="producto_0">
+
+            <!-- Datos del producto -->
+
+            <div class="row">
+              <div class="col-sm-2">
+                <label for="id_producto" class="form-label">N°</label>
+                <input type="text" name="id_producto" class="form-control text-center id-producto" readonly>
+              </div>
+              <div class="col-sm-6">
+                <label class="form-label">Producto</label>
+                <select class="form-select nombre-producto" name="nombre_producto" onchange="selectChanged(event)"
+                  required>
+                  <option selected disabled value>Seleccione un producto...</option>
+                </select>
+                <div class="invalid-feedback">
+                  Seleccione un producto.
                 </div>
-                <!--
-                    Pedidos
-                -->
-                <h3>
-                    Productos
-                </h3>
-
-                <div class="row" id="productos">
-
-                    <div class="row producto" id="producto_0">
-                        <!--
-                            Datos del producto
-                        -->
-                        <div class="row">
-                            <div class="col-sm-2">
-                                <label for="id_producto" class="form-label">N°</label>
-                                <input type="text" name="id_producto" class="form-control text-center id-producto"
-                                    readonly>
-                            </div>
-                            <div class="col-sm-5">
-                                <label class="form-label">Producto</label>
-                                <select class="form-select nombre-producto" name="nombre_producto"
-                                    onchange="selectChanged(event)" required>
-                                    <option selected disabled value>Seleccione un producto...</option>
-                                </select>
-                                <div class="invalid-feedback">
-                                    Seleccione un producto.
-                                </div>
-                            </div>
-                            <div class="col-sm-2">
-                                <label for="cantidad" class="form-label">Cantidad</label>
-                                <input type="number" name="cantidad" class="form-control cantidad"
-                                    onkeyup="calculateTotal(); formatCount(event)" required>
-                                <div class="invalid-feedback">
-                                    Ingrese una cantidad.
-                                </div>
-                            </div>
-                            <div class="col-sm-3">
-                                <label for="valor_unitario" class="form-label">Valor Unitario</label>
-                                <input type="text" class="form-control valor-unitario" name="valor_unitario"
-                                    onkeyup="calculateTotal(); formatPrice(event)">
-                            </div>
-                        </div>
-                        <!--
-                            Opciones del producto
-                        -->
-                        <div class="row opciones-productos">
-                        </div>
-                    </div>
-
+              </div>
+              <div class="col-sm-2">
+                <label for="cantidad" class="form-label">Cantidad</label>
+                <input type="number" name="cantidad" class="form-control cantidad"
+                  onkeyup="calculateTotal(); formatCount(event)" required>
+                <div class="invalid-feedback">
+                  Ingrese una cantidad.
                 </div>
-                <!--
-                    Agregar otro producto
-                -->
-                <div class="row">
-                    <div class="col-sm-12 d-flex justify-content-center">
-                        <button type="button" onclick="addProduct()" class="btn btn-success btn-sm">+</button>
-                    </div>
-                </div>
-                <!--
-                    Totales
-                -->
-                <h3>
-                    Totales
-                </h3>
-                <div class="row">
-                    <div class="col-sm">
-                        <label for="valor_total" class="form-label">Valor Total</label>
-                        <input type="text" class="form-control" id="valor_total" name="valor_total" readonly>
-                    </div>
-                    <div class="col-sm">
-                        <label for="abono" class="form-label">Abono</label>
-                        <input type="text" class="form-control" id="abono" name="abono"
-                            onkeyup="calculateAdvance(); formatPrice(event)" required>
-                        <div class="invalid-feedback" id="invalid-feedback-abono">
-                            Ingrese un abono.<br> Si no hay puede poner 0.
-                        </div>
-                    </div>
-                    <div class="col-sm">
-                        <label for="valor_restante" class="form-label">Valor Restante</label>
-                        <input type="text" class="form-control" id="valor_restante" name="valor_restante" readonly>
-                    </div>
-                    <div class="col-sm">
-                        <label for="fecha_entrega" class="form-label">Fecha Entrega</label>
-                        <input type="date" class="form-control" id="fecha_entrega" name="fecha_entrega"
-                            onchange="timeToDelivery()" required>
-                        <div class="invalid-feedback">
-                            El plazo de entrega no puede ser negativo o nulo.
-                        </div>
-                    </div>
-                    <div class="col-sm">
-                        <label for="plazo_entrega" class="form-label">Plazo (dias)</label>
-                        <input type="number" class="form-control" id="plazo_entrega" name="plazo_entrega" readonly>
-
-                    </div>
-                </div>
-                <!--
-                    Botones de Acción
-                -->
-                <div class="row">
-                    <div class="col-sm-12 d-flex justify-content-center">
-                        <button id="register_button" type="button" class="btn btn-success"
-                            onclick="submitFormSale()">Registrar</button>
-                    </div>
-                </div>
-            </form>
-
-            <!-- Create Sale Modal -->
-            <div class="modal fade" id="create_sale_modal" data-bs-backdrop="static" data-bs-keyboard="false"
-                tabindex="-1" aria-labelledby="create_sale_modal_Label" aria-hidden="true">
-                <div class="modal-dialog modal-lg">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="create_sale_modal_Label">Información de la venta</h5>
-                        </div>
-                        <div class="modal-body" id="modal_body">
-                            <!--
-                                Cliente
-                            -->
-                            <h3>
-                                Cliente
-                            </h3>
-                            <!--
-                                Datos del cliente
-                            -->
-                            <table class="table table-hover">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">N°</th>
-                                        <th scope="col">Cliente</th>
-                                        <th scope="col">Celular</th>
-                                        <th scope="col">Estado</th>
-                                        <th scope="col">Fecha Recibido</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td id="id_cliente_modal"></td>
-                                        <td id="nombre_cliente_modal"></td>
-                                        <td id="celular_cliente_modal"></td>
-                                        <td id="estado_cliente_modal"></td>
-                                        <td id="fecha_cliente_modal"></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <!--
-                                Pedidos
-                            -->
-                            <h3>
-                                Productos
-                            </h3>
-                            <table class="table table-hover">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">N°</th>
-                                        <th scope="col">Producto</th>
-                                        <th scope="col">Cantidad</th>
-                                        <th scope="col">Valor Unitario</th>
-                                        <th scope="col">Orientación</th>
-                                        <th scope="col">Color</th>
-                                        <th scope="col">Tipo Diseño</th>
-                                        <th scope="col">Ruana</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="tableBody-products-modal">
-                                </tbody>
-                            </table>
-
-                            <!--
-                                Totales
-                            -->
-                            <h3>
-                                Totales
-                            </h3>
-                            <table class="table table-hover">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Valor Total</th>
-                                        <th scope="col">Abono</th>
-                                        <th scope="col">Valor Restante</th>
-                                        <th scope="col">Fecha Entrega</th>
-                                        <th scope="col">Plazo (dias)</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td id="valor_total_modal" class="table-active"></td>
-                                        <td id="abono_modal"></td>
-                                        <td id="valor_restante_modal"></td>
-                                        <td id="fecha_entrega_modal"></td>
-                                        <td id="plazo_modal"></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary"
-                                onclick="closeCreateSaleModal()">Atrás</button>
-                            <button type="button" class="btn btn-primary" onclick="sendDataFromSale()">Guardar</button>
-                        </div>
-                    </div>
-                </div>
+              </div>
+              <div class="col-sm-2">
+                <label for="valor_unitario" class="form-label">Valor Unitario</label>
+                <input type="text" class="form-control valor-unitario" name="valor_unitario"
+                  onkeyup="calculateTotal(); formatPrice(event)">
+              </div>
             </div>
 
-            <!--
-                Este script se encarga de insertar o eliminar un form de producto.
-            -->
-            <script>
-
-                const newProduct =
-                    '<div class="row">' +
-                    '<div class="col-sm-12 d-flex justify-content-end">' +
-                    '<button type="button" onclick="deleteProduct(event)" class="btn btn-danger btn-sm">x</button>' +
-                    '</div>' +
-                    '</div>' +
-                    '<div class="row">' +
-                    '<div class="col-sm-2">' +
-                    '<label for="id_producto" class="form-label">N°</label>' +
-                    '<input type="text" name="id_producto" class="form-control text-center id-producto " readonly>' +
-                    '</div>' +
-                    '<div class="col-sm-5">' +
-                    '<label class="form-label">Producto</label>' +
-                    '<select class="form-select nombre-producto" name="nombre_producto" onchange="selectChanged(event)" required>' +
-                    '<option selected disabled value>Seleccione un producto...</option>' +
-                    '</select>' +
-                    '<div class="invalid-feedback">' +
-                    'Seleccione un producto.' +
-                    '</div>' +
-                    '</div>' +
-                    '<div class="col-sm-2">' +
-                    '<label for="cantidad" class="form-label">Cantidad</label>' +
-                    '<input type="number" name="cantidad" class="form-control cantidad" onkeyup="calculateTotal(); formatCount(event)" required>' +
-                    '<div class="invalid-feedback">' +
-                    'Ingrese una cantidad.' +
-                    '</div>' +
-                    '</div>' +
-                    '<div class="col-sm-3">' +
-                    '<label for="valor_unitario" class="form-label">Valor Unitario</label>' +
-                    '<input type="text" class="form-control format-price valor-unitario" name="valor_unitario" onkeyup="calculateTotal(); formatPrice(event)">' +
-                    '</div>' +
-                    '</div>' +
-                    '<div class="row opciones-productos">' +
-                    '</div>';
-
-                function addProduct() {
-
-                    productos = document.getElementById('productos');
-
-                    // Se crea el nuevo div con sus parámetros y se agrega el html del nuevo producto
-                    productsIndex = document.querySelectorAll('.producto').length;
-
-                    let div_newProduct = document.createElement("div");
-                    div_newProduct.className = "row producto";
-                    div_newProduct.id = `producto_${productsIndex}`;
-                    div_newProduct.innerHTML = newProduct;
-
-                    // Se agrega al contendor de productos
-                    productos.appendChild(div_newProduct);
-
-                    // Se actualizan los selects nuevos con los productos
-                    updateDataNewSelects();
-
-                    // Se actualizan los ID's de producto
-                    updateProductId();
-                }
-
-                function deleteProduct(event) {
-                    // Obtengo el indice del producto
-                    let index = event.target.parentElement.parentElement.parentElement.id.split('_')[1];
-
-                    // Elimino el contenedor
-                    document.getElementById(`producto_${index}`).remove();
-
-                    // Se actualizan los ID's de producto
-                    updateProductId();
-
-                    // Se actualizan los ID's de los contenedores de producto
-                    updateClassProductsId();
-
-                    // Se actualizan los totales
-                    calculateTotal();
-                    calculateAdvance();
-                }
-
-                // Cuando se elimina un producto, se deben actualizar los ID´s de sus contenedores
-                // para evitar un problema con la referencia.
-                function updateClassProductsId() {
-
-                    let productos = document.querySelectorAll('.producto');
-                    let newId = 0;
-                    productos.forEach(producto => {
-                        producto.id = `producto_${newId}`;
-                        newId++;
-                    });
-                }
-
-            </script>
-
-            <!--
-                Este script se encarga de generar las opciones de cada producto seleccionado y todos los
-                cambios que desencadena su selección.
-            -->
-            <script>
-
-                const orientacion =
-                    '<div class="col-sm-4">' +
-                    '<label class="form-label">Orientación</label>' +
-                    '<select name="orientacion" class="form-select" required>' +
-                    '<option selected disabled value>Seleccionar...</option>' +
-                    '<option value="HORIZONTAL">HORIZONTAL</option>' +
-                    '<option value="VERTICAL">VERTICAL</option>' +
-                    '</select>' +
-                    '<div class="invalid-feedback">' +
-                    'Seleccione una orientación.' +
-                    '</div>' +
-                    '</div>';
-
-                const color =
-                    '<div class="col-sm-4">' +
-                    '<label class="form-label">Color</label>' +
-                    '<select name="color" class="form-select" required>' +
-                    '<option selected disabled value>Seleccionar...</option>' +
-                    '<option value="WENGUE">WENGUE</option>' +
-                    '<option value="MIEL">MIEL</option>' +
-                    '<option value="CARAMELO">CARAMELO</option>' +
-                    '<option value="NATURAL">NATURAL</option>' +
-                    '<option value="BLANCO">BLANCO</option>' +
-                    '<option value="NEGRO">NEGRO</option>' +
-                    '</select>' +
-                    '<div class="invalid-feedback">' +
-                    'Seleccione un color.' +
-                    '</div>' +
-                    '</div>';
-
-                const tipoDiseño =
-                    '<div class="col-sm-4">' +
-                    '<label class="form-label">Tipo de Diseño</label>' +
-                    '<select name="tipo_diseño" class="form-select" required>' +
-                    '<option selected disabled value>Seleccionar...</option>' +
-                    '<option value="COLLAGE">COLLAGE</option>' +
-                    '<option value="RETOQUE">RETOQUE</option>' +
-                    '<option value="MONTAJE">MONTAJE</option>' +
-                    '</select>' +
-                    '<div class="invalid-feedback">' +
-                    'Seleccione el tipo de diseño.' +
-                    '</div>' +
-                    '</div>';
-
-                const ruana =
-                    '<div class="col-sm-4">' +
-                    '<label class="form-label">Ruana</label>' +
-                    '<select name="ruana" class="form-select" required>' +
-                    '<option selected disabled value>Seleccionar...</option>' +
-                    '<option value="SI">SI</option>' +
-                    '<option value="NO">NO</option>' +
-                    '</select>' +
-                    '<div class="invalid-feedback">' +
-                    'Seleccione un valor.' +
-                    '</div>' +
-                    '</div>';
-
-                /*
-                    Capturo el select seleccionado y su opción.
-                    Agrego la opciones correspondientes al tipo de producto
-                */
-
-                function selectChanged(event) {
-
-                    /*
-                        Se busca la data del producto que se seleccionó en el select seleccionado
-                    */
-
-                    // Busco el indice y el valor del select activado
-                    let selectValue = event.target.value;
-                    let index = event.target.parentElement.parentElement.parentElement.id.split('_')[1];
-                    let index_productList = 0;
-
-
-                    // se busca la data
-                    while (productsList[index_productList][0] !== selectValue) {
-                        index_productList++;
-                    }
-                    let data_selectedProduct = productsList[index_productList];
-
-
-                    /*
-                        Se agregan y modifican los cambios que el select produce
-                    */
-                    // --------------------- Valor Unitario -----------------------
-                    let valoresUnitarios = document.querySelectorAll('.valor-unitario');
-                    valoresUnitarios[index].value = data_selectedProduct[1];
-
-                    // --------------------- Cantidad -----------------------
-                    // Si se realiza un cambio de producto la cantidad se formatea
-                    let cantidades = document.querySelectorAll('.cantidad');
-                    cantidades[index].value = "";
-
-
-                    // ----------- Opciones para el producto seleccio1nado -------------
-                    let opcionesProductos = document.querySelectorAll('.opciones-productos');
-
-                    // Borrar las opciones que existan
-                    opcionesProductos[index].innerHTML = "";
-                    // Orientación 
-                    if (data_selectedProduct[2] === 'TRUE') {
-                        opcionesProductos[index].innerHTML += orientacion;
-                    }
-                    // Color 
-                    if (data_selectedProduct[3] === 'TRUE') {
-                        opcionesProductos[index].innerHTML += color;
-                    }
-                    // Tipo Diseño 
-                    if (data_selectedProduct[4] === 'TRUE') {
-                        opcionesProductos[index].innerHTML += tipoDiseño;
-                    }
-                    // Ruana 
-                    if (data_selectedProduct[5] === 'TRUE') {
-                        opcionesProductos[index].innerHTML += ruana;
-                    }
-                }
-
-            </script>
-
-            <!--
-                Este script se ejecuta cada vez que se carga el contenedor de Ventas 
-                Crea los options para los selects disponibles y carga la lista de productos.
-            -->
-            <script>
-
-                // Se ejecuta al cargar el documento y cada que se actualiza
-                window.addEventListener("load", loadProductsList);
-
-                // Variables de inicio.
-                let productsList = null;
-
-                // Leo y almaceno en una variable la lista de productos desde el SpreadSheet
-                function loadProductsList() {
-                    google.script.run
-                        .withSuccessHandler(products_list => {
-
-                            productsList = products_list;
-
-                            let selects = document.querySelectorAll('.nombre-producto');
-                            for (let select of selects) {
-
-                                products_list.forEach(product => {
-
-                                    let option = document.createElement("option");
-                                    option.value = product[0];
-                                    option.text = product[0];
-                                    select.add(option);
-                                });
-                            }
-                        })
-                        .readProductsList();
-                }
-
-                // Actualiza los options para los selects nuevos
-                function updateDataNewSelects() {
-
-                    let selects = document.querySelectorAll('.nombre-producto');
-                    for (let select of selects) {
-
-                        // Solo se actualizan los selects con sólo el option por defecto.
-                        if (select.options.length === 1) {
-                            productsList.forEach(product => {
-
-                                let option = document.createElement("option");
-                                option.value = product[0];
-                                option.text = product[0];
-                                select.add(option);
-                            });
-                        }
-                    }
-                }
-
-            </script>
-
-            <!--
-                Este script se encarga de calcular los totales cuando hay cambio en:
-                Cantidad
-                Valor Unitario
-                Abono
-
-                Tambiém calcula el plazo de entrega.
-            -->
-            <script>
-
-                let total;
-
-                /*
-                    Se llama cuando hay cambios en el input de cantidad o valor unitario
-                */
-                function calculateTotal() {
-
-                    let cantidades = document.querySelectorAll('.cantidad');
-                    let valoresUnitarios = document.querySelectorAll('.valor-unitario');
-
-                    total = 0;
-                    for (let index = 0; index < cantidades.length; index++) {
-                        total += cantidades[index].value.replace(/,/g, '') * valoresUnitarios[index].value.replace(/,/g, '');
-                    }
-
-                    document.getElementById("valor_total").value = numeral(total).format('0,0')
-                    calculateAdvance();
-                }
-
-                /*
-                    Se llama cuando se ingresa un abono, calcula el valor restante
-                */
-                function calculateAdvance() {
-                    let isInvalidAbono = document.getElementById("abono");
-                    let advance = isInvalidAbono.value.replace(/,/g, '');
-
-                    if (advance <= total) {
-                        document.getElementById("valor_restante").value = numeral(total - advance).format('0,0');
-                        document.getElementById("invalid-feedback-abono").innerText = "Ingresa un abono.\n Si no hay puedes poner 0."
-                        isInvalidAbono.className = "form-control";
-                    }
-
-                    // El abono es mayor que el total de la venta
-                    else {
-                        isInvalidAbono.className = "form-control is-invalid";
-
-                        document.getElementById("invalid-feedback-abono").innerText = `El abono no puede ser mayor al total.\n Se sugieren mínimo ${numeral(total / 2).format('0,0')} COP \n ;p`
-                    }
-                }
-
-                /*
-                    Se llama cuando la fecha de entrega cambia y calcula el plazo de entrega 
-                    que no debe ser menor a cero es decir el mismo dia.
-                */
-                function timeToDelivery() {
-
-                    let isInvalidFechaEntrega = document.getElementById("fecha_entrega");
-                    let currentDate = new Date();
-                    let inputDate = new Date(isInvalidFechaEntrega.value);
-
-
-                    // El tiempo se dá en milisegundos, se resta y se hace la conversión a dias
-                    let difference = subtractDate(inputDate, currentDate);
-
-                    // Se muestra por pantalla
-                    document.getElementById("plazo_entrega").value = difference;
-
-                    // Avisa si es necesario activando el invalid-feedback
-                    if (difference < 0) {
-                        isInvalidFechaEntrega.className = "form-control is-invalid";
-                    }
-                    else {
-                        isInvalidFechaEntrega.className = "form-control";
-                    }
-                }
-
-            </script>
-
-            <!--
-                Este escript genera el ID del cliente al iniciar y los de productos conforme se van creando.
-            -->
-            <script>
-
-                /*
-                    Carga el ID del cliente al cargar el documento
-                */
-                window.addEventListener("load", loadClientId());
-
-                function loadClientId() {
-                    google.script.run
-                        .withSuccessHandler(id => {
-                            document.getElementById("id_cliente").value = id;
-                            updateProductId();
-                        })
-                        .getLastClientId();
-                }
-
-                function updateProductId() {
-                    // Se obtiene el id del cliente
-                    let clientId = document.getElementById("id_cliente").value;
-
-                    // Se recorren los productos creados y se les agrega su id personalizado
-                    let productsIdentifier = document.querySelectorAll('.id-producto');
-
-                    for (let index = 0; index < productsIdentifier.length; index++) {
-                        productsIdentifier[index].value = `${clientId}P${index}`;
-                    }
-                }
-            </script>
-
-            <!--
-                Este script controla el botón de submit del formulario.
-                Realiza las validaciones.
-                Lanza un modal en el cual se verifica la info suministrada.
-                Si acepta, llama a la función que guarda la data.
-            -->
-            <script>
-                let data = {};
-
-                function submitFormSale() {
-                    let form = document.getElementById("crear_venta");
-
-                    // Se verifica que la clase de estos inputs que están personallizados no contenga el "is-invalid"
-                    let isInvalidAbono = document.getElementById("abono").className.match("is-invalid");
-                    let isInvalidFechaEntrega = document.getElementById("fecha_entrega").className.match("is-invalid");
-
-                    // Se activa la validación de Bootstrap
-                    form.classList.add('was-validated');
-
-                    // No es válido
-                    if (!form.checkValidity() || isInvalidFechaEntrega != null || isInvalidAbono != null) {
-
-                        event.preventDefault();
-                        event.stopPropagation();
-                    }
-                    // Es válido
-                    else {
-                        // Se genera un objeto json a partir de los datos
-
-                        // FormData es un objeto JavaScript que permite crear un conjunto de pares 
-                        // clave/valor para enviar a un servidor a través de una solicitud HTTP
-                        let formData = new FormData(form);
-
-                        let products = {};
-                        let productsIndex = 0;
-                        let product = {};
-                        let isProduct = false;
-
-                        // Se recorre el formData y se arma el json
-                        for (var [key, value] of formData.entries()) {
-                            if (key === "id_producto") {
-                                isProduct = true;
-
-                                // Ya tiene la data de un producto
-                                if (Object.keys(product).length !== 0) {
-                                    products[productsIndex] = product;
-                                    productsIndex++;
-                                    product = {};
-                                }
-                            }
-                            // Recupero la info del último producto
-                            if (key === "valor_total") {
-                                isProduct = false;
-
-                                products[productsIndex] = product;
-                            }
-
-                            if (isProduct) {
-                                product[key] = value;
-                            }
-                            else {
-                                data[key] = value
-                            }
-                        }
-                        data["products"] = products;
-
-                        // Se muestra la info por el modal para pedir confirmación
-
-                        // Datos del cliente
-                        document.getElementById("id_cliente_modal").innerHTML = data.id_cliente;
-                        document.getElementById("nombre_cliente_modal").innerHTML = data.nombre_cliente.toUpperCase();
-                        document.getElementById("celular_cliente_modal").innerHTML = data.celular_cliente;
-                        document.getElementById("estado_cliente_modal").innerHTML = "POR HACER";
-                        document.getElementById("fecha_cliente_modal").innerHTML = getDate();
-
-                        // Datos de productos
-                        let tableBody = document.getElementById("tableBody-products-modal");
-                        let orientacion_column;
-                        let color_column;
-                        let tipo_diseño_column;
-                        let ruana_column;
-
-                        tableBody.innerHTML = "";
-                        for (const [key, product] of Object.entries(data.products)) {
-                            let row = `<tr>
-                                        <td>${product.id_producto}</td>
-                                        <td>${product.nombre_producto}</td>
-                                        <td>${product.cantidad}</td>
-                                        <td>${product.valor_unitario}</td>
-                                        `;
-
-                            if (product.orientacion !== undefined) {
-                                orientacion_column = `<td>${product.orientacion}</td>`;
-                            }
-                            else {
-                                orientacion_column = "<td>-</td>";
-                            }
-
-                            if (product.color !== undefined) {
-                                color_column = `<td>${product.color}</td>`;
-                            }
-                            else {
-                                color_column = "<td>-</td>";
-                            }
-
-                            if (product.tipo_diseño !== undefined) {
-                                tipo_diseño_column = `<td>${product.tipo_diseño}</td>`;
-                            }
-                            else {
-                                tipo_diseño_column = "<td>-</td>";
-                            }
-
-                            if (product.ruana !== undefined) {
-                                ruana_column = `<td>${product.ruana}</td>`;
-                            }
-                            else {
-                                ruana_column = "<td>-</td>";
-                            }
-
-                            tableBody.innerHTML += `${row}${orientacion_column}${color_column}${tipo_diseño_column}${ruana_column}</tr>`;
-                        }
-
-                        // Datos de los totales
-                        document.getElementById("valor_total_modal").innerHTML = data.valor_total;
-                        document.getElementById("abono_modal").innerHTML = data.abono;
-                        document.getElementById("valor_restante_modal").innerHTML = data.valor_restante;
-                        document.getElementById("fecha_entrega_modal").innerHTML = data.fecha_entrega;
-                        document.getElementById("plazo_modal").innerHTML = data.plazo_entrega;
-
-                        // Muestra el modal
-                        let modal = document.getElementById("create_sale_modal");
-                        modal.style.display = "block";
-                        modal.classList.add("show");
-                    }
-                }
-
-                /*
-                    Se encarga de enviar la información al spreadsheet
-                */
-                function sendDataFromSale() {
-                    let form = document.getElementById("crear_venta");
-
-                    setTimeout(function () {
-                        alert(`\nVenta Registrada \n\n N° ${form.id_cliente.value} \n\nPor favor apunte el N° en el sobre y la tirilla que debe ser entregada al cliente.`);
-                    }, 500);
-
-                    google.script.run
-                        .withSuccessHandler(result => {
-
-                            reloadCreateSaleForm(form);
-                            loadClientId();
-                            closeCreateSaleModal();
-                        })
-                        .createSale(data);
-                }
-
-                /*
-                    Cierra el create_sale_modal
-                */
-                function closeCreateSaleModal() {
-                    let modal = document.getElementById("create_sale_modal");
-                    modal.style.display = "none";
-                }
-
-                /*
-                    Regresa el form a su estado inicial
-                    Borra los campos de texto
-                    Elimina el was validate de la clase
-                    Quita el contenedor de los productos adicionales
-                */
-                function reloadCreateSaleForm(form) {
-                    // Se borran los inputs
-                    form.reset();
-
-                    // Se desactiva el trigger de la validación de Bootstrap
-                    form.classList.remove('was-validated');
-
-                    // Quita el contenedor de los productos adicionales 
-                    // index 0,1,2....
-                    let containersProducts = document.getElementById('productos').childElementCount;
-                    for (let index = 1; index <= containersProducts - 1; index++) {
-                        document.getElementById(`producto_${index}`).remove();
-                    }
-                }
-
-            </script>
-
+            <!-- Opciones del producto -->
+
+            <div class="row opciones-productos">
+            </div>
+          </div>
         </div>
 
-        <!--
-            Content - Buscar y editar Ventas
-        -->
-        <div class="tab-pane fade" id="nav-view-sale" role="tabpanel" aria-labelledby="nav-view-sale-tab">
-            <!--
-                Formulario para buscar las ventas
-            -->
-            <form name="buscar_venta" id="buscar_venta">
-                <!--
-                    Área de búsqueda
-                -->
-                <h3>
-                    Buscar Venta
-                </h3>
-                <!--
-                    Datos de Búsqueda
-                -->
-                <div class="row">
-                    <div class="col-sm-3">
-                        <input type="text" class="form-control text-center" id="texto_busqueda"
-                            onkeydown="disableEnterKey(event)">
-                    </div>
-                    <div class="col-sm-3">
-                        <select class="form-select" id="cantidad_resultados" onkeydown="disableEnterKey(event)">
-                            <option value="5">5</option>
-                            <option value="10">10</option>
-                            <option value="20">20</option>
-                            <option value="50">50</option>
-                            <option value="Todos">Todos</option>
-                        </select>
-                    </div>
-                    <div class="col-sm-3">
-                        <button id="buscar_venta_button" type="button" class="btn btn-primary"
-                            onclick="viewSales()">Buscar</button>
-                    </div>
-                    <div id="loading" class="spinner-border" role="status" style="display: none;">
-                        <span class="sr-only"></span>
-                    </div>
-                </div>
-            </form>
+        <!-- Agregar otro producto -->
 
-            <!--
-                Tabla con la info encontrada
-            -->
-            <table class="table table-hover">
-                <thead>
+        <div class="row">
+          <div class="col-sm-12 d-flex justify-content-center">
+            <button type="button" onclick="addProduct()" class="btn btn-primary btn-sm">+</button>
+          </div>
+        </div>
+
+        <!-- Totales -->
+
+        <br>
+        <h4>
+          Totales
+        </h4>
+        <hr class="divider-1">
+
+        <div class="row">
+          <div class="col-sm">
+            <label for="valor_total" class="form-label">Valor Total</label>
+            <input type="text" class="form-control" id="valor_total" name="valor_total" readonly>
+          </div>
+          <div class="col-sm">
+            <label for="abono" class="form-label">Abono</label>
+            <input type="text" class="form-control" id="abono" name="abono"
+              onkeyup="calculateAdvance(); formatPrice(event)" required>
+            <div class="invalid-feedback" id="invalid-feedback-abono">
+              Ingrese un abono.<br> Si no hay puede poner 0.
+            </div>
+          </div>
+          <div class="col-sm">
+            <label for="valor_restante" class="form-label">Valor Restante</label>
+            <input type="text" class="form-control" id="valor_restante" name="valor_restante" readonly>
+          </div>
+          <div class="col-sm">
+            <label for="fecha_entrega" class="form-label">Fecha Entrega</label>
+            <input type="date" class="form-control" id="fecha_entrega" name="fecha_entrega" onchange="timeToDelivery()"
+              required>
+            <div id="orders_count" class="valid-feedback">
+            </div>
+            <div class="invalid-feedback">
+              El plazo de entrega no puede ser negativo o nulo.
+            </div>
+          </div>
+          <div class="col-sm">
+            <label for="plazo_entrega" class="form-label">Plazo (dias)</label>
+            <input type="number" class="form-control" id="plazo_entrega" name="plazo_entrega" readonly>
+
+          </div>
+        </div>
+
+        <!-- Botones de Acción -->
+
+        <br>
+        <div class="row">
+          <div class="col-sm-12 d-flex justify-content-end">
+            <button id="register_button" type="button" class="btn btn-success"
+              onclick="submitFormSale()">Registrar</button>
+          </div>
+        </div>
+      </form>
+
+      <!-- Create Sale Modal -->
+
+      <div class="modal fade" id="create_sale_modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="create_sale_modal_Label" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+
+            <div class="modal-body" id="modal_body">
+
+              <!-- Cliente -->
+
+              <h4>
+                Nueva Venta
+              </h4>
+              <hr class="divider-1">
+
+              <!-- Datos del cliente -->
+
+              <div class="table-responsive-lg">
+                <table class="table table-striped table-hover table-dark">
+                  <thead>
                     <tr>
-                        <th>N°</th>
-                        <th>Estado</th>
-                        <th>Fecha</th>
-                        <th>Cliente</th>
-                        <th>Celular</th>
-                        <th>Fecha Entrega</th>
-                        <th>Vlr Abonado</th>
-                        <th>Vlr Total</th>
-                        <th></th>
+                      <th scope="col">N°</th>
+                      <th scope="col">Cliente</th>
+                      <th scope="col">Celular</th>
+                      <th scope="col">Estado</th>
+                      <th scope="col">Fecha<br>Recibido</th>
                     </tr>
-                </thead>
-                <tbody id="tableBody_ventas_encontradas">
-                </tbody>
-            </table>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td id="id_cliente_modal"></td>
+                      <td id="nombre_cliente_modal"></td>
+                      <td id="celular_cliente_modal"></td>
+                      <td id="estado_cliente_modal"></td>
+                      <td id="fecha_cliente_modal"></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
 
-            <template id="rowTemplate">
-                <tr>
-                    <td class="template-id"></td>
-                    <td class="template-estado"></td>
-                    <td class="template-fecha"></td>
-                    <td class="template-cliente"></td>
-                    <td class="template-celular"></td>
-                    <td class="template-fecha-entrega"></td>
-                    <td class="template-vlr-abonado"></td>
-                    <td class="template-vlr-total"></td>
-                    <td class="template-acciones text-center">
-                        <button class="btn btn-success show-button"
-                            onclick="showDetails(this.dataset.saleId)">Ver</button>
-                    </td>
-                </tr>
-            </template>
+              <!-- Pedidos -->
 
+              <hr class="divider-1">
+              <div class="table-responsive-lg">
+                <table class="table table-striped table-hover table-dark">
+                  <thead>
+                    <tr>
+                      <th scope="col">N°</th>
+                      <th scope="col">Producto</th>
+                      <th scope="col">Cantidad</th>
+                      <th scope="col">Valor<br>Unitario</th>
+                      <th scope="col">Orientación</th>
+                      <th scope="col">Color</th>
+                      <th scope="col">Tipo<br>Diseño</th>
+                      <th scope="col">Ruana</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tableBody-products-modal">
+                  </tbody>
+                </table>
+              </div>
 
-            <!-- Show Sale Modal -->
-            <div class="modal fade" id="show_sale_modal" data-bs-backdrop="static" data-bs-keyboard="false"
-                tabindex="-1" aria-labelledby="show_sale_modal_Label" aria-hidden="true">
-                <div class="modal-dialog modal-lg">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="show_sale_modal_Label">Información de la venta</h5>
-                        </div>
-                        <div class="modal-body" id="modal_body_show_sale">
-                            <!--
-                                Cliente
-                            -->
-                            <h3>
-                                Cliente
-                            </h3>
-                            <!--
-                                Datos del cliente
-                            -->
-                            <table class="table table-hover">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">N°</th>
-                                        <th scope="col">Cliente</th>
-                                        <th scope="col">Celular</th>
-                                        <th scope="col">Estado</th>
-                                        <th scope="col">Fecha Entrega</th>
-                                        <th scope="col">Plazo(dias)</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td id="id_cliente_modal_show_sale"></td>
-                                        <td id="nombre_cliente_modal_show_sale"></td>
-                                        <td id="celular_cliente_modal_show_sale"></td>
-                                        <td id="estado_cliente_modal_show_sale"></td>
-                                        <td id="fecha_entrega_cliente_modal_show_sale"></td>
-                                        <td id="plazo_modal_show_sale"></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <!--
-                                Pedidos
-                            -->
-                            <h3>
-                                Productos
-                            </h3>
-                            <table class="table table-hover">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">N°</th>
-                                        <th scope="col">Producto</th>
-                                        <th scope="col">Cantidad</th>
-                                        <th scope="col">Valor Unitario</th>
-                                        <th scope="col">Orientación</th>
-                                        <th scope="col">Color</th>
-                                        <th scope="col">Tipo Diseño</th>
-                                        <th scope="col">Ruana</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="tableBody_products_modal_show_sale">
-                                </tbody>
-                            </table>
-                            <!--
-                                Pedidos
-                            -->
-                            <h3>
-                                Abonos
-                            </h3>
-                            <table class="table table-hover">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">N°</th>
-                                        <th scope="col">Valor</th>
-                                        <th scope="col">Fecha Recibido</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="tableBody_advance_modal_show_sale">
-                                </tbody>
-                            </table>
-                            <!--
-                                Agregar otro abono
-                            -->
-                            <div class="row">
-                                <div class="col-sm-12 d-flex justify-content-center">
-                                    <button type="button" onclick="addAdvance()"
-                                        class="btn btn-success btn-sm">+</button>
-                                </div>
-                            </div>
-                            <!--
-                                Totales
-                            -->
-                            <h3>
-                                Totales
-                            </h3>
-                            <table class="table table-hover">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Valor Total</th>
-                                        <th scope="col">Abono Total</th>
-                                        <th scope="col">Valor Restante</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td id="valor_total_modal_show_sale" class="table-active"></td>
-                                        <td id="abono_total_modal_show_sale"></td>
-                                        <td id="valor_restante_modal_show_sale"></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary"
-                                onclick="closeShowSaleModal()">Atrás</button>
-                            <button type="button" class="btn btn-primary"
-                                onclick="sendDataFromShowSale()">Guardar</button>
-                        </div>
-                    </div>
+              <!-- Totales -->
+
+              <hr class="divider-1">
+              <div class="table-responsive-lg">
+                <table class="table table-striped table-hover table-dark">
+                  <thead>
+                    <tr>
+                      <th scope="col">Valor<br>Total</th>
+                      <th scope="col">Abono</th>
+                      <th scope="col">Valor<br>Restante</th>
+                      <th scope="col">Fecha<br>Entrega</th>
+                      <th scope="col">Plazo<br>(dias)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td id="valor_total_modal" class="table-active"></td>
+                      <td id="abono_modal"></td>
+                      <td id="valor_restante_modal"></td>
+                      <td id="fecha_entrega_modal"></td>
+                      <td id="plazo_modal"></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- Botones de Acción -->
+
+              <div class="row justify-content-end m-3">
+                <div class="col-lg-1 mt-2">
+                  <button type="button" class="btn btn-secondary" onclick="closeCreateSaleModal()">Atrás</button>
                 </div>
+                <div class="col-lg-1 mt-2">
+                  <button type="button" class="btn btn-primary" onclick="sendDataFromSale()">Guardar</button>
+                </div>
+              </div>
+
             </div>
+          </div>
+        </div>
+      </div>
 
-            <!--
-                Busca y muestra y actualiza los pedidos
-            -->
-            <script>
+      <!-- Este script se encarga de insertar o eliminar un form de producto. -->
 
-                let showSaleData = {}; // Almacena la data de la venta que se desea ver com más detalle
-                let lastAdvanceId = ""; // Almacena el id del último abono disponible en la tabla de abonos
-                let searchText = ""; // String a buscar
-                let maxResults = ""; // Cantidad máxima de resultados
+      <script>
+        const newProduct =
+          '<div class="row">' +
+          '<div class="col-sm-2">' +
+          '<label for="id_producto" class="form-label">N°</label>' +
+          '<input type="text" name="id_producto" class="form-control text-center id-producto " readonly>' +
+          '</div>' +
+          '<div class="col-sm-5">' +
+          '<label class="form-label">Producto</label>' +
+          '<select class="form-select nombre-producto" name="nombre_producto" onchange="selectChanged(event)" required>' +
+          '<option selected disabled value>Seleccione un producto...</option>' +
+          '</select>' +
+          '<div class="invalid-feedback">' +
+          'Seleccione un producto.' +
+          '</div>' +
+          '</div>' +
+          '<div class="col-sm-2">' +
+          '<label for="cantidad" class="form-label">Cantidad</label>' +
+          '<input type="number" name="cantidad" class="form-control cantidad" onkeyup="calculateTotal(); formatCount(event)" required>' +
+          '<div class="invalid-feedback">' +
+          'Ingrese una cantidad.' +
+          '</div>' +
+          '</div>' +
+          '<div class="col-sm-2">' +
+          '<label for="valor_unitario" class="form-label">Valor Unitario</label>' +
+          '<input type="text" class="form-control format-price valor-unitario" name="valor_unitario" onkeyup="calculateTotal(); formatPrice(event)">' +
+          '</div>' +
+          '<div class="col-sm-1">' +
+          '<button type="button" onclick="deleteProduct(event)" class="btn btn-danger btn-sm">x</button>' +
+          '</div>' +
+          '<div class="row opciones-productos">' +
+          '</div>';
+
+        function addProduct() {
+
+          productos = document.getElementById('productos');
+
+          // Se crea el nuevo div con sus parámetros y se agrega el html del nuevo producto
+          productsIndex = document.querySelectorAll('.producto').length;
+
+          let div_newProduct = document.createElement("div");
+          div_newProduct.className = "row producto";
+          div_newProduct.id = `producto_${productsIndex}`;
+          div_newProduct.innerHTML = newProduct;
+
+          // Se agrega al contendor de productos
+          productos.appendChild(div_newProduct);
+
+          // Se actualizan los selects nuevos con los productos
+          updateDataNewSelects();
+
+          // Se actualizan los ID's de producto
+          updateProductId();
+        }
+
+        function deleteProduct(event) {
+          // Obtengo el indice del producto
+          let index = event.target.parentElement.parentElement.parentElement.id.split('_')[1];
+
+          // Elimino el contenedor
+          document.getElementById(`producto_${index}`).remove();
+
+          // Se actualizan los ID's de producto
+          updateProductId();
+
+          // Se actualizan los ID's de los contenedores de producto
+          updateClassProductsId();
+
+          // Se actualizan los totales
+          calculateTotal();
+          calculateAdvance();
+        }
+
+        // Cuando se elimina un producto, se deben actualizar los ID´s de sus contenedores
+        // para evitar un problema con la referencia.
+        function updateClassProductsId() {
+
+          let productos = document.querySelectorAll('.producto');
+          let newId = 0;
+          productos.forEach(producto => {
+            producto.id = `producto_${newId}`;
+            newId++;
+          });
+        }
+
+      </script>
+
+      <!--  Este script se encarga de generar las opciones de cada producto seleccionado y todos los cambios que desencadena su selección. -->
+
+      <script>
+        const orientacion =
+          '<div class="col-sm-4">' +
+          '<label class="form-label">Orientación</label>' +
+          '<select name="orientacion" class="form-select" required>' +
+          '<option selected disabled value>Seleccionar...</option>' +
+          '<option value="HORIZONTAL">HORIZONTAL</option>' +
+          '<option value="VERTICAL">VERTICAL</option>' +
+          '</select>' +
+          '<div class="invalid-feedback">' +
+          'Seleccione una orientación.' +
+          '</div>' +
+          '</div>';
+
+        const color =
+          '<div class="col-sm-4">' +
+          '<label class="form-label">Color</label>' +
+          '<select name="color" class="form-select" required>' +
+          '<option selected disabled value>Seleccionar...</option>' +
+          '<option value="WENGUE">WENGUE</option>' +
+          '<option value="MIEL">MIEL</option>' +
+          '<option value="CARAMELO">CARAMELO</option>' +
+          '<option value="NATURAL">NATURAL</option>' +
+          '<option value="BLANCO">BLANCO</option>' +
+          '<option value="NEGRO">NEGRO</option>' +
+          '</select>' +
+          '<div class="invalid-feedback">' +
+          'Seleccione un color.' +
+          '</div>' +
+          '</div>';
+
+        const tipoDiseño =
+          '<div class="col-sm-4">' +
+          '<label class="form-label">Tipo de Diseño</label>' +
+          '<select name="tipo_diseño" class="form-select" required>' +
+          '<option selected disabled value>Seleccionar...</option>' +
+          '<option value="COLLAGE">COLLAGE</option>' +
+          '<option value="RETOQUE">RETOQUE</option>' +
+          '<option value="MONTAJE">MONTAJE</option>' +
+          '</select>' +
+          '<div class="invalid-feedback">' +
+          'Seleccione el tipo de diseño.' +
+          '</div>' +
+          '</div>';
+
+        const ruana =
+          '<div class="col-sm-4">' +
+          '<label class="form-label">Ruana</label>' +
+          '<select name="ruana" class="form-select" required>' +
+          '<option selected disabled value>Seleccionar...</option>' +
+          '<option value="SI">SI</option>' +
+          '<option value="NO">NO</option>' +
+          '</select>' +
+          '<div class="invalid-feedback">' +
+          'Seleccione un valor.' +
+          '</div>' +
+          '</div>';
+
+        /*
+            Capturo el select seleccionado y su opción.
+            Agrego la opciones correspondientes al tipo de producto
+        */
+
+        function selectChanged(event) {
+
+          /*
+              Se busca la data del producto que se seleccionó en el select seleccionado
+          */
+
+          // Busco el indice y el valor del select activado
+          let selectValue = event.target.value;
+          let index = event.target.parentElement.parentElement.parentElement.id.split('_')[1];
+          let index_productList = 0;
 
 
-                /*
-                    Busca los pedidos en base a un parámetro específico.
-                */
-                function viewSales() {
-
-                    getTextSearch();
-                    getMaxResults();
-
-                    if (searchText != "") {
-                        // Muestra animación de carga
-                        document.getElementById("loading").style.display = "block";
-
-                        google.script.run
-                            .withSuccessHandler(showSales => {
-                                // Ocultar animación de carga
-                                document.getElementById("loading").style.display = "none";
-
-                                let tableBody = document.getElementById("tableBody_ventas_encontradas");
-                                tableBody.innerHTML = ""; // Reinicio el contenido
-
-                                let template = document.getElementById("rowTemplate");
-                                let templateContent = template.content;
-
-                                if (showSales != null) {
-
-                                    showSales.forEach(sale => {
-
-                                        const tr = templateContent.cloneNode(true);
-
-                                        const idCol = tr.querySelector(".template-id");
-                                        const estadoCol = tr.querySelector(".template-estado");
-                                        const fechaCol = tr.querySelector(".template-fecha");
-                                        const clienteCol = tr.querySelector(".template-cliente");
-                                        const celularCol = tr.querySelector(".template-celular");
-                                        const fechaEntregaCol = tr.querySelector(".template-fecha-entrega");
-                                        const vlrAbonadoCol = tr.querySelector(".template-vlr-abonado");
-                                        const vlrTotalCol = tr.querySelector(".template-vlr-total");
-
-                                        const accionesCol = tr.querySelector(".template-acciones");
-                                        const showButton = tr.querySelector(".show-button");
-
-                                        idCol.textContent = sale[0];
-                                        estadoCol.textContent = sale[1];
-                                        fechaCol.textContent = sale[2];
-                                        clienteCol.textContent = sale[3];
-                                        celularCol.textContent = sale[4];
-                                        fechaEntregaCol.textContent = sale[5];
-                                        vlrAbonadoCol.textContent = sale[6];
-                                        vlrTotalCol.textContent = sale[7];
-                                        showButton.dataset.saleId = sale[0];
+          // se busca la data
+          while (productsList[index_productList][0] !== selectValue) {
+            index_productList++;
+          }
+          let data_selectedProduct = productsList[index_productList];
 
 
-                                        tableBody.appendChild(tr);
-                                    })
-                                }
-                                else {
-                                    alert("No hay coinicidencia");
-                                }
-                            })
-                            .lookForSale(searchText, maxResults);
-                    }
-                    else {
-                        alert("Por favor ingrese un dato para realizar la búsqueda");
-                    }
+          /*
+              Se agregan y modifican los cambios que el select produce
+          */
+          // --------------------- Valor Unitario -----------------------
+          let valoresUnitarios = document.querySelectorAll('.valor-unitario');
+          valoresUnitarios[index].value = data_selectedProduct[1];
+
+          // --------------------- Cantidad -----------------------
+          // Si se realiza un cambio de producto la cantidad se formatea
+          let cantidades = document.querySelectorAll('.cantidad');
+          cantidades[index].value = "";
+
+
+          // ----------- Opciones para el producto seleccionado -------------
+          let opcionesProductos = document.querySelectorAll('.opciones-productos');
+
+          // Borro las opciones que pueden quedar dela selección anterior
+          opcionesProductos[index].innerHTML = "";
+
+          // Orientación 
+          if (data_selectedProduct[2] === 'TRUE') {
+            opcionesProductos[index].innerHTML += orientacion;
+          }
+          // Color 
+          if (data_selectedProduct[3] === 'TRUE') {
+            opcionesProductos[index].innerHTML += color;
+          }
+          // Tipo Diseño 
+          if (data_selectedProduct[4] === 'TRUE') {
+            opcionesProductos[index].innerHTML += tipoDiseño;
+          }
+          // Ruana 
+          if (data_selectedProduct[5] === 'TRUE') {
+            opcionesProductos[index].innerHTML += ruana;
+          }
+        }
+
+      </script>
+
+      <!-- Este script se ejecuta cada vez que se carga el contenedor de Ventas, Crea los options para los selects disponibles y carga la lista de productos. -->
+
+      <script>
+        // Se ejecuta al cargar el documento y cada que se actualiza
+        window.addEventListener("load", loadProductsList);
+
+        // Variables de inicio.
+        let productsList = null;
+
+        // Leo y almaceno en una variable la lista de productos desde el SpreadSheet
+        function loadProductsList() {
+          google.script.run
+            .withSuccessHandler(products_list => {
+
+              productsList = products_list;
+
+              let selects = document.querySelectorAll('.nombre-producto');
+              for (let select of selects) {
+
+                products_list.forEach(product => {
+
+                  let option = document.createElement("option");
+                  option.value = product[0];
+                  option.text = product[0];
+                  select.add(option);
+                });
+              }
+            })
+            .readProductsList();
+        }
+
+        // Actualiza los options para los selects nuevos
+        function updateDataNewSelects() {
+
+          let selects = document.querySelectorAll('.nombre-producto');
+          for (let select of selects) {
+
+            // Solo se actualizan los selects con sólo el option por defecto.
+            if (select.options.length === 1) {
+              productsList.forEach(product => {
+
+                let option = document.createElement("option");
+                option.value = product[0];
+                option.text = product[0];
+                select.add(option);
+              });
+            }
+          }
+        }
+
+      </script>
+
+      <!--
+        Este script se encarga de calcular los totales cuando hay cambio en:
+        Cantidad
+        Valor Unitario
+        Abono
+
+        Tambiém calcula el plazo de entrega.
+      -->
+
+      <script>
+        let total;
+
+        /*
+            Se llama cuando hay cambios en el input de cantidad o valor unitario
+        */
+        function calculateTotal() {
+
+          let cantidades = document.querySelectorAll('.cantidad');
+          let valoresUnitarios = document.querySelectorAll('.valor-unitario');
+
+          total = 0;
+          for (let index = 0; index < cantidades.length; index++) {
+            total += cantidades[index].value.replace(/,/g, '') * valoresUnitarios[index].value.replace(/,/g, '');
+          }
+
+          document.getElementById("valor_total").value = numeral(total).format('0,0')
+          calculateAdvance();
+        }
+
+        /*
+            Se llama cuando se ingresa un abono, calcula el valor restante
+        */
+        function calculateAdvance() {
+          let isInvalidAbono = document.getElementById("abono");
+          let advance = isInvalidAbono.value.replace(/,/g, '');
+
+          if (advance <= total) {
+            document.getElementById("valor_restante").value = numeral(total - advance).format('0,0');
+            document.getElementById("invalid-feedback-abono").innerText = "Ingresa un abono.\n Si no hay puedes poner 0."
+            isInvalidAbono.className = "form-control";
+          }
+
+          // El abono es mayor que el total de la venta
+          else {
+            isInvalidAbono.className = "form-control is-invalid";
+
+            document.getElementById("invalid-feedback-abono").innerText = `El abono no puede ser mayor al total.\n Se sugieren mínimo ${numeral(total / 2).format('0,0')} COP \n ;p`
+          }
+        }
+
+        /*
+            Se llama cuando la fecha de entrega cambia y calcula el plazo de entrega 
+            que no debe ser menor a cero es decir el mismo dia.
+        */
+        function timeToDelivery() {
+
+          let isInvalidFechaEntrega = document.getElementById("fecha_entrega");
+          let currentDate = new Date();
+          let inputDate = new Date(isInvalidFechaEntrega.value);
+
+
+          // El tiempo se dá en milisegundos, se resta y se hace la conversión a dias
+          let difference = substractDate(inputDate, currentDate);
+
+          // Se muestra por pantalla
+          document.getElementById("plazo_entrega").value = difference;
+
+          // Avisa si es necesario activando el invalid-feedback
+          if (difference < 0) {
+            isInvalidFechaEntrega.className = "form-control is-invalid";
+          }
+          else {
+            isInvalidFechaEntrega.className = "form-control is-valid";
+            document.getElementById("orders_count").innerHTML = "Existen ... trabajo(s) por hacer para esta fecha";
+
+            google.script.run.withSuccessHandler(ordersCount => {
+              document.getElementById("orders_count").innerHTML = `Existen ${ordersCount} trabajo(s) por hacer para esta fecha`;
+            }).getOrdersByDate(isInvalidFechaEntrega.value);
+          }
+        }
+
+      </script>
+
+      <!-- Este escript genera el ID del cliente al iniciar y los de productos conforme se van creando. -->
+
+      <script>
+        /* Carga el ID del cliente al cargar el documento */
+        window.addEventListener("load", loadClientId());
+
+        function loadClientId() {
+          google.script.run
+            .withSuccessHandler(id => {
+              document.getElementById("id_cliente").value = id;
+              updateProductId();
+            })
+            .getLastClientId();
+        }
+
+        function updateProductId() {
+          // Se obtiene el id del cliente
+          let clientId = document.getElementById("id_cliente").value;
+
+          // Se recorren los productos creados y se les agrega su id personalizado
+          let productsIdentifier = document.querySelectorAll('.id-producto');
+
+          for (let index = 0; index < productsIdentifier.length; index++) {
+            productsIdentifier[index].value = `${clientId}P${index}`;
+          }
+        }
+      </script>
+
+      <!--
+        Este script controla el botón de submit del formulario.
+        Realiza las validaciones.
+        Lanza un modal en el cual se verifica la info suministrada.
+        Si acepta, llama a la función que guarda la data.
+      -->
+      <script>
+        let data = {};
+
+        function submitFormSale() {
+          let form = document.getElementById("crear_venta");
+
+          // Se verifica que la clase de estos inputs que están personallizados no contenga el "is-invalid"
+          let isInvalidAbono = document.getElementById("abono").className.match("is-invalid");
+          let isInvalidFechaEntrega = document.getElementById("fecha_entrega").className.match("is-invalid");
+
+          // Se activa la validación de Bootstrap
+          form.classList.add('was-validated');
+
+          // No es válido
+          if (!form.checkValidity() || isInvalidFechaEntrega != null || isInvalidAbono != null) {
+
+            event.preventDefault();
+            event.stopPropagation();
+          }
+          // Es válido
+          else {
+            // Se genera un objeto json a partir de los datos
+
+            // FormData es un objeto JavaScript que permite crear un conjunto de pares 
+            // clave/valor para enviar a un servidor a través de una solicitud HTTP
+            let formData = new FormData(form);
+
+            let products = {};
+            let productsIndex = 0;
+            let product = {};
+            let isProduct = false;
+
+            // Se recorre el formData y se arma el json
+            for (var [key, value] of formData.entries()) {
+              if (key === "id_producto") {
+                isProduct = true;
+
+                // Ya tiene la data de un producto
+                if (Object.keys(product).length !== 0) {
+                  products[productsIndex] = product;
+                  productsIndex++;
+                  product = {};
                 }
+              }
+              // Recupero la info del último producto
+              if (key === "valor_total") {
+                isProduct = false;
 
-                /*
-                    Recupera los datos de búsqueda y los formatea si es necesario
-                */
-                function getTextSearch() {
-                    searchText = document.getElementById("texto_busqueda").value;
+                products[productsIndex] = product;
+              }
 
-                    // Identifica si el string proporcionado es un teléfono, en ese caso procede a formatearlo como tal
-                    if (!isNaN(searchText) && searchText.length === 10) {
-                        searchText = searchText.replace(/^(\d{3})(\d{3})(\d{4})$/, "$1-$2-$3");
-                    }
+              if (isProduct) {
+                product[key] = value;
+              }
+              else {
+                data[key] = value
+              }
+            }
+            data["products"] = products;
+
+            // Se muestra la info por el modal para pedir confirmación
+
+            // Datos del cliente
+            document.getElementById("id_cliente_modal").innerHTML = data.id_cliente;
+            document.getElementById("nombre_cliente_modal").innerHTML = data.nombre_cliente.toUpperCase();
+            document.getElementById("celular_cliente_modal").innerHTML = data.celular_cliente;
+            document.getElementById("estado_cliente_modal").innerHTML = "POR HACER";
+            document.getElementById("fecha_cliente_modal").innerHTML = getDate();
+
+            // Datos de productos
+            let tableBody = document.getElementById("tableBody-products-modal");
+            let orientacion_column;
+            let color_column;
+            let tipo_diseño_column;
+            let ruana_column;
+
+            tableBody.innerHTML = "";
+            for (const [key, product] of Object.entries(data.products)) {
+              let row = `<tr>
+                          <td>${product.id_producto}</td>
+                          <td>${product.nombre_producto}</td>
+                          <td>${product.cantidad}</td>
+                          <td>${product.valor_unitario}</td>
+                          `;
+
+              if (product.orientacion !== undefined) {
+                orientacion_column = `<td>${product.orientacion}</td>`;
+              }
+              else {
+                orientacion_column = "<td>-</td>";
+              }
+
+              if (product.color !== undefined) {
+                color_column = `<td>${product.color}</td>`;
+              }
+              else {
+                color_column = "<td>-</td>";
+              }
+
+              if (product.tipo_diseño !== undefined) {
+                tipo_diseño_column = `<td>${product.tipo_diseño}</td>`;
+              }
+              else {
+                tipo_diseño_column = "<td>-</td>";
+              }
+
+              if (product.ruana !== undefined) {
+                ruana_column = `<td>${product.ruana}</td>`;
+              }
+              else {
+                ruana_column = "<td>-</td>";
+              }
+
+              tableBody.innerHTML += `${row}${orientacion_column}${color_column}${tipo_diseño_column}${ruana_column}</tr>`;
+            }
+
+            // Datos de los totales
+            document.getElementById("valor_total_modal").innerHTML = data.valor_total;
+            document.getElementById("abono_modal").innerHTML = data.abono;
+            document.getElementById("valor_restante_modal").innerHTML = data.valor_restante;
+            document.getElementById("fecha_entrega_modal").innerHTML = data.fecha_entrega;
+            document.getElementById("plazo_modal").innerHTML = data.plazo_entrega;
+
+            // Resalta los datos importantes
+            highlightState(document.getElementById("estado_cliente_modal"))
+
+            document.getElementById("valor_total_modal").style.color = "yellowgreen";
+            document.getElementById("abono_modal").style.color = "yellowgreen";
+            document.getElementById("valor_restante_modal").style.color = "yellowgreen";
+            document.getElementById("plazo_modal").style.color = "yellowgreen";
+
+            // Muestra el modal
+            let modal = document.getElementById("create_sale_modal");
+            modal.style.display = "block";
+            modal.classList.add("show");
+          }
+        }
+
+        /*
+            Se encarga de enviar la información al spreadsheet
+        */
+        function sendDataFromSale() {
+          let form = document.getElementById("crear_venta");
+
+          setTimeout(function () {
+            alert(`\nVenta Registrada\n\nN°\n-> ${form.id_cliente.value}`);
+          }, 500);
+
+          google.script.run
+            .withSuccessHandler(result => {
+
+              reloadCreateSaleForm(form);
+              loadClientId();
+              closeCreateSaleModal();
+            })
+            .createSale(data);
+        }
+
+        /*
+            Cierra el create_sale_modal
+        */
+        function closeCreateSaleModal() {
+          let modal = document.getElementById("create_sale_modal");
+          modal.style.display = "none";
+        }
+
+        /*
+            Regresa el form a su estado inicial
+            Borra los campos de texto
+            Elimina el was validate de la clase
+            Quita el contenedor de los productos adicionales
+        */
+        function reloadCreateSaleForm(form) {
+          // Se borran los inputs
+          form.reset();
+
+          // Se desactiva el trigger de la validación de Bootstrap
+          form.classList.remove('was-validated');
+
+          // Quita el contenedor de los productos adicionales 
+          // index 0,1,2....
+          let containersProducts = document.getElementById('productos').childElementCount;
+          for (let index = 1; index <= containersProducts - 1; index++) {
+            document.getElementById(`producto_${index}`).remove();
+          }
+        }
+
+      </script>
+
+    </div>
+    <br>
+
+    <!--  Content - Buscar y editar Ventas -->
+
+    <div class="tab-pane fade" id="nav-view-sale" role="tabpanel" aria-labelledby="nav-view-sale-tab">
+
+      <!-- Formulario para buscar las ventas -->
+
+      <form name="buscar_venta" id="buscar_venta">
+
+        <!-- Área de búsqueda -->
+        <!-- Datos de Búsqueda -->
+
+        <div class="row">
+          <div class="col-sm-3">
+            <input type="text" class="form-control" id="texto_busqueda" onkeydown="disableEnterKey(event)">
+          </div>
+          <div class="col-sm-2">
+            <select class="form-select mt-3 mb-3" id="cantidad_resultados" onkeydown="disableEnterKey(event)">
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="20">20</option>
+              <option value="50">50</option>
+              <option value="Todos">*</option>
+            </select>
+          </div>
+          <div class="col-sm-1">
+            <button id="buscar_venta_button" type="button" class="btn btn-custom-purple" onclick="viewSales()">Buscar</button>
+          </div>
+        </div>
+        <div id="loading" class="spinner-grow spinner-custom-purple mt-2" role="status" style="display: none;">
+          <span class="sr-only"></span>
+        </div>
+      </form>
+      <br>
+
+      <!-- Tabla con la info encontrada -->
+
+      <div class="table-responsive-md mb-4">
+        <table class="table table-striped table-hover table-dark">
+          <thead class="table-dark">
+            <tr>
+              <th>N°</th>
+              <th>Estado</th>
+              <th>Cliente</th>
+              <th>Celular</th>
+              <th>Fecha<br>Recibido</th>
+              <th>Fecha<br>Entrega</th>
+              <th>Valor<br>Abonado</th>
+              <th>Valor<br>Total</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="tableBody_ventas_encontradas">
+          </tbody>
+        </table>
+      </div>
+
+      <template id="rowTemplate">
+        <tr>
+          <td class="template-id"></td>
+          <td class="template-estado"></td>
+          <td class="template-cliente"></td>
+          <td class="template-celular"></td>
+          <td class="template-fecha"></td>
+          <td class="template-fecha-entrega"></td>
+          <td class="template-vlr-abonado"></td>
+          <td class="template-vlr-total"></td>
+          <td class="template-acciones text-center">
+            <button class="btn btn-success show-button btn-sm" onclick="showDetails(this.dataset.saleId)">+</button>
+          </td>
+        </tr>
+      </template>
+
+      <!-- Show Sale Modal -->
+
+      <div class="modal fade" id="show_sale_modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="show_sale_modal_Label" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+
+            <div class="modal-body" id="modal_body_show_sale">
+
+              <!-- Cliente -->
+
+              <h4>
+                Información de Venta
+              </h4>
+              <hr class="divider-1">
+
+              <!-- Datos del cliente -->
+
+              <div class="table-responsive-lg">
+                <table class="table table-striped table-hover table-dark">
+                  <thead>
+                    <tr>
+                      <th scope="col">N°</th>
+                      <th scope="col">Cliente</th>
+                      <th scope="col">Celular</th>
+                      <th scope="col">Estado</th>
+                      <th scope="col">Fecha<br>Recibido</th>
+                      <th scope="col">Fecha<br>Entrega</th>
+                      <th scope="col">Plazo<br>(dias)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td id="id_cliente_modal_show_sale"></td>
+                      <td id="nombre_cliente_modal_show_sale"></td>
+                      <td id="celular_cliente_modal_show_sale"></td>
+                      <td id="estado_cliente_modal_show_sale"></td>
+                      <td id="fecha_recibido_cliente_modal_show_sale"></td>
+                      <td id="fecha_entrega_cliente_modal_show_sale"></td>
+                      <td id="plazo_modal_show_sale"></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- Pedidos -->
+
+              <hr class="divider-1">
+              <div class="table-responsive-lg">
+                <table class="table table-striped table-hover table-dark">
+                  <thead>
+                    <tr>
+                      <th scope="col">N°</th>
+                      <th scope="col">Producto</th>
+                      <th scope="col">Cantidad</th>
+                      <th scope="col">Valor<br>Unitario</th>
+                      <th scope="col">Orientación</th>
+                      <th scope="col">Color</th>
+                      <th scope="col">Tipo<br>Diseño</th>
+                      <th scope="col">Ruana</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tableBody_products_modal_show_sale">
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- Pedidos -->
+
+              <hr class="divider-1">
+              <div class="table-responsive-lg">
+                <table class="table table-striped table-hover table-dark">
+                  <thead>
+                    <tr>
+                      <th scope="col">N°</th>
+                      <th scope="col">Valor<br>Abono</th>
+                      <th scope="col">Fecha<br>Recibido</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tableBody_advance_modal_show_sale">
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- Agregar otro abono -->
+
+              <div class="row">
+                <div class="col-sm-12 d-flex justify-content-center">
+                  <button type="button" onclick="addAdvance()" class="btn btn-success btn-sm">+</button>
+                </div>
+              </div>
+
+              <!-- Totales -->
+
+              <hr class="divider-1">
+              <div class="table-responsive-lg">
+                <table class="table table-striped table-hover table-dark">
+                  <thead>
+                    <tr>
+                      <th scope="col">Valor<br>Total</th>
+                      <th scope="col">Abono<br>Total</th>
+                      <th scope="col">Valor<br>Restante</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td id="valor_total_modal_show_sale" class="table-active"></td>
+                      <td id="abono_total_modal_show_sale"></td>
+                      <td id="valor_restante_modal_show_sale"></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- Botones de acción -->
+
+              <div class="row justify-content-end m-3">
+                <div class="col-lg-1 mt-2">
+                  <button type="button" class="btn btn-secondary" onclick="closeShowSaleModal()">Atrás</button>
+                </div>
+                <div class="col-lg-1 mt-2">
+                  <button type="button" class="btn btn-custom-purple" onclick="sendDataFromShowSale()">Guardar</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Busca y muestra y actualiza los pedidos -->
+
+      <script>
+        let showSaleData = {}; // Almacena la data de la venta que se desea ver com más detalle
+        let lastAdvanceId = ""; // Almacena el id del último abono disponible en la tabla de abonos
+        let searchText = ""; // String a buscar
+        let maxResults = ""; // Cantidad máxima de resultados
+
+
+        /*
+            Busca los pedidos en base a un parámetro específico.
+        */
+        function viewSales() {
+
+          getTextSearch();
+          getMaxResults();
+
+          if (searchText != "") {
+            // Muestra animación de carga
+            document.getElementById("loading").style.display = "inline-block";
+
+            google.script.run
+              .withSuccessHandler(showSales => {
+                // Ocultar animación de carga
+                document.getElementById("loading").style.display = "none";
+
+                let tableBody = document.getElementById("tableBody_ventas_encontradas");
+                tableBody.innerHTML = ""; // Reinicio el contenido
+
+                let template = document.getElementById("rowTemplate");
+                let templateContent = template.content;
+
+                if (showSales != null) {
+
+                  showSales = showSales.reverse(); // Muestra los más recientes primero
+
+                  showSales.forEach(sale => {
+
+                    const tr = templateContent.cloneNode(true);
+
+                    const idCol = tr.querySelector(".template-id");
+                    const estadoCol = tr.querySelector(".template-estado");
+                    const fechaCol = tr.querySelector(".template-fecha");
+                    const clienteCol = tr.querySelector(".template-cliente");
+                    const celularCol = tr.querySelector(".template-celular");
+                    const fechaEntregaCol = tr.querySelector(".template-fecha-entrega");
+                    const vlrAbonadoCol = tr.querySelector(".template-vlr-abonado");
+                    const vlrTotalCol = tr.querySelector(".template-vlr-total");
+
+                    const accionesCol = tr.querySelector(".template-acciones");
+                    const showButton = tr.querySelector(".show-button");
+
+                    idCol.textContent = sale[0];
+                    estadoCol.textContent = sale[1];
+                    fechaCol.textContent = sale[2];
+                    clienteCol.textContent = sale[3];
+                    celularCol.textContent = sale[4];
+                    fechaEntregaCol.textContent = sale[5];
+                    vlrAbonadoCol.textContent = sale[6];
+                    vlrTotalCol.textContent = sale[7];
+                    showButton.dataset.saleId = sale[0];
+
+                    // Resalta los estados
+                    highlightState(estadoCol);
+
+
+                    tableBody.appendChild(tr);
+                  })
                 }
-
-                /*
-                    Obtiene la cantidad de resultados para la búsqueda indicados por el usuario
-                */
-                function getMaxResults() {
-                    maxResults = document.getElementById("cantidad_resultados").value;
+                else {
+                  alert("No se encontraron resultados");
                 }
+              })
+              .lookForSale(searchText, maxResults);
+          }
+          else {
+            alert("Por favor ingrese un dato para realizar la búsqueda");
+          }
+        }
 
-                /*
-                    Desactiva la tecla enter para evitar que envíe el form y presiona el botón requerido
-                */
-                function disableEnterKey(event) {
-                    // Verificar si se presionó la tecla "Enter"
-                    if (event.keyCode === 13) {
-                        document.getElementById("buscar_venta_button").click();
-                        event.preventDefault();
-                        return false;
-                    }
-                }
+        /*
+            Recupera los datos de búsqueda y los formatea si es necesario
+        */
+        function getTextSearch() {
+          searchText = document.getElementById("texto_busqueda").value;
 
-                /*
-                    Abre el modal que muestra toda la información de la venta seleccionada en conjunto con sus acciones determinadas
-                */
-                function showDetails(saleId) {
+          // Identifica si el string proporcionado es un teléfono, en ese caso procede a formatearlo como tal
+          if (!isNaN(searchText) && searchText.length === 10) {
+            searchText = searchText.replace(/^(\d{3})(\d{3})(\d{4})$/, "$1-$2-$3");
+          }
+        }
 
-                    // Muestra animación de carga
-                    document.getElementById("loading").style.display = "block";
+        /*
+            Obtiene la cantidad de resultados para la búsqueda indicados por el usuario
+        */
+        function getMaxResults() {
+          maxResults = document.getElementById("cantidad_resultados").value;
+        }
 
-                    // Se recupera la info de la venta con la ayuda del saleId
-                    google.script.run
-                        .withSuccessHandler(sale => {
+        /*
+            Desactiva la tecla enter para evitar que envíe el form y presiona el botón requerido
+        */
+        function disableEnterKey(event) {
+          // Verificar si se presionó la tecla "Enter"
+          if (event.keyCode === 13) {
+            document.getElementById("buscar_venta_button").click();
+            event.preventDefault();
+            return false;
+          }
+        }
 
-                            showSaleData = sale;
+        /*
+            Abre el modal que muestra toda la información de la venta seleccionada en conjunto con sus acciones determinadas
+        */
+        function showDetails(saleId) {
 
-                            // Ocultar animación de carga
-                            document.getElementById("loading").style.display = "none";
+          // Muestra animación de carga
+          document.getElementById("loading").style.display = "inline-block";
 
-                            // Se muestra la info de la venta seleccionada por el modal
-                            // Datos del cliente
+          // Se recupera la info de la venta con la ayuda del saleId
+          google.script.run
+            .withSuccessHandler(sale => {
 
-                            try {
-                                document.getElementById("id_cliente_modal_show_sale").innerHTML = sale.pedido.id;
-                                document.getElementById("nombre_cliente_modal_show_sale").innerHTML = sale.pedido.cliente;
-                                document.getElementById("celular_cliente_modal_show_sale").innerHTML = sale.pedido.celular;
-                                document.getElementById("fecha_entrega_cliente_modal_show_sale").innerHTML = sale.pedido.fechaEntrega;
+              showSaleData = sale;
+
+              // Ocultar animación de carga
+              document.getElementById("loading").style.display = "none";
+
+              // Se muestra la info de la venta seleccionada por el modal
+              // Datos del cliente
+
+              try {
+                document.getElementById("id_cliente_modal_show_sale").innerHTML = sale.pedido.id;
+                document.getElementById("nombre_cliente_modal_show_sale").innerHTML = sale.pedido.cliente;
+                document.getElementById("celular_cliente_modal_show_sale").innerHTML = sale.pedido.celular;
+                document.getElementById("fecha_recibido_cliente_modal_show_sale").innerHTML = sale.pedido.fecha;
+                document.getElementById("fecha_entrega_cliente_modal_show_sale").innerHTML = sale.pedido.fechaEntrega;
 
 
-                                // -------------------------------------------------------------------------------------------------
+                // -------------------------------------------------------------------------------------------------
 
-                                document.getElementById("estado_cliente_modal_show_sale").innerHTML = `
+                document.getElementById("estado_cliente_modal_show_sale").innerHTML = `
                                     <div>
                                         <select class="form-select" id="select_estado_cliente_modal_show_sale">
                                         </select>
                                     </div>`;
-                                updateSelectNewState();
+                updateSelectNewState();
 
-                                // Resta las fechas de la venta -------------------------------------------------------------------
+                // Resta las fechas de la venta -------------------------------------------------------------------
 
-                                let difference = subtractDate(new Date(sale.pedido.fechaEntrega), new Date());
-                                if (difference >= 0) {
-                                    document.getElementById("plazo_modal_show_sale").innerHTML = difference;
-                                }
-                                else {
-                                    document.getElementById("plazo_modal_show_sale").innerHTML = "-";
-                                }
+                let difference = substractDate(new Date(sale.pedido.fechaEntrega), new Date());
 
-                                // -------------------------------------------------------------------------------------------------
-                            }
-                            catch {
-                            }
+                if (sale.pedido.estado === "ENTREGADO" || sale.pedido.estado === "CANCELADO") {
+                  document.getElementById("plazo_modal_show_sale").innerHTML = "-";
+                }
+                else {
+                  document.getElementById("plazo_modal_show_sale").innerHTML = difference;
+                }
 
-                            // Datos de productos
+                // -------------------------------------------------------------------------------------------------
+              }
+              catch {
+              }
 
-                            try {
-                                let tableBody = document.getElementById("tableBody_products_modal_show_sale");
-                                let orientacion_column;
-                                let color_column;
-                                let tipo_diseño_column;
-                                let ruana_column;
+              // Datos de productos
 
-                                tableBody.innerHTML = "";
+              try {
+                let tableBody = document.getElementById("tableBody_products_modal_show_sale");
+                let orientacion_column;
+                let color_column;
+                let tipo_diseño_column;
+                let ruana_column;
 
-                                for (const [key, product] of Object.entries(sale.productos)) {
-                                    let row = `<tr>
+                tableBody.innerHTML = "";
+
+                for (const [key, product] of Object.entries(sale.productos)) {
+                  let row = `<tr>
                                         <td>${product.id}</td>
                                         <td>${product.nombre}</td>
                                         <td>${product.cantidad}</td>
                                         <td>${product.vlrUnitario}</td>
                                         `;
 
-                                    if (product.orientacion !== undefined) {
-                                        orientacion_column = `<td>${product.orientacion}</td>`;
-                                    }
-                                    else {
-                                        orientacion_column = "<td>-</td>";
-                                    }
+                  if (product.orientacion !== undefined) {
+                    orientacion_column = `<td>${product.orientacion}</td>`;
+                  }
+                  else {
+                    orientacion_column = "<td>-</td>";
+                  }
 
-                                    if (product.color !== undefined) {
-                                        color_column = `<td>${product.color}</td>`;
-                                    }
-                                    else {
-                                        color_column = "<td>-</td>";
-                                    }
+                  if (product.color !== undefined) {
+                    color_column = `<td>${product.color}</td>`;
+                  }
+                  else {
+                    color_column = "<td>-</td>";
+                  }
 
-                                    if (product.tipoD !== undefined) {
-                                        tipo_diseño_column = `<td>${product.tipoD}</td>`;
-                                    }
-                                    else {
-                                        tipo_diseño_column = "<td>-</td>";
-                                    }
+                  if (product.tipoD !== undefined) {
+                    tipo_diseño_column = `<td>${product.tipoD}</td>`;
+                  }
+                  else {
+                    tipo_diseño_column = "<td>-</td>";
+                  }
 
-                                    if (product.ruana !== undefined) {
-                                        ruana_column = `<td>${product.ruana}</td>`;
-                                    }
-                                    else {
-                                        ruana_column = "<td>-</td>";
-                                    }
+                  if (product.ruana !== undefined) {
+                    ruana_column = `<td>${product.ruana}</td>`;
+                  }
+                  else {
+                    ruana_column = "<td>-</td>";
+                  }
 
-                                    tableBody.innerHTML += `${row}${orientacion_column}${color_column}${tipo_diseño_column}${ruana_column}</tr>`;
-                                }
+                  tableBody.innerHTML += `${row}${orientacion_column}${color_column}${tipo_diseño_column}${ruana_column}</tr>`;
+                }
 
-                            }
-                            catch {
-                            }
+              }
+              catch {
+              }
 
-                            // Datos de Abonos
+              // Datos de Abonos
 
-                            try {
-                                let tableBody = document.getElementById("tableBody_advance_modal_show_sale");
+              try {
+                let tableBody = document.getElementById("tableBody_advance_modal_show_sale");
 
-                                tableBody.innerHTML = "";
+                tableBody.innerHTML = "";
 
-                                for (const [key, advance] of Object.entries(sale.abonos)) {
-                                    let row = `<tr>
+                for (const [key, advance] of Object.entries(sale.abonos)) {
+                  let row = `<tr>
                                         <td>${advance.id}</td>
                                         <td>${advance.vlr}</td>
                                         <td>${advance.fecha}</td>
                                         `;
 
-                                    tableBody.innerHTML += `${row}</tr>`;
+                  tableBody.innerHTML += `${row}</tr>`;
 
-                                    // Al final del for se queda con el último id disponible
-                                    lastAdvanceId = advance.id;
-                                }
-
-                            }
-                            catch {
-                            }
-
-                            // Datos de los totales
-
-                            try {
-                                document.getElementById("valor_total_modal_show_sale").innerHTML = sale.pedido.vlrTotal;
-                                document.getElementById("abono_total_modal_show_sale").innerHTML = sale.pedido.vlrAbonado;
-
-                                // Resta los totales y actualiza el valor restante
-                                remainingValue();
-                            }
-                            catch {
-
-                            }
-
-                            // Muestra el modal
-                            let modal = document.getElementById("show_sale_modal");
-                            modal.style.display = "block";
-                            modal.classList.add("show");
-
-                        }).showSaleById(saleId);
+                  // Al final del for se queda con el último id disponible
+                  lastAdvanceId = advance.id;
                 }
 
-                /*
-                    Crea una fila nueva en la tabla de abonos con un input llamado newAdvance que permite agregar un nuevo abono
-                */
-                function addAdvance() {
+              }
+              catch {
+              }
 
-                    // Si no existe la fila con el input para agregar un abono nuevo se genera
-                    if (document.getElementById("newAdvance") === null) {
-                        let tableBody = document.getElementById("tableBody_advance_modal_show_sale");
+              // Datos de los totales
 
-                        let row = `<tr>
+              try {
+                document.getElementById("valor_total_modal_show_sale").innerHTML = sale.pedido.vlrTotal;
+                document.getElementById("abono_total_modal_show_sale").innerHTML = sale.pedido.vlrAbonado;
+
+                // Resta los totales y actualiza el valor restante
+                remainingValue();
+              }
+              catch {
+
+              }
+
+              // Resalta los datos importantes
+              document.getElementById("valor_total_modal_show_sale").style.color = "yellowgreen";
+              document.getElementById("abono_total_modal_show_sale").style.color = "yellowgreen";
+              document.getElementById("valor_restante_modal_show_sale").style.color = "yellowgreen";
+              document.getElementById("plazo_modal_show_sale").style.color = "yellowgreen";
+
+              // Muestra el modal
+              let modal = document.getElementById("show_sale_modal");
+              modal.style.display = "block";
+              modal.classList.add("show");
+
+
+            }).showSaleById(saleId);
+        }
+
+        /*
+            Crea una fila nueva en la tabla de abonos con un input llamado newAdvance que permite agregar un nuevo abono
+        */
+        function addAdvance() {
+
+          // Si no existe la fila con el input para agregar un abono nuevo se genera
+          if (document.getElementById("newAdvance") === null) {
+            let tableBody = document.getElementById("tableBody_advance_modal_show_sale");
+
+            let row = `<tr>
                         <td>${getAdvanceId()}</td>
-                        <td>
+                        <td class="justify-content-center col-sm-3">
                             <div class="needs-validation">
                                 <input type="text" class="form-control" id="newAdvance" onkeyup="calculateNewAdvance(); formatPrice(event)">
                                 <div class="invalid-feedback" id="invalid-feedback-newAdvance">
@@ -1315,187 +1339,239 @@
                         </td>
                         <td>${getDate()}</td>
                         `;
-                        tableBody.innerHTML += `${row}</tr>`;
-                    }
-                }
+            tableBody.innerHTML += `${row}</tr>`;
+          }
+        }
 
-                /*
-                    Cierra el show_sale_modal
-                */
-                function closeShowSaleModal() {
-                    let modal = document.getElementById("show_sale_modal");
-                    modal.style.display = "none";
-                }
+        /*
+            Cierra el show_sale_modal
+        */
+        function closeShowSaleModal() {
+          let modal = document.getElementById("show_sale_modal");
+          modal.style.display = "none";
+        }
 
-                /*
-                    Devuelve la fecha del dia formateada
-                */
-                function getDate() {
-                    let date = new Date();
-                    let numberMonth = date.getMonth() + 1;
-                    let month = (numberMonth < 10 ? "0" : "") + numberMonth.toString();
-                    return date.getFullYear() + "-" + (month) + "-" + date.getDate();
-                }
+        /*
+            Devuelve la fecha del dia formateada
+        */
+        function getDate() {
+          let date = new Date();
+          let numberMonth = date.getMonth() + 1;
+          let month = (numberMonth < 10 ? "0" : "") + numberMonth.toString();
+          return date.getFullYear() + "-" + (month) + "-" + date.getDate();
+        }
 
-                /*
-                    Resta dos fechas dadas
-                */
-                function subtractDate(minDate, susDate) {
-                    let difference = (Math.floor((minDate - susDate) / (1000 * 60 * 60 * 24))) + 1;
-                    return difference;
-                }
+        /*
+            Resta dos fechas dadas
+        */
+        function substractDate(minDate, susDate) {
+          let difference = (Math.floor((minDate - susDate) / (1000 * 60 * 60 * 24))) + 1;
+          return difference;
+        }
 
-                /*
-                    Encuentra el siguiente identificador de abono disponible
-                */
-                function getAdvanceId() {
-                    let arrayAdvanceId = lastAdvanceId.split("A");  //"1A22" --> "1","22" 
-                    let nextId = parseInt(arrayAdvanceId[1]) + 1;
-                    return arrayAdvanceId[0] + "A" + nextId;
-                }
+        /*
+            Encuentra el siguiente identificador de abono disponible
+        */
+        function getAdvanceId() {
+          let arrayAdvanceId = lastAdvanceId.split("A");  //"1A22" --> "1","22" 
+          let nextId = parseInt(arrayAdvanceId[1]) + 1;
+          return arrayAdvanceId[0] + "A" + nextId;
+        }
 
-                /*
-                    Generea las opciones restantes para el select del estado cliente modal show
-                */
-                function updateSelectNewState() {
-                    let select = document.getElementById("select_estado_cliente_modal_show_sale");
-                    let options = [];
+        /*
+            Generea las opciones restantes para el select del estado cliente modal show
+        */
+        function updateSelectNewState() {
+          let select = document.getElementById("select_estado_cliente_modal_show_sale");
+          let options = [];
 
-                    switch (showSaleData.pedido.estado) {
-                        case "POR HACER":
-                            options = ["POR HACER", "LISTO", "ENTREGADO", "CANCELADO"];
-                            break;
-                        case "ENTREGADO":
-                            options = ["ENTREGADO", "CANCELADO", "LISTO", "POR HACER",];
-                            break;
-                        case "CANCELADO":
-                            options = ["CANCELADO", "POR HACER", "LISTO", "ENTREGADO"];
-                            break;
-                        case "LISTO":
-                            options = ["LISTO", "ENTREGADO", "CANCELADO", "POR HACER"];
-                            break;
-                        default:
-                            break;
-                    }
+          switch (showSaleData.pedido.estado) {
+            case "POR HACER":
+              options = ["POR HACER", "LISTO", "ENTREGADO", "CANCELADO"];
+              break;
+            case "ENTREGADO":
+              options = ["ENTREGADO", "CANCELADO", "LISTO", "POR HACER",];
+              break;
+            case "CANCELADO":
+              options = ["CANCELADO", "POR HACER", "LISTO", "ENTREGADO"];
+              break;
+            case "LISTO":
+              options = ["LISTO", "ENTREGADO", "CANCELADO", "POR HACER"];
+              break;
+            default:
+              break;
+          }
 
-                    for (var i = 0; i < options.length; i++) {
-                        let option = document.createElement("option");
-                        option.value = options[i];
-                        option.text = options[i];
-                        select.add(option);
-                    }
-                }
+          for (var i = 0; i < options.length; i++) {
+            let option = document.createElement("option");
+            option.value = options[i];
+            option.text = options[i];
+            select.add(option);
+          }
+        }
 
-                /*
-                    Recalcula los totales cada vez que cambia el input newAdvance
-                    Verifica que la suma de abonos no sea mayor que el total de la venta
-                */
-                function calculateNewAdvance() {
-                    let inputNewAdvance = document.getElementById("newAdvance");
-                    let inputFeedback = document.getElementById("invalid-feedback-newAdvance");
+        /*
+            Recalcula los totales cada vez que cambia el input newAdvance
+            Verifica que la suma de abonos no sea mayor que el total de la venta
+        */
+        function calculateNewAdvance() {
+          let inputNewAdvance = document.getElementById("newAdvance");
+          let inputFeedback = document.getElementById("invalid-feedback-newAdvance");
 
-                    let totalAdvance = parseInt(showSaleData.pedido.vlrAbonado.replace(/,/g, ''));
-                    let restValue = parseInt(showSaleData.pedido.vlrTotal.replace(/,/g, '')) - totalAdvance;
+          let totalAdvance = parseInt(showSaleData.pedido.vlrAbonado.replace(/,/g, ''));
+          let restValue = parseInt(showSaleData.pedido.vlrTotal.replace(/,/g, '')) - totalAdvance;
 
-                    let newAdvance = parseInt(inputNewAdvance.value.replace(/,/g, ''));
+          let newAdvance = parseInt(inputNewAdvance.value.replace(/,/g, ''));
 
-                    if (newAdvance > restValue) {
-                        inputNewAdvance.className = "form-control is-invalid";
-                        inputFeedback.innerText = `El abono no puede ser mayor al valor restante de ${numeral(restValue).format('0,0')} COP`;
-                    }
-                    else {
-                        inputNewAdvance.className = "form-control";
-                        inputFeedback.innerText = "Ingresa un abono";
+          if (newAdvance > restValue) {
+            inputNewAdvance.className = "form-control is-invalid";
+            inputFeedback.innerText = `El abono no puede ser mayor al valor restante de ${numeral(restValue).format('0,0')} COP`;
+          }
+          else {
+            inputNewAdvance.className = "form-control";
+            inputFeedback.innerText = "Ingresa un abono";
 
-                        if (newAdvance > 0) {
-                            document.getElementById("abono_total_modal_show_sale").innerHTML = numeral(totalAdvance + newAdvance).format('0,0');
-                        }
-                        else {
-                            document.getElementById("abono_total_modal_show_sale").innerHTML = numeral(totalAdvance).format('0,0');
-                        }
+            if (newAdvance > 0) {
+              document.getElementById("abono_total_modal_show_sale").innerHTML = numeral(totalAdvance + newAdvance).format('0,0');
+            }
+            else {
+              document.getElementById("abono_total_modal_show_sale").innerHTML = numeral(totalAdvance).format('0,0');
+            }
 
-                    }
+          }
 
-                    remainingValue()
-                }
+          remainingValue()
+        }
 
-                /*
-                    Actualiza el valor restante úbicado en el modal show sale
-                */
-                function remainingValue() {
+        /*
+            Actualiza el valor restante úbicado en el modal show sale
+        */
+        function remainingValue() {
 
-                    // Resta los totales
-                    let difference = parseInt(document.getElementById("valor_total_modal_show_sale").innerText.replace(/,/g, ''))
-                        - parseInt(document.getElementById("abono_total_modal_show_sale").innerText.replace(/,/g, ''));
-                    // Se formatea para ser mostrado
-                    document.getElementById("valor_restante_modal_show_sale").innerHTML = numeral(difference).format('0,0');
-                }
+          // Resta los totales
+          let difference = parseInt(document.getElementById("valor_total_modal_show_sale").innerText.replace(/,/g, ''))
+            - parseInt(document.getElementById("abono_total_modal_show_sale").innerText.replace(/,/g, ''));
+          // Se formatea para ser mostrado
+          document.getElementById("valor_restante_modal_show_sale").innerHTML = numeral(difference).format('0,0');
+        }
 
 
-                /*
-                    Actualiza los abonos y el estado del pedido
-                */
-                function sendDataFromShowSale() {
+        /*
+            Actualiza los abonos y el estado del pedido
+        */
+        function sendDataFromShowSale() {
 
-                    let inputNewAdvance = document.getElementById("newAdvance");
-                    let selectNewState = document.getElementById("select_estado_cliente_modal_show_sale");
-                    let sendNewAdvance = false;
-                    let sendNewState = false;
+          let inputNewAdvance = document.getElementById("newAdvance");
+          let selectNewState = document.getElementById("select_estado_cliente_modal_show_sale");
+          let sendNewAdvance = false;
+          let sendNewState = false;
 
-                    // Hay un abono válido
-                    if (inputNewAdvance !== null) {
-                        if (parseInt(inputNewAdvance.value.replace(/,/g, '')) > 0 && inputNewAdvance.className == "form-control") {
-                            sendNewAdvance = true;
-                        }
-                    }
+          // Hay un abono válido
+          if (inputNewAdvance !== null) {
+            if (parseInt(inputNewAdvance.value.replace(/,/g, '')) > 0 && inputNewAdvance.className == "form-control") {
+              sendNewAdvance = true;
+            }
+          }
 
-                    // Hay un cambio de estado válido
-                    if (selectNewState.value !== showSaleData.pedido.estado) {
-                        sendNewState = true;
-                    }
+          // Hay un cambio de estado válido
+          if (selectNewState.value !== showSaleData.pedido.estado) {
+            sendNewState = true;
+          }
 
-                    console.log(sendNewAdvance, sendNewState);
+          // Hay un cambio válido en los abonos o en los estados
+          if (sendNewAdvance || sendNewState) {
 
-                    // Hay un cambio válido en los abonos o en los estados
-                    if (sendNewAdvance || sendNewState) {
+            let id = showSaleData.pedido.id;
+            let newState = selectNewState.value;
+            let newTotalAdvance = document.getElementById("abono_total_modal_show_sale").innerText;
+            let newAdvanceId = "";
+            let newAdvanceDate = "";
+            let newAdvance = "";
 
-                        let id = showSaleData.pedido.id;
-                        let newState = selectNewState.value;
-                        let newTotalAdvance = document.getElementById("abono_total_modal_show_sale").innerText;
-                        let newAdvanceId = "";
-                        let newAdvanceDate = "";
-                        let newAdvance = "";
+            if (sendNewAdvance) {
+              newAdvanceId = getAdvanceId();
+              newAdvanceDate = getDate();
+              newAdvance = inputNewAdvance.value;
+            }
 
-                        if (sendNewAdvance) {
-                            newAdvanceId = getAdvanceId();
-                            newAdvanceDate = getDate();
-                            newAdvance = inputNewAdvance.value;
-                        }
+            setTimeout(function () {
+              if (newAdvance === "") {
+                alert(`\nCambio Registrado\n\nN°\n-> ${id}\nNuevo Abono\n -> ${"0"}\nNuevo Estado\n -> ${newState}`);
+              }
+              else {
+                alert(`\nCambio Registrado\n\nN°\n-> ${id}\nNuevo Abono\n-> ${newAdvance}\nNuevo Estado\n-> ${newState}`);
+              }
+            }, 500);
 
-                        setTimeout(function () {
-                            alert(`\nCambio Registrado \n\n N° ${id} \n Abono : ${newAdvance} COP \n Estado : ${newState}
-                                    `);
-                        }, 500);
+            google.script.run.withSuccessHandler(updateShowSale => {
+              viewSales();
+              closeShowSaleModal();
+            }).updateShowSale(id, newState, newTotalAdvance, newAdvanceId, newAdvance, newAdvanceDate, sendNewAdvance);
+          }
+          else {
+            if (inputNewAdvance === null) {
+              closeShowSaleModal();
 
-                        google.script.run.withSuccessHandler(updateShowSale => {
-                            viewSales();
-                            closeShowSaleModal();
-                        }).updateShowSale(id, newState, newTotalAdvance, newAdvanceId, newAdvance, newAdvanceDate, sendNewAdvance);
-                    }
-                    else {
-                        if (inputNewAdvance === null) {
-                            closeShowSaleModal();
+            }
+            else {
+              if (inputNewAdvance.className == "form-control") {
+                closeShowSaleModal();
+              }
+            }
+          }
+        }
 
-                        }
-                        else {
-                            if (inputNewAdvance.className == "form-control") {
-                                closeShowSaleModal();
-                            }
-                        }
-                    }
-                }
 
-            </script>
-        </div>
+        /*
+          Cambia el color de un estado según sea necesario.
+        */
+        function highlightState(element) {
+          switch (element.innerText) {
+
+            case "POR HACER":
+              element.style.color = "#c53bb0";
+              break;
+            case "CANCELADO":
+              element.style.color = "#c1c1c1";
+              break;
+            case "ENTREGADO":
+              element.style.color = "yellowgreen";
+              break;
+            case "DISEÑADO":
+              element.style.color = "#d63c68";
+              break;
+            case "IMPRESO":
+              element.style.color = "cyan";
+              break;
+            case "LISTO":
+              element.style.color = "yellow";
+              break;
+            default:
+              element.style.color = "white";
+              break;
+          }
+        }
+
+        /*
+          Cambia el color de un estado según sea necesario.
+        */
+        function highlightPlazo(element) {
+
+          let plazo = parseInt(element.innerText);
+
+          if (plazo > 3) {
+            element.style.color = "yellowgreen";
+          }
+          else if (plazo <= 0) {
+            element.style.color = "#d63c68";
+          }
+          else {
+            element.style.color = "yellow";
+          }
+        }
+
+      </script>
+
     </div>
+  </div>
 </div>

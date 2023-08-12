@@ -2,62 +2,75 @@
 <html lang="en">
 
 <head>
-    <base target="_self">
+  <base target="_self">
 
-    <!-- Bootstrap y CSS -->
-    <?!= include('_app_css')?>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1">
-    <title>ERP Colormath</title>
+  <!-- Bootstrap y CSS -->
+  <?!= include('_app_css')?>
+  
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1">
+  <title>Colormath ERP</title>
 
 </head>
 <header>
-    <nav class="navbar navbar-expand-sm navbar-dark bg-dark" id="main-navbar">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">
-                Colormath
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
-                aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-                <div class="navbar-nav">
-                    <a class="nav-link " href="#" id="nav-sales">Ventas</a>
-                    <a class="nav-link " href="#" id="nav-orders">Pedidos</a>
-                    <a class="nav-link " href="#" id="nav-prices">Precios</a>
-                    <a class="nav-link " href="#" id="nav-bills">Facturas</a>
-                    <a class="nav-link " href="#" id="nav-wood">Madera</a>
-                </div>
-            </div>
+  <nav class="navbar navbar-expand-sm navbar-dark bg-dark" id="main-navbar">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">
+        <img src="http://drive.google.com/uc?export=view&id=1p4iNPoKTdcOW3zuKVbEF9wW8RWYyBsz2" height="35">
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
+        aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+        <div class="navbar-nav">
+          <a class="nav-link " href="#" id="nav-sales">Ventas</a>
+          <a class="nav-link " href="#" id="nav-orders">Pedidos</a>
+          <a class="nav-link " href="#" id="nav-prices">Precios</a>
+
+          <!-- <a class="nav-link " href="#" id="nav-bills">Facturas</a> -->
+          
+          <a class="nav-link " href="#" id="nav-wood">Madera</a>
         </div>
-    </nav>
+      </div>
+    </div>
+  </nav>
+  <img id="header-divider" src="http://drive.google.com/uc?export=view&id=1uUb-uwV9J0D_qxXoydg4Ctt_B29f_IBy" height="10"
+    width="100%">
 </header>
 
 <body>
-    <!-- Contenido Principal -->
-    <div id="content-sales" style="display: inline;">
-        <?!= include('_sales')?>
-    </div>
+  <!-- Contenido Principal -->
+  <div id="content-sales" style="display: inline;">
+    <?!= include('_sales')?>
+  </div>
 
-    <div id="content-orders" style="display: none;">
-        <?!= include('_orders')?>
-    </div>
+  <div id="content-orders" style="display: none;">
+    <?!= include('_orders')?>
+  </div>
 
-    <div id="content-prices" style="display: none;">
-        <?!= include('_prices')?>
-    </div>
+  <div id="content-prices" style="display: none;">
+    <?!= include('_prices')?>
+  </div>
 
-    <div id="content-bills" style="display: none;">
-        <?!= include('_bills')?>
-    </div>
+  <!--
+  <div id="content-bills" style="display: none;">
+    <?!= include('_bills')?>
+  </div>
+  -->
 
-    <div id="content-wood" style="display: none;">
-        <?!= include('_wood')?>
-    </div>
+  <div id="content-wood" style="display: none;">
+    <?!= include('_wood')?>
+  </div>
 
-    <!-- Bootstrap y JS -->
-    <?!= include('_app_script')?>
+  <!-- Bootstrap y JS -->
+  <?!= include('_app_script')?>
+  
 </body>
+
+<footer>
+  <img id="header-divider" src="http://drive.google.com/uc?export=view&id=1uUb-uwV9J0D_qxXoydg4Ctt_B29f_IBy" height="10"
+    width="100%">
+</footer>
 
 </html>
