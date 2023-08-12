@@ -67,22 +67,18 @@ function searchOrdersByState(searchText) {
  * retorna la cantidad de entregas que hay para un dia en específico
  */
 function getOrdersByDate(date) {
-
-  const range = "F2:F";
-  let rowList = [];
   let countOrders = 0;
 
-  const textFinder = PEDIDOS_TABLE.getRange(range)
-    .createTextFinder(date).matchEntireCell(true);
+  let orders = PEDIDOS_TABLE.getDataRange().getValues();
+  orders = orders.filter(order => order[5] === date);
 
-  rowList = textFinder.findAll();
-
-  for (let i = 0; i < rowList.length; i++) {
-    let state = PEDIDOS_TABLE.getRange(rowList[i].getRow(), 2).getValue();
-    if (state === "POR HACER") {
+  for (let i = 0; i < orders.length; i++) {
+    if (orders[i][1] === "POR HACER") {
       countOrders++;
+      console.log(orders[i]);
     }
   }
+
   return countOrders;
 }
 

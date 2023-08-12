@@ -351,7 +351,6 @@ function getRowById(id, table) {
  */
 function updateShowSale(id, newState, newTotalAdvance, newAdvanceId, newAdvance, newAdvanceDate, sendNewAdvance) {
 
-
   let row = "";
 
   // Se actualiza tabla PEDIDO

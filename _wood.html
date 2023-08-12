@@ -9,21 +9,16 @@
         <!-- Datos de Búsqueda -->
 
         <div class="row">
-            <div class="col-sm-3">
-                <select class="form-select mt-3 mb-3" id="texto_busqueda_madera" onkeydown="disableEnterKeyWood(event)">
-                    <option value="5">5</option>
-                    <option value="10">10</option>
-                    <option value="20">20</option>
-                    <option value="50">50</option>
-                    <option value="Todos">*</option>
-                </select>
-            </div>
-            <div class="col-sm-1">
-                <button id="madera_button" type="button" class="btn btn-custom-green" onclick="viewWood()">Buscar</button>
+            <div class="col-sm-2 mt-3 mb-2">
+                <button id="madera_button" type="button" class="btn btn-custom-green"
+                    onclick="viewWood()">Actualizar</button>
             </div>
         </div>
-        <div id="madera_loading" class="spinner-grow spinner-custom-green mt-2" role="status" style="display: none;">
-            <span class="sr-only"></span>
+        <div class="row">
+            <div id="madera_loading" class="spinner-grow spinner-custom-green mt-3 mb-1" role="status"
+                style="display: none;">
+                <span class="sr-only"></span>
+            </div>
         </div>
     </form>
     <br>
@@ -172,7 +167,6 @@
     </div>
 
     <script>
-        let maxWoodResults = ""; // Cantidad máxima de pedidos de madera a mostrar
         let showWoodData = {}; // Almacena la data de la venta que se desea ver con más detalle
 
         /*
@@ -180,69 +174,62 @@
         */
         function viewWood() {
 
-            maxWoodResults = document.getElementById("texto_busqueda_madera").value;
+            // Muestra animación de carga
+            document.getElementById("madera_loading").style.display = "inline-block";
 
-            if (maxWoodResults != "") {
-                // Muestra animación de carga
-                document.getElementById("madera_loading").style.display = "inline-block";
+            google.script.run
+                .withSuccessHandler(showWood => {
+                    // Ocultar animación de carga
+                    document.getElementById("madera_loading").style.display = "none";
 
-                google.script.run
-                    .withSuccessHandler(showWood => {
-                        // Ocultar animación de carga
-                        document.getElementById("madera_loading").style.display = "none";
+                    let tableBody = document.getElementById("tableBody_madera");
+                    tableBody.innerHTML = ""; // Reinicio el contenido
 
-                        let tableBody = document.getElementById("tableBody_madera");
-                        tableBody.innerHTML = ""; // Reinicio el contenido
+                    let template = document.getElementById("rowTemplate_madera");
+                    let templateContent = template.content;
 
-                        let template = document.getElementById("rowTemplate_madera");
-                        let templateContent = template.content;
+                    if (showWood != null) {
 
-                        if (showWood != null) {
+                        showWood.forEach(wood => {
 
-                            showWood.forEach(wood => {
+                            const tr = templateContent.cloneNode(true);
 
-                                const tr = templateContent.cloneNode(true);
+                            const idCol_madera = tr.querySelector(".template-id_madera");
+                            const estadoCol_madera = tr.querySelector(".template-estado_madera");
+                            const clienteCol_madera = tr.querySelector(".template-cliente_madera");
+                            const celularCol_madera = tr.querySelector(".template-celular_madera");
+                            const plazoCol_madera = tr.querySelector(".template-plazo_madera");
+                            const vlrAbonadoCol_madera = tr.querySelector(".template-vlr-abonado_madera");
+                            const vlrTotalCol_madera = tr.querySelector(".template-vlr-total_madera");
 
-                                const idCol_madera = tr.querySelector(".template-id_madera");
-                                const estadoCol_madera = tr.querySelector(".template-estado_madera");
-                                const clienteCol_madera = tr.querySelector(".template-cliente_madera");
-                                const celularCol_madera = tr.querySelector(".template-celular_madera");
-                                const plazoCol_madera = tr.querySelector(".template-plazo_madera");
-                                const vlrAbonadoCol_madera = tr.querySelector(".template-vlr-abonado_madera");
-                                const vlrTotalCol_madera = tr.querySelector(".template-vlr-total_madera");
+                            const accionesCol_madera = tr.querySelector(".template-acciones_madera");
+                            const showButton_madera = tr.querySelector(".show-button_madera");
 
-                                const accionesCol_madera = tr.querySelector(".template-acciones_madera");
-                                const showButton_madera = tr.querySelector(".show-button_madera");
+                            idCol_madera.textContent = wood[0];
+                            estadoCol_madera.textContent = wood[1];
+                            clienteCol_madera.textContent = wood[3];
+                            celularCol_madera.textContent = wood[4];
+                            plazoCol_madera.textContent = wood[8];
+                            vlrAbonadoCol_madera.textContent = wood[6];
+                            vlrTotalCol_madera.textContent = wood[7];
+                            showButton_madera.dataset.woodId = wood[0];
 
-                                idCol_madera.textContent = wood[0];
-                                estadoCol_madera.textContent = wood[1];
-                                clienteCol_madera.textContent = wood[3];
-                                celularCol_madera.textContent = wood[4];
-                                plazoCol_madera.textContent = wood[8];
-                                vlrAbonadoCol_madera.textContent = wood[6];
-                                vlrTotalCol_madera.textContent = wood[7];
-                                showButton_madera.dataset.woodId = wood[0];
+                            // Resalta los estados
+                            highlightState(estadoCol_madera);
 
-                                // Resalta los estados
-                                highlightState(estadoCol_madera);
-
-                                // Resalta los plazos
-                                highlightPlazo(plazoCol_madera);
+                            // Resalta los plazos
+                            highlightPlazo(plazoCol_madera);
 
 
-                                tableBody.appendChild(tr);
-                            })
+                            tableBody.appendChild(tr);
+                        })
 
-                        }
-                        else {
-                            alert("No se encontraron resultados");
-                        }
-                    })
-                    .filterWoodOrders(maxWoodResults);
-            }
-            else {
-                alert("Por favor ingrese un dato para realizar la búsqueda");
-            }
+                    }
+                    else {
+                        alert("No se encontraron resultados");
+                    }
+                })
+                .filterWoodOrders();
         }
 
 
@@ -384,20 +371,6 @@
                 }).showSaleById(woodId);
         }
 
-
-        /*
-          Desactiva la tecla enter para evitar que envíe el form y presiona el botón requerido
-        */
-        function disableEnterKeyWood(event) {
-            // Verificar si se presionó la tecla "Enter"
-            if (event.keyCode === 13) {
-                document.getElementById("madera_button").click();
-                event.preventDefault();
-                return false;
-            }
-        }
-
-
         /*
             Cierra el show_wood_modal
         */
@@ -470,13 +443,6 @@
                 select.add(option);
             }
         }
-
-        /*
-            Se cargan las ordenes por defecto al reiniciar la página
-        */
-        window.addEventListener('load', function () {
-            viewWood();
-        });
 
     </script>
 </div>
