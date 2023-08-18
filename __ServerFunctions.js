@@ -33,18 +33,18 @@ function include(fileName) {
 
 function loadAllData() {
 
+  // Time
+  var startTime = new Date();
+
   deleteDataTable(PEDIDOS_TABLE);
   deleteDataTable(PRODUCTOS_TABLE);
   deleteDataTable(ABONOS_TABLE);
 
-  //última fila - 3
+  loadData(0, 1284-3); // última fila - 3
 
-  //loadData(0, 200);
-  //loadData(200, 400);
-  //loadData(400, 600);
-  //loadData(600, 800);
-  //loadData(800, 1000);
-  loadData(900, 1184);
+  // Time
+  var endTime = new Date();
+  console.log("time : ", endTime - startTime);
 
   //  ........ No olvides convertir todo a texto plano
 
@@ -53,11 +53,14 @@ function loadAllData() {
 function loadData(start, end) {
 
   const idFlujoCaja = '1OhU5Fz_L773P0YfNvrUns1rCxMuT0rtZcZ89dJiMqIg';
-  const flujoCaga = SpreadsheetApp.openById(idFlujoCaja);
-  const ventas = flujoCaga.getSheetByName('Ventas');
+  const flujoCaja = SpreadsheetApp.openById(idFlujoCaja);
+  const ventas = flujoCaja.getSheetByName('Ventas');
   const dataFlujoCaja = ventas.getRange('A4:AC').getValues();
-
   let i = start;
+
+  let pedidosData = [];
+  let productosData = [];
+  let abonosData = [];
 
   // -------------------------- Pedidos ----------------------------
 
@@ -103,14 +106,14 @@ function loadData(start, end) {
       fecha = "-";
     }
 
-
     cliente = dataFlujoCaja[i][3];
     celular = "";
-    fecha_entrega = "2023-07-28";
+    fecha_entrega = "2023-08-17";
     vlr_abonado = formatValue(dataFlujoCaja[i][27]);
     vlr_total = formatValue(dataFlujoCaja[i][28]);
 
-    PEDIDOS_TABLE.appendRow([
+
+    pedidosData.push([
       id,
       estado,
       fecha,
@@ -121,8 +124,6 @@ function loadData(start, end) {
       vlr_total
     ]);
 
-    // Se formatea la fila agregada (última fila) como texto plano para evitar problemas con las fechas
-    //PEDIDOS_TABLE.getRange("A" + PEDIDOS_TABLE.getLastRow() + ":Z" + PEDIDOS_TABLE.getLastRow()).setNumberFormat("@");
 
     // -------------------------- Productos ----------------------------
 
@@ -135,7 +136,7 @@ function loadData(start, end) {
     tipo_diseño = "-";
     ruana = "-";
 
-    PRODUCTOS_TABLE.appendRow([
+    productosData.push([
       id_producto,
       id,
       nombre,
@@ -147,8 +148,6 @@ function loadData(start, end) {
       ruana
     ]);
 
-    // Se formatea la fila agregada (última fila) como texto plano
-    //PRODUCTOS_TABLE.getRange("A" + PRODUCTOS_TABLE.getLastRow() + ":Z" + PRODUCTOS_TABLE.getLastRow()).setNumberFormat("@");
 
     if (dataFlujoCaja[i][9] !== "") {
 
@@ -161,7 +160,7 @@ function loadData(start, end) {
       tipo_diseño = "-";
       ruana = "-";
 
-      PRODUCTOS_TABLE.appendRow([
+      productosData.push([
         id_producto,
         id,
         nombre,
@@ -172,9 +171,6 @@ function loadData(start, end) {
         tipo_diseño,
         ruana
       ]);
-
-      // Se formatea la fila agregada (última fila) como texto plano
-      //PRODUCTOS_TABLE.getRange("A" + PRODUCTOS_TABLE.getLastRow() + ":Z" + PRODUCTOS_TABLE.getLastRow()).setNumberFormat("@");
     }
 
     // -------------------------- Abonos ----------------------------
@@ -182,21 +178,29 @@ function loadData(start, end) {
     id_abono = id + "A0";
     vlr_abono = formatValue(dataFlujoCaja[i][27]);
 
-    ABONOS_TABLE.appendRow([
+    abonosData.push([
       id_abono,
       id,
       vlr_abono,
       fecha
     ]);
 
-    // Se formatea la fila agregada (última fila) como texto plano
-    //ABONOS_TABLE.getRange("A" + ABONOS_TABLE.getLastRow() + ":Z" + ABONOS_TABLE.getLastRow()).setNumberFormat("@");
-
     i++;
   }
 
+  PEDIDOS_TABLE.getRange(`A2:H${pedidosData.length + 1}`).setValues(pedidosData);
+  PEDIDOS_TABLE.getRange("A2" + ":Z" + PEDIDOS_TABLE.getLastRow()).setNumberFormat("@");
+
+  PRODUCTOS_TABLE.getRange(`A2:I${productosData.length + 1}`).setValues(productosData);
+  PRODUCTOS_TABLE.getRange("A2" + ":Z" + PRODUCTOS_TABLE.getLastRow()).setNumberFormat("@");
+
+  ABONOS_TABLE.getRange(`A2:D${abonosData.length + 1}`).setValues(abonosData);
+  ABONOS_TABLE.getRange("A2" + ":Z" + ABONOS_TABLE.getLastRow()).setNumberFormat("@");
+
   console.log(i + " Registros ingresados");
+
 }
+
 
 /**
  * Elimina toda la información de una tabla excepto el encabezado
