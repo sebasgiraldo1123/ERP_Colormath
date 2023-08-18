@@ -841,6 +841,13 @@
           for (let index = 1; index <= containersProducts - 1; index++) {
             document.getElementById(`producto_${index}`).remove();
           }
+
+          // Se eliminan las opciones del producto 0
+          document.getElementsByClassName('row opciones-productos')[0].innerHTML = "";
+
+          // Elimina el aviso de trabajos por hacer
+          document.getElementById('orders_count').innerHTML = "";
+          document.getElementById('fecha_entrega').className = "form-control";
         }
 
       </script>
@@ -1387,19 +1394,25 @@
 
           switch (showSaleData.pedido.estado) {
             case "POR HACER":
-              options = ["POR HACER", "LISTO", "ENTREGADO", "CANCELADO"];
-              break;
+                options = ["POR HACER", "LISTO", "ENTREGADO", "CANCELADO"];
+                break;
             case "ENTREGADO":
-              options = ["ENTREGADO", "CANCELADO", "LISTO", "POR HACER",];
-              break;
+                options = ["ENTREGADO", "CANCELADO", "POR HACER", "LISTO"];
+                break;
             case "CANCELADO":
-              options = ["CANCELADO", "POR HACER", "LISTO", "ENTREGADO"];
-              break;
+                options = ["CANCELADO", "POR HACER", "LISTO", "ENTREGADO"];
+                break;
             case "LISTO":
-              options = ["LISTO", "ENTREGADO", "CANCELADO", "POR HACER"];
-              break;
+                options = ["LISTO", "ENTREGADO", "CANCELADO", "POR HACER"];
+                break;
+            case "DISEÑADO":
+                options = ["DISEÑADO", "LISTO", "ENTREGADO", "CANCELADO", "POR HACER"];
+                break;
+            case "IMPRESO":
+                options = ["IMPRESO", "LISTO", "ENTREGADO", "CANCELADO", "POR HACER"];
+                break;
             default:
-              break;
+                break;
           }
 
           for (var i = 0; i < options.length; i++) {
