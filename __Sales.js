@@ -102,7 +102,7 @@ function createSale(data) {
 
   //------------------------------ Abono -------------------------------------
 
-  const id_abono = `${id}A1`;
+  const id_abono = `${id}A0`;
   const vlr_abono = data.abono;
 
   ABONOS_TABLE.appendRow([

@@ -29,6 +29,8 @@ function filterOrders(parameter) {
       break;
     default:
       orders = searchOrdersByState("LISTO");
+      orders = orders.concat(searchOrdersByState("DISEÑADO"));
+      orders = orders.concat(searchOrdersByState("IMPRESO"));
       orders = orders.concat(searchOrdersByState("POR HACER"));
       break;
   }

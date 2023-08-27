@@ -36,11 +36,11 @@ function loadAllData() {
   // Time
   var startTime = new Date();
 
-  deleteDataTable(PEDIDOS_TABLE);
-  deleteDataTable(PRODUCTOS_TABLE);
-  deleteDataTable(ABONOS_TABLE);
+  //deleteDataTable(PEDIDOS_TABLE);
+  //deleteDataTable(PRODUCTOS_TABLE);
+  //deleteDataTable(ABONOS_TABLE);
 
-  loadData(0, 1284-3); // última fila - 3
+  loadData(0, 1306-3); // última fila - 3
 
   // Time
   var endTime = new Date();
@@ -108,7 +108,7 @@ function loadData(start, end) {
 
     cliente = dataFlujoCaja[i][3];
     celular = "";
-    fecha_entrega = "2023-08-17";
+    fecha_entrega = "2023-08-26";
     vlr_abonado = formatValue(dataFlujoCaja[i][27]);
     vlr_total = formatValue(dataFlujoCaja[i][28]);
 
