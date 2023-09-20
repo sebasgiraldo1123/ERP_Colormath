@@ -1,6 +1,6 @@
 //---------------- Data ERP Colormath ------------------------
 
-const BD_ID = '1BYXFtDEnkaH2dNwD89MYIadp-JYcYobmwYHkE79oR5I';
+const BD_ID = '';
 const DATA_ERP_COLORMATH = SpreadsheetApp.openById(BD_ID);
 
 // Tablas de la BD
@@ -11,7 +11,7 @@ const ABONOS_TABLE = DATA_ERP_COLORMATH.getSheetByName('ABONOS');
 
 //------------- Price Admin ERP Colormath ---------------------
 
-const PRICE_ID = '1H-KPUe-9E6-EblhPDo1eX3YHcVwInThHpeN2TF2fI1w';
+const PRICE_ID = '';
 const PRICE_ADMIN_ERP_COLORMATH = SpreadsheetApp.openById(PRICE_ID);
 
 // Tabla de Precios
